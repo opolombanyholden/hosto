@@ -1,0 +1,33 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    # Start at level 6 to ratchet up to 8 as the codebase matures.
+    # Level 6 already catches most missing types and signatures.
+    level: 6
+
+    paths:
+        - app
+        - bootstrap
+        - database
+        - routes
+        - tests
+
+    excludePaths:
+        - bootstrap/cache/*
+        - vendor/*
+        - storage/*
+        - node_modules/*
+
+    # Report unmatched ignored errors so we don't accumulate dead rules.
+    reportUnmatchedIgnoredErrors: true
+
+    # Treat unresolvable types as implicit mixed rather than failures.
+    treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+        # TracksActor trait will be used from Phase 1 onwards. Keeping it
+        # ready avoids noise in the history when the first consumer lands.
+        -
+            message: '#^Trait App\\Modules\\Core\\Traits\\TracksActor is used zero times#'
+            path: app/Modules/Core/Traits/TracksActor.php
