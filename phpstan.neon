@@ -25,9 +25,4 @@ parameters:
     # Treat unresolvable types as implicit mixed rather than failures.
     treatPhpDocTypesAsCertain: false
 
-    ignoreErrors:
-        # TracksActor trait will be used from Phase 1 onwards. Keeping it
-        # ready avoids noise in the history when the first consumer lands.
-        -
-            message: '#^Trait App\\Modules\\Core\\Traits\\TracksActor is used zero times#'
-            path: app/Modules/Core/Traits/TracksActor.php
+    ignoreErrors: []

@@ -14,22 +14,29 @@ use Illuminate\Database\Eloquent\Model;
  *
  * System-initiated writes (seeders, jobs without actor) leave NULL,
  * which is how audit distinguishes user vs system actions.
+ *
+ * @phpstan-require-extends Model
  */
 trait TracksActor
 {
     protected static function bootTracksActor(): void
     {
         static::creating(function (Model $model): void {
+            /** @phpstan-ignore property.notFound */
             if (empty($model->created_by) && ($actor = self::currentActorUuid()) !== null) {
+                /** @phpstan-ignore property.notFound */
                 $model->created_by = $actor;
             }
+            /** @phpstan-ignore property.notFound */
             if (empty($model->updated_by) && ($actor = self::currentActorUuid()) !== null) {
+                /** @phpstan-ignore property.notFound */
                 $model->updated_by = $actor;
             }
         });
 
         static::updating(function (Model $model): void {
             if (($actor = self::currentActorUuid()) !== null) {
+                /** @phpstan-ignore property.notFound */
                 $model->updated_by = $actor;
             }
         });
@@ -43,7 +50,7 @@ trait TracksActor
             return null;
         }
 
-        // Models must expose "uuid" attribute (via HasUuid).
+        /** @phpstan-ignore property.notFound */
         return $user->uuid ?? null;
     }
 }
