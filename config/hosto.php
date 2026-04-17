@@ -31,8 +31,8 @@ return [
         // Phase 1
         'Annuaire' => env('HOSTO_MODULE_ANNUAIRE', false),
 
-        // Phase 2
-        'Referentiel' => env('HOSTO_MODULE_REFERENTIEL', false),
+        // Phase 1.1+
+        'Referentiel' => env('HOSTO_MODULE_REFERENTIEL', true),
 
         // Phase 3
         'Usager' => env('HOSTO_MODULE_USAGER', false),

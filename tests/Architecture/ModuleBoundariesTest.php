@@ -110,8 +110,11 @@ final class ModuleBoundariesTest extends TestCase
             foreach ($finder as $file) {
                 $content = file_get_contents($file->getPathname()) ?: '';
 
-                // Skip abstract base classes and interfaces.
-                if (preg_match('/\babstract\s+class\b/', $content) || str_contains($content, 'interface ')) {
+                // Skip abstract classes, interfaces, traits and concerns.
+                if (preg_match('/\babstract\s+class\b/', $content)
+                    || str_contains($content, 'interface ')
+                    || str_contains($content, 'trait ')
+                ) {
                     continue;
                 }
 
