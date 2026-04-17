@@ -113,6 +113,8 @@
         .navbar-nav .btn-nav { background: var(--white); color: var(--green); font-weight: 600; margin-left: 8px; }
         .navbar.scrolled .navbar-nav .btn-nav { background: var(--green); color: var(--white); }
         .navbar-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
+        .navbar { top: 30px; } /* offset for country bar */
+        .navbar.scrolled { top: 0; }
         .navbar-toggle span { width: 24px; height: 2.5px; background: var(--white); border-radius: 4px; transition: all var(--transition); }
         .navbar.scrolled .navbar-toggle span { background: var(--green); }
 
@@ -356,6 +358,19 @@
             .audience-illustration { order: -1; min-height: 240px; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
         }
+        /* Country selector bar */
+        .country-bar {
+            background: var(--dark); color: rgba(255,255,255,.8); font-size: .75rem;
+            padding: 6px 0; text-align: right; position: relative; z-index: 1001;
+        }
+        .country-bar .container { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+        .country-bar select {
+            background: rgba(255,255,255,.1); color: white; border: 1px solid rgba(255,255,255,.2);
+            border-radius: 6px; padding: 3px 8px; font-family: 'Poppins',sans-serif; font-size: .72rem;
+            cursor: pointer; outline: none;
+        }
+        .country-bar select option { color: var(--dark); background: white; }
+
         @media (max-width: 768px) {
             .section { padding: 64px 0; }
             .navbar-nav { display: none; }
@@ -367,21 +382,47 @@
             .navbar-nav.open a { color: var(--gray-800); padding: 12px 16px; }
             .navbar-nav.open .btn-nav { background: var(--green); color: var(--white); text-align: center; justify-content: center; }
             .navbar-toggle { display: flex; }
-            .search-bar { grid-template-columns: 1fr; }
+            .search-bar { grid-template-columns: 1fr !important; }
+            .search-btn { justify-content: center; }
+            .navbar { top: 30px; }
+            .navbar.scrolled { top: 0; }
             .services-grid { grid-template-columns: repeat(2, 1fr); }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
             .eco-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; }
             .cta-box { padding: 40px 24px; }
             .hero-stats { gap: 24px; }
+            .hero h1 { font-size: 2rem; }
+            .hero-text { font-size: .95rem; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .hero-buttons .btn { width: 100%; justify-content: center; }
+            .container { padding: 0 16px; }
+            .audience-tabs { gap: 4px; }
+            .audience-tab { padding: 8px 14px; font-size: .78rem; }
+            .country-bar { text-align: center; }
+            .country-bar .container { justify-content: center; }
         }
         @media (max-width: 480px) {
-            .services-grid { grid-template-columns: 1fr 1fr; }
+            .services-grid { grid-template-columns: 1fr; }
             .hero-stats { flex-direction: column; align-items: center; gap: 16px; }
+            .section-title { font-size: 1.4rem; }
+            .section-subtitle { font-size: .9rem; }
+            .eco-card { padding: 20px; }
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+
+<!-- COUNTRY SELECTOR -->
+<div class="country-bar" id="countryBar">
+    <div class="container">
+        <span>Pays :</span>
+        <select id="countrySelect" onchange="changeCountry(this.value)">
+            <option value="">Chargement...</option>
+        </select>
+    </div>
+</div>
 
 <!-- NAVBAR -->
 <nav class="navbar" id="navbar">
@@ -393,10 +434,10 @@
             HOSTO
         </a>
         <div class="navbar-nav" id="navMenu">
+            <a href="#recherche" onclick="openAnnuaire()">Annuaire</a>
             <a href="#services">Services</a>
             <a href="#fonctionnalites">Fonctionnalites</a>
             <a href="#ecosysteme">Ecosysteme</a>
-            <a href="#solutions">Solutions</a>
             <a href="#connexion" class="btn-nav">Connexion</a>
         </div>
         <div class="navbar-toggle" id="navToggle" onclick="document.getElementById('navMenu').classList.toggle('open')">
@@ -506,10 +547,16 @@
 <!-- SEARCH (connected to API) -->
 <div class="search-section" id="recherche">
     <div class="container">
-        <form class="search-bar" id="searchForm" onsubmit="searchStructures(event)">
+        <form class="search-bar" id="searchForm" onsubmit="searchStructures(event)" style="grid-template-columns: 1fr 1fr 1fr 1fr auto;">
+            <div class="search-field">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input type="text" id="searchQ" placeholder="Nom de la structure...">
+            </div>
             <div class="search-field">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <input type="text" id="searchQ" placeholder="Nom de la structure...">
+                <select id="searchCity">
+                    <option value="">Toutes les villes</option>
+                </select>
             </div>
             <div class="search-field">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -930,8 +977,63 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // ===== HOSTO API integration =====
 const API = '/api/v1';
 let userLat = null, userLng = null;
+let currentCountryIso = localStorage.getItem('hosto_country') || 'GA';
+let countriesCache = [];
+let regionsCache = [];
 
-// Load referentials into dropdowns on page load.
+// Load countries for the top bar selector.
+async function loadCountries() {
+    try {
+        const res = await fetch(`${API}/referentiel/countries`);
+        countriesCache = (await res.json()).data;
+        const sel = document.getElementById('countrySelect');
+        sel.innerHTML = '';
+        countriesCache.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.iso2;
+            opt.textContent = c.name;
+            if (c.iso2 === currentCountryIso) opt.selected = true;
+            sel.appendChild(opt);
+        });
+    } catch (e) { console.error('Failed to load countries', e); }
+}
+
+// Change active country.
+function changeCountry(iso2) {
+    currentCountryIso = iso2;
+    localStorage.setItem('hosto_country', iso2);
+    loadCities();
+    // Clear previous results when country changes.
+    document.getElementById('resultats').style.display = 'none';
+}
+
+// Load cities for the search dropdown (filtered by current country).
+async function loadCities() {
+    try {
+        const regRes = await fetch(`${API}/referentiel/countries/${currentCountryIso}/regions`);
+        regionsCache = (await regRes.json()).data;
+
+        const citySelect = document.getElementById('searchCity');
+        citySelect.innerHTML = '<option value="">Toutes les villes</option>';
+
+        for (const region of regionsCache) {
+            const citiesRes = await fetch(`${API}/referentiel/regions/${region.uuid}/cities`);
+            const cities = (await citiesRes.json()).data;
+            if (cities.length === 0) continue;
+            const optGroup = document.createElement('optgroup');
+            optGroup.label = region.name;
+            cities.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.uuid;
+                opt.textContent = c.name + (c.population ? ` (${c.population.toLocaleString()})` : '');
+                optGroup.appendChild(opt);
+            });
+            citySelect.appendChild(optGroup);
+        }
+    } catch (e) { console.error('Failed to load cities', e); }
+}
+
+// Load types and specialties into dropdowns.
 async function loadReferentials() {
     try {
         const [typesRes, specsRes] = await Promise.all([
@@ -940,6 +1042,7 @@ async function loadReferentials() {
         ]);
 
         const typeSelect = document.getElementById('searchType');
+        typeSelect.innerHTML = '<option value="">Type de structure</option>';
         typesRes.data.forEach(t => {
             const opt = document.createElement('option');
             opt.value = t.slug;
@@ -948,6 +1051,7 @@ async function loadReferentials() {
         });
 
         const specSelect = document.getElementById('searchSpecialty');
+        specSelect.innerHTML = '<option value="">Specialite</option>';
         specsRes.data.forEach(s => {
             const opt = document.createElement('option');
             opt.value = s.code;
@@ -970,11 +1074,13 @@ async function searchStructures(e) {
     if (e) e.preventDefault();
 
     const q = document.getElementById('searchQ').value.trim();
+    const city = document.getElementById('searchCity').value;
     const type = document.getElementById('searchType').value;
     const specialty = document.getElementById('searchSpecialty').value;
 
     const params = new URLSearchParams();
     if (q) params.set('q', q);
+    if (city) params.set('city', city);
     if (type) params.set('type', type);
     if (specialty) params.set('specialty', specialty);
     if (userLat && userLng) {
@@ -1117,11 +1223,11 @@ async function showDetail(uuid) {
 
         const overlay = document.createElement('div');
         overlay.id = 'detailOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:24px;';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;';
         overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
 
         overlay.innerHTML = `
-        <div style="background:white;border-radius:20px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;position:relative;">
+        <div style="background:white;border-radius:20px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch;">
             <!-- Cover image (Facebook-style) -->
             <div style="position:relative;height:180px;border-radius:20px 20px 0 0;overflow:hidden;background:linear-gradient(135deg,var(--green),var(--green-mid));">
                 ${coverImg ? `<img src="${coverImg}" alt="Couverture" style="width:100%;height:100%;object-fit:cover;">` : ''}
@@ -1212,6 +1318,7 @@ function geolocateMe() {
 
 function clearSearch() {
     document.getElementById('searchQ').value = '';
+    document.getElementById('searchCity').value = '';
     document.getElementById('searchType').value = '';
     document.getElementById('searchSpecialty').value = '';
     userLat = null;
@@ -1219,8 +1326,16 @@ function clearSearch() {
     document.getElementById('resultats').style.display = 'none';
 }
 
+// Open annuaire: trigger an empty search to show all structures.
+function openAnnuaire() {
+    clearSearch();
+    setTimeout(() => searchStructures(), 100);
+}
+
 // Initialize.
+loadCountries();
 loadReferentials();
+loadCities();
 </script>
 
 </body>
