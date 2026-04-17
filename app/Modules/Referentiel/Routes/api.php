@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Modules\Referentiel\Http\Controllers\CitiesController;
 use App\Modules\Referentiel\Http\Controllers\CountriesController;
 use App\Modules\Referentiel\Http\Controllers\RegionsController;
+use App\Modules\Referentiel\Http\Controllers\ServicesController;
 use App\Modules\Referentiel\Http\Controllers\SpecialtiesController;
 use App\Modules\Referentiel\Http\Controllers\StructureTypesController;
 use Illuminate\Support\Facades\Route;
@@ -38,3 +39,6 @@ Route::get('structure-types/{slug}', [StructureTypesController::class, 'show'])-
 // Specialties
 Route::get('specialties', [SpecialtiesController::class, 'index'])->name('specialties.index');
 Route::get('specialties/{uuid}', [SpecialtiesController::class, 'show'])->name('specialties.show');
+
+// Services / prestations / soins
+Route::get('services', [ServicesController::class, 'index'])->name('services.index');
