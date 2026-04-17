@@ -95,9 +95,9 @@ final class HostosEndpointTest extends TestCase
             ->assertJsonPath('data.uuid', $hosto->uuid)
             ->assertJsonPath('data.types.0.slug', 'hopital')
             ->assertJsonPath('data.specialties.0.code', 'CARD')
-            ->assertJsonPath('data.services.0.code', 'CONSULT')
-            ->assertJsonPath('data.services.0.tarif_min', 5000)
-            ->assertJsonPath('data.services.0.tarif_max', 15000)
+            ->assertJsonPath('data.services.prestation.0.code', 'CONSULT')
+            ->assertJsonPath('data.services.prestation.0.tarif_min', 5000)
+            ->assertJsonPath('data.services.prestation.0.tarif_max', 15000)
             ->assertJsonStructure([
                 'data' => ['uuid', 'name', 'types', 'specialties', 'services', 'opening_hours'],
             ]);
