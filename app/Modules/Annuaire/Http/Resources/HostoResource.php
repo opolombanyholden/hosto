@@ -34,6 +34,10 @@ final class HostoResource extends JsonResource
             'city' => new CityResource($this->whenLoaded('city')),
             'address' => $this->address,
             'quarter' => $this->quarter,
+            'distance_km' => $this->when(
+                isset($this->resource->distance_meters),
+                fn () => round($this->resource->distance_meters / 1000, 2),
+            ),
 
             // Contact (always shown)
             'phone' => $this->phone,
