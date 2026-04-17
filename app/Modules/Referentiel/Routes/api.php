@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Modules\Referentiel\Http\Controllers\CitiesController;
 use App\Modules\Referentiel\Http\Controllers\CountriesController;
 use App\Modules\Referentiel\Http\Controllers\RegionsController;
+use App\Modules\Referentiel\Http\Controllers\SpecialtiesController;
+use App\Modules\Referentiel\Http\Controllers\StructureTypesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,3 +30,11 @@ Route::get('regions/{uuid}/cities', [RegionsController::class, 'cities'])->name(
 
 // Cities
 Route::get('cities/{uuid}', [CitiesController::class, 'show'])->name('cities.show');
+
+// Structure types
+Route::get('structure-types', [StructureTypesController::class, 'index'])->name('structure-types.index');
+Route::get('structure-types/{slug}', [StructureTypesController::class, 'show'])->name('structure-types.show');
+
+// Specialties
+Route::get('specialties', [SpecialtiesController::class, 'index'])->name('specialties.index');
+Route::get('specialties/{uuid}', [SpecialtiesController::class, 'show'])->name('specialties.show');
