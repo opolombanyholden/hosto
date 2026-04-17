@@ -26,7 +26,7 @@ final class HostosController
     public function index(Request $request): AnonymousResourceCollection
     {
         $query = Hosto::active()
-            ->with(['city.region', 'structureTypes', 'specialties']);
+            ->with(['city.region', 'structureTypes', 'specialties', 'media']);
 
         $hasGeo = $request->filled('lat') && $request->filled('lng');
 
@@ -119,7 +119,7 @@ final class HostosController
     public function show(string $uuid): HostoResource
     {
         $query = Hosto::whereUuid($uuid)
-            ->with(['city.region.country', 'structureTypes', 'specialties', 'services']);
+            ->with(['city.region.country', 'structureTypes', 'specialties', 'services', 'media']);
 
         // Add distance if coordinates provided.
         if (request()->filled('lat') && request()->filled('lng') && DB::getDriverName() === 'pgsql') {

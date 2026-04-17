@@ -11,6 +11,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+    <!-- Leaflet (OpenStreetMap) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; font-size: 16px; }
@@ -1021,34 +1025,40 @@ async function searchStructures(e) {
 function createCard(h) {
     const card = document.createElement('div');
     card.className = 'service-card';
-    card.style.textAlign = 'left';
-    card.style.cursor = 'pointer';
+    card.style.cssText = 'text-align:left;cursor:pointer;padding:0;overflow:hidden;';
     card.onclick = () => showDetail(h.uuid);
 
+    const profileImg = h.profile_image || '/images/icons/icon-hopitaux.png';
     const types = (h.types || []).map(t => t.name).join(', ');
-    const specs = (h.specialties || []).slice(0, 4).map(s => s.name).join(', ');
-    const dist = h.distance_km != null ? `<span style="color:var(--green);font-weight:600;">${h.distance_km} km</span>` : '';
+    const specs = (h.specialties || []).slice(0, 3).map(s => s.name).join(', ');
+    const dist = h.distance_km != null ? `<span style="color:var(--green);font-weight:600;font-size:.75rem;">${h.distance_km} km</span>` : '';
     const guard = h.is_guard_service ? '<span style="background:#FFF3E0;color:#E65100;padding:2px 8px;border-radius:100px;font-size:.68rem;font-weight:600;">Garde</span>' : '';
     const openStatus = h.is_open_now === true
-        ? '<span style="color:var(--green);font-size:.75rem;">Ouvert</span>'
+        ? '<span style="color:var(--green);font-size:.72rem;font-weight:500;">Ouvert</span>'
         : h.is_open_now === false
-            ? '<span style="color:#E53935;font-size:.75rem;">Ferme</span>'
+            ? '<span style="color:#E53935;font-size:.72rem;font-weight:500;">Ferme</span>'
             : '';
     const city = h.city?.name || '';
     const quarter = h.quarter ? ` - ${h.quarter}` : '';
 
     card.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
-            <div style="font-size:.9rem;font-weight:600;color:var(--dark);line-height:1.3;">${h.name}</div>
-            ${dist}
+        <div style="padding:20px 20px 16px;display:flex;gap:14px;align-items:start;">
+            <img src="${profileImg}" alt="${h.name}" style="width:48px;height:48px;border-radius:12px;object-fit:cover;background:var(--green-pale);flex-shrink:0;">
+            <div style="flex:1;min-width:0;">
+                <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;">
+                    <div style="font-size:.88rem;font-weight:600;color:var(--dark);line-height:1.3;overflow:hidden;text-overflow:ellipsis;">${h.name}</div>
+                    ${dist}
+                </div>
+                <div style="font-size:.72rem;color:var(--gray-600);margin-top:2px;">${types}</div>
+                <div style="font-size:.72rem;color:var(--gray-600);">${city}${quarter}</div>
+            </div>
         </div>
-        <div style="font-size:.75rem;color:var(--gray-600);margin-bottom:6px;">${types}</div>
-        <div style="font-size:.75rem;color:var(--gray-600);margin-bottom:8px;">${city}${quarter}</div>
-        ${specs ? `<div style="font-size:.72rem;color:var(--green);margin-bottom:6px;">${specs}</div>` : ''}
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            ${guard}
-            ${openStatus}
-            ${h.phone ? `<span style="font-size:.72rem;color:var(--gray-600);">${h.phone}</span>` : ''}
+        <div style="padding:0 20px 16px;">
+            ${specs ? `<div style="font-size:.7rem;color:var(--green);margin-bottom:8px;">${specs}</div>` : ''}
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                ${guard} ${openStatus}
+                ${h.phone ? `<span style="font-size:.7rem;color:var(--gray-600);">${h.phone}</span>` : ''}
+            </div>
         </div>
     `;
     return card;
@@ -1064,6 +1074,9 @@ async function showDetail(uuid) {
         const types = (d.types || []).map(t => t.name).join(', ');
         const specs = (d.specialties || []).map(s => s.name).join(', ');
         const dist = d.distance_km != null ? `${d.distance_km} km de vous` : '';
+        const profileImg = d.profile_image || '/images/icons/icon-hopitaux.png';
+        const coverImg = d.cover_image || '';
+        const gallery = d.gallery || [];
 
         let servicesHtml = '';
         if (d.services) {
@@ -1088,30 +1101,89 @@ async function showDetail(uuid) {
             hoursHtml += '</div>';
         }
 
+        // Gallery HTML
+        let galleryHtml = '';
+        if (gallery.length > 0) {
+            galleryHtml = '<div style="margin-top:16px;"><strong style="font-size:.82rem;color:var(--green);">Galerie</strong><div style="display:flex;gap:8px;margin-top:8px;overflow-x:auto;padding-bottom:8px;">';
+            gallery.forEach(m => {
+                galleryHtml += `<img src="${m.url}" alt="${m.alt_text||''}" style="width:100px;height:80px;object-fit:cover;border-radius:10px;flex-shrink:0;background:var(--green-pale);">`;
+            });
+            galleryHtml += '</div></div>';
+        }
+
+        // Map placeholder ID
+        const mapId = 'detail-map-' + uuid.slice(0, 8);
+        const hasCoords = d.coordinates && d.coordinates.latitude;
+
         const overlay = document.createElement('div');
         overlay.id = 'detailOverlay';
         overlay.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:24px;';
         overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
 
         overlay.innerHTML = `
-        <div style="background:white;border-radius:20px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:32px;position:relative;">
-            <button onclick="document.getElementById('detailOverlay').remove()" style="position:absolute;top:16px;right:16px;background:var(--gray-200);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">&times;</button>
-            <div style="font-size:.75rem;color:var(--green);font-weight:600;margin-bottom:4px;">${types}</div>
-            <h2 style="font-size:1.3rem;font-weight:700;color:var(--dark);margin-bottom:4px;">${d.name}</h2>
-            <div style="font-size:.82rem;color:var(--gray-600);margin-bottom:16px;">
-                ${d.city?.name || ''}${d.address ? ' - ' + d.address : ''}${d.quarter ? ' (' + d.quarter + ')' : ''}
-                ${dist ? ` &mdash; <span style="color:var(--green);font-weight:600;">${dist}</span>` : ''}
+        <div style="background:white;border-radius:20px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;position:relative;">
+            <!-- Cover image (Facebook-style) -->
+            <div style="position:relative;height:180px;border-radius:20px 20px 0 0;overflow:hidden;background:linear-gradient(135deg,var(--green),var(--green-mid));">
+                ${coverImg ? `<img src="${coverImg}" alt="Couverture" style="width:100%;height:100%;object-fit:cover;">` : ''}
+                <button onclick="document.getElementById('detailOverlay').remove()" style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,.4);color:white;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">&times;</button>
             </div>
-            ${d.phone ? `<div style="font-size:.85rem;margin-bottom:4px;"><strong>Tel :</strong> <a href="tel:${d.phone}" style="color:var(--green);">${d.phone}</a></div>` : ''}
-            ${d.email ? `<div style="font-size:.85rem;margin-bottom:4px;"><strong>Email :</strong> ${d.email}</div>` : ''}
-            ${d.website ? `<div style="font-size:.85rem;margin-bottom:4px;"><strong>Site :</strong> <a href="${d.website}" target="_blank" style="color:var(--green);">${d.website}</a></div>` : ''}
-            ${specs ? `<div style="margin-top:12px;"><strong style="font-size:.82rem;color:var(--green);">Specialites</strong><div style="font-size:.78rem;color:var(--gray-800);margin-top:4px;">${specs}</div></div>` : ''}
-            ${servicesHtml}
-            ${hoursHtml}
-            ${d.coordinates ? `<div style="margin-top:16px;"><a href="https://www.google.com/maps?q=${d.coordinates.latitude},${d.coordinates.longitude}" target="_blank" class="btn btn-primary" style="padding:10px 20px;font-size:.82rem;">Voir sur Google Maps</a></div>` : ''}
+
+            <!-- Profile image (overlapping cover) -->
+            <div style="margin-top:-40px;padding:0 28px;">
+                <img src="${profileImg}" alt="${d.name}" style="width:80px;height:80px;border-radius:16px;border:4px solid white;object-fit:cover;background:var(--green-pale);box-shadow:var(--shadow-md);">
+            </div>
+
+            <div style="padding:12px 28px 28px;">
+                <div style="font-size:.75rem;color:var(--green);font-weight:600;margin-bottom:4px;">${types}</div>
+                <h2 style="font-size:1.3rem;font-weight:700;color:var(--dark);margin-bottom:4px;">${d.name}</h2>
+                <div style="font-size:.82rem;color:var(--gray-600);margin-bottom:16px;">
+                    ${d.city?.name || ''}${d.address ? ' - ' + d.address : ''}${d.quarter ? ' (' + d.quarter + ')' : ''}
+                    ${dist ? ` &mdash; <span style="color:var(--green);font-weight:600;">${dist}</span>` : ''}
+                </div>
+
+                <!-- Contact -->
+                ${d.phone ? `<div style="font-size:.85rem;margin-bottom:4px;"><strong>Tel :</strong> <a href="tel:${d.phone}" style="color:var(--green);">${d.phone}</a></div>` : ''}
+                ${d.email ? `<div style="font-size:.85rem;margin-bottom:4px;"><strong>Email :</strong> ${d.email}</div>` : ''}
+                ${d.website ? `<div style="font-size:.85rem;margin-bottom:4px;"><strong>Site :</strong> <a href="${d.website}" target="_blank" style="color:var(--green);">${d.website}</a></div>` : ''}
+
+                <!-- Specialites -->
+                ${specs ? `<div style="margin-top:12px;"><strong style="font-size:.82rem;color:var(--green);">Specialites</strong><div style="font-size:.78rem;color:var(--gray-800);margin-top:4px;">${specs}</div></div>` : ''}
+
+                <!-- Services & tarifs -->
+                ${servicesHtml}
+
+                <!-- Horaires -->
+                ${hoursHtml}
+
+                <!-- Galerie -->
+                ${galleryHtml}
+
+                <!-- Map (OpenStreetMap via Leaflet) -->
+                ${hasCoords ? `
+                <div style="margin-top:16px;">
+                    <strong style="font-size:.82rem;color:var(--green);">Localisation</strong>
+                    <div id="${mapId}" style="height:220px;border-radius:12px;margin-top:8px;z-index:1;"></div>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${d.coordinates.latitude},${d.coordinates.longitude}" target="_blank" style="display:inline-block;margin-top:8px;font-size:.78rem;color:var(--green);font-weight:500;">Itineraire Google Maps &rarr;</a>
+                </div>` : ''}
+            </div>
         </div>`;
 
         document.body.appendChild(overlay);
+
+        // Initialize Leaflet map after DOM insertion.
+        if (hasCoords) {
+            setTimeout(() => {
+                const map = L.map(mapId).setView([d.coordinates.latitude, d.coordinates.longitude], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap',
+                    maxZoom: 19,
+                }).addTo(map);
+                L.marker([d.coordinates.latitude, d.coordinates.longitude])
+                    .addTo(map)
+                    .bindPopup(`<strong>${d.name}</strong><br>${types}`)
+                    .openPopup();
+            }, 100);
+        }
     } catch (err) {
         console.error('Failed to load detail', err);
     }

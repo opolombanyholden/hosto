@@ -70,8 +70,19 @@ final class HostoResource extends JsonResource
             'description_fr' => $this->when($isDetail, $this->description_fr),
             'description_en' => $this->when($isDetail, $this->description_en),
             'opening_hours' => $this->when($isDetail, fn () => self::formatHours($hours)),
-            'logo_url' => $this->logo_url,
-            'cover_image_url' => $this->when($isDetail, $this->cover_image_url),
+            // Media
+            'profile_image' => $this->when(
+                $this->relationLoaded('media'),
+                fn () => $this->resource->profileImageUrl(),
+            ),
+            'cover_image' => $this->when(
+                $isDetail && $this->relationLoaded('media'),
+                fn () => $this->resource->coverImageUrl(),
+            ),
+            'gallery' => $this->when(
+                $isDetail && $this->relationLoaded('media'),
+                fn () => HostoMediaResource::collection($this->resource->galleryImages()),
+            ),
         ];
     }
 
