@@ -7,12 +7,12 @@
 <style>
     .annuaire-header {
         background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
-        padding: 48px 0 80px; color: white; text-align: center;
+        padding: 56px 0 100px; color: white; text-align: center;
     }
     .annuaire-header h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; margin-bottom: 8px; }
     .annuaire-header p { font-size: .95rem; opacity: .85; max-width: 500px; margin: 0 auto; }
 
-    .search-wrapper { margin-top: -40px; position: relative; z-index: 10; margin-bottom: 32px; }
+    .search-wrapper { margin-top: -50px; position: relative; z-index: 10; margin-bottom: 32px; }
     .search-bar {
         background: var(--white); border-radius: var(--radius); padding: 12px;
         box-shadow: var(--shadow-lg); display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto;
