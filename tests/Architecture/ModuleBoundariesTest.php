@@ -49,10 +49,9 @@ final class ModuleBoundariesTest extends TestCase
                     $matches,
                 );
 
-                // Allowed dependencies: own module, Core, and Referentiel
-                // (Referentiel is a shared read-only data layer consumed
-                // by all business modules — Annuaire, Pro, Pharma, etc.).
-                $allowedDeps = [$module, 'Core', 'Referentiel'];
+                // Allowed dependencies: own module, Core, Referentiel
+                // and Annuaire (shared entities: Hosto, Practitioner).
+                $allowedDeps = [$module, 'Core', 'Referentiel', 'Annuaire'];
 
                 foreach ($matches[1] as $usedModule) {
                     if (in_array($usedModule, $allowedDeps, true)) {

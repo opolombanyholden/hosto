@@ -13,6 +13,7 @@ use App\Modules\Referentiel\Database\Seeders\MedicationsSeeder;
 use App\Modules\Referentiel\Database\Seeders\ServicesSeeder;
 use App\Modules\Referentiel\Database\Seeders\SpecialtiesSeeder;
 use App\Modules\Referentiel\Database\Seeders\StructureTypesSeeder;
+use App\Modules\RendezVous\Database\Seeders\TimeSlotsSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -34,6 +35,9 @@ class DatabaseSeeder extends Seeder
             HostosLibrevilleSeeder::class,
             HostoMediaSeeder::class,
             PractitionersSeeder::class,
+
+            // RendezVous
+            TimeSlotsSeeder::class,
         ]);
     }
 }
