@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Core\Http\Middleware\AssignRequestId;
+use App\Modules\Core\Http\Middleware\EnsureEnvironment;
 use App\Modules\Core\Http\Middleware\ForceJsonResponse;
 use App\Modules\Core\Http\Middleware\SecurityHeaders;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -28,6 +29,22 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(SecurityHeaders::class);
 
         $middleware->prependToGroup('api', ForceJsonResponse::class);
+
+        $middleware->alias([
+            'env' => EnsureEnvironment::class,
+        ]);
+
+        // Redirect unauthenticated users based on the URL prefix.
+        $middleware->redirectGuestsTo(function ($request) {
+            if ($request->is('admin*')) {
+                return '/admin/connexion';
+            }
+            if ($request->is('pro*')) {
+                return '/pro/connexion';
+            }
+
+            return '/compte/connexion';
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Uniform JSON error envelope on API routes.

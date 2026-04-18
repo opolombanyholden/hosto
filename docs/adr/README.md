@@ -31,3 +31,5 @@ Chaque ADR documente : le **contexte**, la **décision**, les **alternatives con
 | 0008 | [Référentiels géographiques bilingues](0008-referentiels-geographiques.md) | Accepté |
 | 0009 | [Workflow enregistrement structure + interactions sociales](0009-workflow-enregistrement-structure-interactions.md) | Accepté (spec) |
 | 0010 | [Structures partenaires et layout page detail](0010-structures-partenaires-et-layout-detail.md) | Accepté (spec) |
+| 0011 | [Trois environnements d'authentification séparés](0011-trois-environnements-authentification.md) | Accepté |
+| 0010 | [Structures partenaires et layout page detail](0010-structures-partenaires-et-layout-detail.md) | Accepté (spec) |
