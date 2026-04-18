@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -69,6 +70,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read Collection<int, StructureType> $structureTypes
  * @property-read Collection<int, Specialty> $specialties
  * @property-read Collection<int, Service> $services
+ * @property-read Collection<int, HostoMedia> $media
  */
 class Hosto extends Model
 {
@@ -155,6 +157,46 @@ class Hosto extends Model
         return $this->belongsToMany(Service::class, 'hosto_service')
             ->withPivot('tarif_min', 'tarif_max', 'currency_code', 'is_available', 'display_order')
             ->orderByPivot('display_order');
+    }
+
+    /**
+     * All media (profile, cover, gallery).
+     *
+     * @return HasMany<HostoMedia, $this>
+     */
+    public function media(): HasMany
+    {
+        return $this->hasMany(HostoMedia::class)->orderBy('display_order');
+    }
+
+    /**
+     * Profile image URL (or null).
+     */
+    public function profileImageUrl(): ?string
+    {
+        $media = $this->media->firstWhere('type', 'profile');
+
+        return $media !== null ? $media->url : $this->logo_url;
+    }
+
+    /**
+     * Cover image URL (or null).
+     */
+    public function coverImageUrl(): ?string
+    {
+        $media = $this->media->firstWhere('type', 'cover');
+
+        return $media !== null ? $media->url : $this->cover_image_url;
+    }
+
+    /**
+     * Gallery images (excluding profile and cover).
+     *
+     * @return Collection<int, HostoMedia>
+     */
+    public function galleryImages(): Collection
+    {
+        return $this->media->where('type', 'gallery')->values();
     }
 
     // ---------------------------------------------------------------

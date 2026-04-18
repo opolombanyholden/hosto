@@ -29,3 +29,5 @@ Chaque ADR documente : le **contexte**, la **décision**, les **alternatives con
 | 0006 | [API versioning et contrat OpenAPI](0006-api-versioning-openapi.md) | Accepté |
 | 0007 | [Stratégie Git et workflow de contribution](0007-strategie-git.md) | Accepté |
 | 0008 | [Référentiels géographiques bilingues](0008-referentiels-geographiques.md) | Accepté |
+| 0009 | [Workflow enregistrement structure + interactions sociales](0009-workflow-enregistrement-structure-interactions.md) | Accepté (spec) |
+| 0010 | [Structures partenaires et layout page detail](0010-structures-partenaires-et-layout-detail.md) | Accepté (spec) |

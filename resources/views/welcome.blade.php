@@ -392,7 +392,8 @@
             <a href="#services">Services</a>
             <a href="#fonctionnalites">Fonctionnalites</a>
             <a href="#ecosysteme">Ecosysteme</a>
-            <a href="#solutions">Solutions</a>
+            <a href="/annuaire">Annuaire</a>
+            <a href="#services">Services</a>
             <a href="#connexion" class="btn-nav">Connexion</a>
         </div>
         <div class="navbar-toggle" id="navToggle" onclick="document.getElementById('navMenu').classList.toggle('open')">
@@ -499,24 +500,23 @@
     </div>
 </section>
 
-<!-- SEARCH (connected to API) -->
-<div class="search-section" id="recherche">
+<!-- SEARCH (redirects to /annuaire) -->
+<div class="search-section">
     <div class="container">
-        <form class="search-bar" id="searchForm" onsubmit="searchStructures(event)">
+        <form class="search-bar" action="/annuaire" method="GET">
             <div class="search-field">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <input type="text" id="searchQ" placeholder="Nom de la structure...">
+                <input type="text" name="q" placeholder="Rechercher un hopital, une pharmacie, un medecin...">
             </div>
             <div class="search-field">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                <select id="searchType">
+                <select name="type">
                     <option value="">Type de structure</option>
-                </select>
-            </div>
-            <div class="search-field">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                <select id="searchSpecialty">
-                    <option value="">Specialite</option>
+                    <option value="hopital">Hopital</option>
+                    <option value="clinique">Clinique</option>
+                    <option value="pharmacie">Pharmacie</option>
+                    <option value="laboratoire">Laboratoire</option>
+                    <option value="cabinet-medical">Cabinet medical</option>
                 </select>
             </div>
             <button type="submit" class="search-btn">
@@ -526,25 +526,6 @@
         </form>
     </div>
 </div>
-
-<!-- RESULTS (dynamic) -->
-<section class="section" id="resultats" style="display:none; padding-top:40px;">
-    <div class="container">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
-            <h2 class="section-title" style="margin-bottom:0;" id="resultsTitle">Resultats</h2>
-            <div style="display:flex; gap:8px; align-items:center;">
-                <button onclick="geolocateMe()" class="btn btn-primary" style="padding:10px 20px; font-size:.82rem;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    A proximite
-                </button>
-                <button onclick="clearSearch()" style="padding:10px 20px; font-size:.82rem; background:var(--gray-200); border:none; border-radius:100px; cursor:pointer; font-family:Poppins,sans-serif; font-weight:500;">Effacer</button>
-            </div>
-        </div>
-        <div id="resultsList" class="services-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));"></div>
-        <p id="resultsEmpty" style="display:none; text-align:center; color:var(--gray-600); padding:40px 0;">Aucune structure trouvee pour cette recherche.</p>
-        <p id="resultsLoading" style="display:none; text-align:center; color:var(--gray-600); padding:40px 0;">Recherche en cours...</p>
-    </div>
-</section>
 
 <!-- SERVICES -->
 <section class="section services" id="services">
@@ -923,232 +904,17 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// ===== HOSTO API integration =====
-const API = '/api/v1';
-let userLat = null, userLng = null;
 
-// Load referentials into dropdowns on page load.
-async function loadReferentials() {
-    try {
-        const [typesRes, specsRes] = await Promise.all([
-            fetch(`${API}/referentiel/structure-types`).then(r => r.json()),
-            fetch(`${API}/referentiel/specialties`).then(r => r.json()),
-        ]);
-
-        const typeSelect = document.getElementById('searchType');
-        typesRes.data.forEach(t => {
-            const opt = document.createElement('option');
-            opt.value = t.slug;
-            opt.textContent = t.name;
-            typeSelect.appendChild(opt);
-        });
-
-        const specSelect = document.getElementById('searchSpecialty');
-        specsRes.data.forEach(s => {
-            const opt = document.createElement('option');
-            opt.value = s.code;
-            opt.textContent = s.name;
-            specSelect.appendChild(opt);
-            (s.children || []).forEach(c => {
-                const copt = document.createElement('option');
-                copt.value = c.code;
-                copt.textContent = '\u00A0\u00A0\u00A0' + c.name;
-                specSelect.appendChild(copt);
-            });
-        });
-    } catch (e) {
-        console.error('Failed to load referentials', e);
-    }
-}
-
-// Search structures via API.
-async function searchStructures(e) {
-    if (e) e.preventDefault();
-
-    const q = document.getElementById('searchQ').value.trim();
-    const type = document.getElementById('searchType').value;
-    const specialty = document.getElementById('searchSpecialty').value;
-
-    const params = new URLSearchParams();
-    if (q) params.set('q', q);
-    if (type) params.set('type', type);
-    if (specialty) params.set('specialty', specialty);
-    if (userLat && userLng) {
-        params.set('lat', userLat);
-        params.set('lng', userLng);
-        params.set('rayon', '20');
-        params.set('sort', 'distance');
-    }
-    params.set('per_page', '12');
-
-    const section = document.getElementById('resultats');
-    const list = document.getElementById('resultsList');
-    const empty = document.getElementById('resultsEmpty');
-    const loading = document.getElementById('resultsLoading');
-    const title = document.getElementById('resultsTitle');
-
-    section.style.display = 'block';
-    list.innerHTML = '';
-    empty.style.display = 'none';
-    loading.style.display = 'block';
-
-    try {
-        const res = await fetch(`${API}/annuaire/hostos?${params}`);
-        const data = await res.json();
-        loading.style.display = 'none';
-
-        const total = data.meta?.total || 0;
-        title.textContent = `${total} structure${total > 1 ? 's' : ''} trouvee${total > 1 ? 's' : ''}`;
-
-        if (total === 0) {
-            empty.style.display = 'block';
-            return;
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('navMenu').classList.remove('open');
         }
-
-        data.data.forEach(h => {
-            list.appendChild(createCard(h));
-        });
-
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } catch (err) {
-        loading.style.display = 'none';
-        empty.textContent = 'Erreur lors de la recherche.';
-        empty.style.display = 'block';
-    }
-}
-
-// Build a result card.
-function createCard(h) {
-    const card = document.createElement('div');
-    card.className = 'service-card';
-    card.style.textAlign = 'left';
-    card.style.cursor = 'pointer';
-    card.onclick = () => showDetail(h.uuid);
-
-    const types = (h.types || []).map(t => t.name).join(', ');
-    const specs = (h.specialties || []).slice(0, 4).map(s => s.name).join(', ');
-    const dist = h.distance_km != null ? `<span style="color:var(--green);font-weight:600;">${h.distance_km} km</span>` : '';
-    const guard = h.is_guard_service ? '<span style="background:#FFF3E0;color:#E65100;padding:2px 8px;border-radius:100px;font-size:.68rem;font-weight:600;">Garde</span>' : '';
-    const openStatus = h.is_open_now === true
-        ? '<span style="color:var(--green);font-size:.75rem;">Ouvert</span>'
-        : h.is_open_now === false
-            ? '<span style="color:#E53935;font-size:.75rem;">Ferme</span>'
-            : '';
-    const city = h.city?.name || '';
-    const quarter = h.quarter ? ` - ${h.quarter}` : '';
-
-    card.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
-            <div style="font-size:.9rem;font-weight:600;color:var(--dark);line-height:1.3;">${h.name}</div>
-            ${dist}
-        </div>
-        <div style="font-size:.75rem;color:var(--gray-600);margin-bottom:6px;">${types}</div>
-        <div style="font-size:.75rem;color:var(--gray-600);margin-bottom:8px;">${city}${quarter}</div>
-        ${specs ? `<div style="font-size:.72rem;color:var(--green);margin-bottom:6px;">${specs}</div>` : ''}
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            ${guard}
-            ${openStatus}
-            ${h.phone ? `<span style="font-size:.72rem;color:var(--gray-600);">${h.phone}</span>` : ''}
-        </div>
-    `;
-    return card;
-}
-
-// Detail modal (simple overlay).
-async function showDetail(uuid) {
-    const params = userLat && userLng ? `?lat=${userLat}&lng=${userLng}` : '';
-    try {
-        const res = await fetch(`${API}/annuaire/hostos/${uuid}${params}`);
-        const d = (await res.json()).data;
-
-        const types = (d.types || []).map(t => t.name).join(', ');
-        const specs = (d.specialties || []).map(s => s.name).join(', ');
-        const dist = d.distance_km != null ? `${d.distance_km} km de vous` : '';
-
-        let servicesHtml = '';
-        if (d.services) {
-            for (const [cat, svcs] of Object.entries(d.services)) {
-                const label = {prestation:'Prestations',soin:'Soins',examen:'Examens'}[cat] || cat;
-                servicesHtml += `<div style="margin-top:12px;"><strong style="font-size:.82rem;color:var(--green);">${label}</strong>`;
-                svcs.forEach(s => {
-                    const tarif = s.tarif_min != null ? `${s.tarif_min.toLocaleString()} - ${s.tarif_max.toLocaleString()} ${s.currency_code}` : '';
-                    servicesHtml += `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:.78rem;border-bottom:1px solid var(--gray-200);"><span>${s.name}</span><span style="color:var(--gray-600);white-space:nowrap;">${tarif}</span></div>`;
-                });
-                servicesHtml += '</div>';
-            }
-        }
-
-        let hoursHtml = '';
-        if (d.opening_hours) {
-            hoursHtml = '<div style="margin-top:12px;"><strong style="font-size:.82rem;color:var(--green);">Horaires</strong>';
-            d.opening_hours.forEach(h => {
-                const time = h.is_closed ? 'Ferme' : `${h.open} - ${h.close}`;
-                hoursHtml += `<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:.78rem;"><span>${h.label_fr}</span><span>${time}</span></div>`;
-            });
-            hoursHtml += '</div>';
-        }
-
-        const overlay = document.createElement('div');
-        overlay.id = 'detailOverlay';
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:24px;';
-        overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
-
-        overlay.innerHTML = `
-        <div style="background:white;border-radius:20px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;padding:32px;position:relative;">
-            <button onclick="document.getElementById('detailOverlay').remove()" style="position:absolute;top:16px;right:16px;background:var(--gray-200);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">&times;</button>
-            <div style="font-size:.75rem;color:var(--green);font-weight:600;margin-bottom:4px;">${types}</div>
-            <h2 style="font-size:1.3rem;font-weight:700;color:var(--dark);margin-bottom:4px;">${d.name}</h2>
-            <div style="font-size:.82rem;color:var(--gray-600);margin-bottom:16px;">
-                ${d.city?.name || ''}${d.address ? ' - ' + d.address : ''}${d.quarter ? ' (' + d.quarter + ')' : ''}
-                ${dist ? ` &mdash; <span style="color:var(--green);font-weight:600;">${dist}</span>` : ''}
-            </div>
-            ${d.phone ? `<div style="font-size:.85rem;margin-bottom:4px;"><strong>Tel :</strong> <a href="tel:${d.phone}" style="color:var(--green);">${d.phone}</a></div>` : ''}
-            ${d.email ? `<div style="font-size:.85rem;margin-bottom:4px;"><strong>Email :</strong> ${d.email}</div>` : ''}
-            ${d.website ? `<div style="font-size:.85rem;margin-bottom:4px;"><strong>Site :</strong> <a href="${d.website}" target="_blank" style="color:var(--green);">${d.website}</a></div>` : ''}
-            ${specs ? `<div style="margin-top:12px;"><strong style="font-size:.82rem;color:var(--green);">Specialites</strong><div style="font-size:.78rem;color:var(--gray-800);margin-top:4px;">${specs}</div></div>` : ''}
-            ${servicesHtml}
-            ${hoursHtml}
-            ${d.coordinates ? `<div style="margin-top:16px;"><a href="https://www.google.com/maps?q=${d.coordinates.latitude},${d.coordinates.longitude}" target="_blank" class="btn btn-primary" style="padding:10px 20px;font-size:.82rem;">Voir sur Google Maps</a></div>` : ''}
-        </div>`;
-
-        document.body.appendChild(overlay);
-    } catch (err) {
-        console.error('Failed to load detail', err);
-    }
-}
-
-// Geolocation.
-function geolocateMe() {
-    if (!navigator.geolocation) {
-        alert('La geolocalisation n\'est pas supportee par votre navigateur.');
-        return;
-    }
-    navigator.geolocation.getCurrentPosition(
-        pos => {
-            userLat = pos.coords.latitude;
-            userLng = pos.coords.longitude;
-            searchStructures();
-        },
-        () => {
-            // Default to Libreville center if denied.
-            userLat = 0.39;
-            userLng = 9.45;
-            searchStructures();
-        },
-    );
-}
-
-function clearSearch() {
-    document.getElementById('searchQ').value = '';
-    document.getElementById('searchType').value = '';
-    document.getElementById('searchSpecialty').value = '';
-    userLat = null;
-    userLng = null;
-    document.getElementById('resultats').style.display = 'none';
-}
-
-// Initialize.
-loadReferentials();
+    });
+});
 </script>
 
 </body>

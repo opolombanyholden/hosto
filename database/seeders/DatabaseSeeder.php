@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Modules\Annuaire\Database\Seeders\HostoMediaSeeder;
 use App\Modules\Annuaire\Database\Seeders\HostosLibrevilleSeeder;
 use App\Modules\Referentiel\Database\Seeders\GabonSeeder;
 use App\Modules\Referentiel\Database\Seeders\ServicesSeeder;
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
 
             // Annuaire
             HostosLibrevilleSeeder::class,
+            HostoMediaSeeder::class,
         ]);
     }
 }
