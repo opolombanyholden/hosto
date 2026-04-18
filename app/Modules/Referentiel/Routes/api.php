@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Modules\Referentiel\Http\Controllers\CitiesController;
 use App\Modules\Referentiel\Http\Controllers\CountriesController;
+use App\Modules\Referentiel\Http\Controllers\MedicationsController;
 use App\Modules\Referentiel\Http\Controllers\RegionsController;
 use App\Modules\Referentiel\Http\Controllers\ServicesController;
 use App\Modules\Referentiel\Http\Controllers\SpecialtiesController;
@@ -42,3 +43,7 @@ Route::get('specialties/{uuid}', [SpecialtiesController::class, 'show'])->name('
 
 // Services / prestations / soins
 Route::get('services', [ServicesController::class, 'index'])->name('services.index');
+
+// Medications catalog
+Route::get('medications', [MedicationsController::class, 'index'])->name('medications.index');
+Route::get('medications/{uuid}', [MedicationsController::class, 'show'])->name('medications.show');
