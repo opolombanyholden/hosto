@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Modules\Annuaire\Database\Seeders\HostoMediaSeeder;
 use App\Modules\Annuaire\Database\Seeders\HostosLibrevilleSeeder;
+use App\Modules\Core\Database\Seeders\RolesSeeder;
 use App\Modules\Referentiel\Database\Seeders\GabonSeeder;
 use App\Modules\Referentiel\Database\Seeders\ServicesSeeder;
 use App\Modules\Referentiel\Database\Seeders\SpecialtiesSeeder;
@@ -20,6 +21,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // Core
+            RolesSeeder::class,
+
             // Referentiels (order matters — hostos depend on these)
             GabonSeeder::class,
             StructureTypesSeeder::class,
