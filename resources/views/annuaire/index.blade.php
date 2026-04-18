@@ -67,6 +67,23 @@
     .empty-state svg { width: 64px; height: 64px; color: var(--gray-200); margin-bottom: 16px; }
     .loading { text-align: center; padding: 40px; color: var(--gray-600); }
 
+    /* View toggle (list / map) */
+    .view-toggle { display: flex; border: 2px solid var(--gray-200); border-radius: 10px; overflow: hidden; }
+    .view-toggle button {
+        padding: 8px 16px; border: none; background: white; font-family: 'Poppins',sans-serif;
+        font-size: .78rem; font-weight: 500; cursor: pointer; display: flex; align-items: center;
+        gap: 6px; color: var(--gray-600); transition: all var(--transition);
+    }
+    .view-toggle button.active { background: var(--green); color: white; }
+    .view-toggle button svg { width: 16px; height: 16px; }
+
+    /* Proximity toggle */
+    .btn-toggle { transition: all var(--transition); }
+    .btn-toggle.active { background: var(--green-dark); box-shadow: inset 0 2px 4px rgba(0,0,0,.2); }
+
+    /* Map container */
+    .map-results { border-radius: var(--radius); overflow: hidden; height: 500px; display: none; margin-bottom: 24px; }
+
     .pagination { display: flex; justify-content: center; gap: 8px; padding: 20px 0; }
     .pagination button {
         padding: 8px 16px; border: 1px solid var(--gray-200); border-radius: 8px;
@@ -81,8 +98,11 @@
         .search-bar { grid-template-columns: 1fr !important; }
         .search-btn { justify-content: center; }
         .results-grid { grid-template-columns: 1fr; }
-        .annuaire-header { padding: 32px 0 64px; }
+        .annuaire-header { padding: 32px 0 72px; }
         .annuaire-header h1 { font-size: 1.4rem; }
+        .map-results { height: 350px; }
+        .toolbar { flex-direction: column; align-items: stretch; }
+        .toolbar-actions { justify-content: space-between; }
     }
 </style>
 @endsection
@@ -124,15 +144,26 @@
     <div class="toolbar">
         <div class="toolbar-title" id="resultsTitle">Structures de sante</div>
         <div class="toolbar-actions">
-            <button onclick="geolocateMe()" class="btn btn-primary btn-sm">
+            <button id="btnProximite" onclick="toggleProximite()" class="btn btn-outline-green btn-sm btn-toggle">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 A proximite
             </button>
+            <div class="view-toggle">
+                <button id="btnViewList" class="active" onclick="setView('list')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    Liste
+                </button>
+                <button id="btnViewMap" onclick="setView('map')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+                    Carte
+                </button>
+            </div>
             <button onclick="resetSearch()" class="btn btn-outline-green btn-sm">Reinitialiser</button>
         </div>
     </div>
 
     <div id="loading" class="loading" style="display:none;">Recherche en cours...</div>
+    <div id="mapResults" class="map-results"></div>
     <div id="resultsList" class="results-grid"></div>
     <div id="emptyState" class="empty-state" style="display:none;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -146,20 +177,20 @@
 <script>
 let userLat = null, userLng = null;
 let currentPage = 1;
+let currentView = 'list'; // 'list' or 'map'
+let proximiteActive = false;
+let resultsMap = null;
+let mapMarkers = [];
+let lastResults = [];
 
-// Read URL params on load.
 const urlParams = new URLSearchParams(window.location.search);
 
 async function init() {
     await Promise.all([loadDropdowns(), loadCities()]);
-
-    // Restore filters from URL.
     if (urlParams.get('q')) document.getElementById('searchQ').value = urlParams.get('q');
     if (urlParams.get('type')) document.getElementById('searchType').value = urlParams.get('type');
     if (urlParams.get('specialty')) document.getElementById('searchSpecialty').value = urlParams.get('specialty');
     if (urlParams.get('city')) document.getElementById('searchCity').value = urlParams.get('city');
-    if (urlParams.get('garde') === '1') userLat = null; // handled in search
-
     doSearch();
 }
 
@@ -172,7 +203,6 @@ async function loadDropdowns() {
         const ts = document.getElementById('searchType');
         ts.innerHTML = '<option value="">Type de structure</option>';
         typesRes.data.forEach(t => { const o = document.createElement('option'); o.value = t.slug; o.textContent = t.name; ts.appendChild(o); });
-
         const ss = document.getElementById('searchSpecialty');
         ss.innerHTML = '<option value="">Specialite</option>';
         specsRes.data.forEach(s => {
@@ -201,6 +231,44 @@ async function loadCities() {
 
 function onCountryChanged() { loadCities(); doSearch(); }
 
+// --- Proximity toggle (NOT active by default) ---
+function toggleProximite() {
+    if (proximiteActive) {
+        proximiteActive = false;
+        userLat = null; userLng = null;
+        document.getElementById('btnProximite').classList.remove('active');
+        doSearch();
+    } else {
+        if (!navigator.geolocation) { alert('Geolocalisation non supportee.'); return; }
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                userLat = pos.coords.latitude; userLng = pos.coords.longitude;
+                proximiteActive = true;
+                document.getElementById('btnProximite').classList.add('active');
+                doSearch();
+            },
+            () => {
+                userLat = 0.39; userLng = 9.45;
+                proximiteActive = true;
+                document.getElementById('btnProximite').classList.add('active');
+                doSearch();
+            }
+        );
+    }
+}
+
+// --- View toggle ---
+function setView(view) {
+    currentView = view;
+    document.getElementById('btnViewList').classList.toggle('active', view === 'list');
+    document.getElementById('btnViewMap').classList.toggle('active', view === 'map');
+    document.getElementById('resultsList').style.display = view === 'list' ? '' : 'none';
+    document.getElementById('mapResults').style.display = view === 'map' ? 'block' : 'none';
+    document.getElementById('pagination').style.display = view === 'list' ? '' : 'none';
+    if (view === 'map') renderMap();
+}
+
+// --- Search ---
 async function doSearch(e, page) {
     if (e) e.preventDefault();
     currentPage = page || 1;
@@ -216,11 +284,13 @@ async function doSearch(e, page) {
     if (type) params.set('type', type);
     if (specialty) params.set('specialty', specialty);
     if (urlParams.get('garde') === '1') params.set('garde', '1');
-    if (userLat && userLng) { params.set('lat', userLat); params.set('lng', userLng); params.set('rayon', '20'); params.set('sort', 'distance'); }
-    params.set('per_page', '12');
+    if (proximiteActive && userLat && userLng) {
+        params.set('lat', userLat); params.set('lng', userLng);
+        params.set('rayon', '20'); params.set('sort', 'distance');
+    }
+    params.set('per_page', currentView === 'map' ? '50' : '12');
     params.set('page', currentPage);
 
-    // Update URL without reload.
     const newUrl = '/annuaire' + (params.toString() ? '?' + params : '');
     history.replaceState(null, '', newUrl);
 
@@ -239,23 +309,26 @@ async function doSearch(e, page) {
             ? `${total} structure${total > 1 ? 's' : ''} trouvee${total > 1 ? 's' : ''}`
             : 'Structures de sante';
 
+        lastResults = data.data || [];
+
         if (total === 0) { document.getElementById('emptyState').style.display = 'block'; return; }
 
         const list = document.getElementById('resultsList');
-        data.data.forEach(h => list.appendChild(buildCard(h)));
-
+        lastResults.forEach(h => list.appendChild(buildCard(h)));
         buildPagination(data.meta);
+
+        if (currentView === 'map') renderMap();
     } catch(err) {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('emptyState').style.display = 'block';
     }
 }
 
+// --- Build card ---
 function buildCard(h) {
     const card = document.createElement('a');
     card.href = `/annuaire/${h.slug}`;
     card.className = 'hosto-card';
-
     const img = h.profile_image || '/images/icons/icon-hopitaux.png';
     const types = (h.types||[]).map(t => t.name).join(', ');
     const specs = (h.specialties||[]).slice(0,3).map(s => s.name).join(', ');
@@ -264,14 +337,12 @@ function buildCard(h) {
     const open = h.is_open_now === true ? '<span class="tag-open">Ouvert</span>' : h.is_open_now === false ? '<span class="tag-closed">Ferme</span>' : '';
     const city = h.city?.name || '';
     const quarter = h.quarter ? ` - ${h.quarter}` : '';
-
     card.innerHTML = `<div class="hosto-card-body">
         <div class="hosto-card-top">
             <img src="${img}" alt="${h.name}" class="hosto-card-img">
             <div style="flex:1;min-width:0;">
                 <div style="display:flex;justify-content:space-between;gap:8px;">
-                    <div class="hosto-card-name">${h.name}</div>
-                    ${dist}
+                    <div class="hosto-card-name">${h.name}</div>${dist}
                 </div>
                 <div class="hosto-card-type">${types}</div>
                 <div class="hosto-card-loc">${city}${quarter}</div>
@@ -295,12 +366,80 @@ function buildPagination(meta) {
     }
 }
 
-function geolocateMe() {
-    if (!navigator.geolocation) { alert('Geolocalisation non supportee.'); return; }
-    navigator.geolocation.getCurrentPosition(
-        pos => { userLat = pos.coords.latitude; userLng = pos.coords.longitude; doSearch(); },
-        () => { userLat = 0.39; userLng = 9.45; doSearch(); }
-    );
+// --- Map rendering ---
+function renderMap() {
+    const container = document.getElementById('mapResults');
+    container.style.display = 'block';
+
+    // Clear existing markers.
+    mapMarkers.forEach(m => m.remove());
+    mapMarkers = [];
+
+    // Collect structures with coordinates.
+    const withCoords = lastResults.filter(h => h.coordinates && h.coordinates.latitude);
+
+    if (withCoords.length === 0) {
+        if (!resultsMap) {
+            resultsMap = L.map('mapResults').setView([0.39, 9.45], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap', maxZoom: 19,
+            }).addTo(resultsMap);
+        }
+        return;
+    }
+
+    // Initialize map on first use.
+    if (!resultsMap) {
+        resultsMap = L.map('mapResults').setView([withCoords[0].coordinates.latitude, withCoords[0].coordinates.longitude], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap', maxZoom: 19,
+        }).addTo(resultsMap);
+    }
+
+    // Custom green marker icon.
+    const greenIcon = L.divIcon({
+        className: '',
+        html: '<div style="background:var(--green);width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>',
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+        popupAnchor: [0, -28],
+    });
+
+    // Add markers.
+    const bounds = L.latLngBounds();
+    withCoords.forEach(h => {
+        const lat = h.coordinates.latitude;
+        const lng = h.coordinates.longitude;
+        const types = (h.types||[]).map(t => t.name).join(', ');
+        const dist = h.distance_km != null ? `<br><strong>${h.distance_km} km</strong>` : '';
+
+        const marker = L.marker([lat, lng], { icon: greenIcon })
+            .addTo(resultsMap)
+            .bindPopup(`<div style="font-family:Poppins,sans-serif;font-size:.82rem;min-width:160px;">
+                <strong><a href="/annuaire/${h.slug}" style="color:#388E3C;text-decoration:none;">${h.name}</a></strong>
+                <br><span style="color:#757575;font-size:.72rem;">${types}</span>
+                ${dist}
+                ${h.phone ? `<br><a href="tel:${h.phone}" style="color:#388E3C;font-size:.75rem;">${h.phone}</a>` : ''}
+            </div>`);
+
+        mapMarkers.push(marker);
+        bounds.extend([lat, lng]);
+    });
+
+    // Add user position marker if proximity active.
+    if (proximiteActive && userLat && userLng) {
+        const userMarker = L.circleMarker([userLat, userLng], {
+            radius: 8, color: '#1565C0', fillColor: '#42A5F5', fillOpacity: 0.8, weight: 2,
+        }).addTo(resultsMap).bindPopup('Votre position');
+        mapMarkers.push(userMarker);
+        bounds.extend([userLat, userLng]);
+    }
+
+    // Fit map to show all markers.
+    resultsMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+
+    // Fix Leaflet tiles not loading properly in hidden container.
+    setTimeout(() => resultsMap.invalidateSize(), 100);
 }
 
 function resetSearch() {
@@ -309,6 +448,8 @@ function resetSearch() {
     document.getElementById('searchType').value = '';
     document.getElementById('searchSpecialty').value = '';
     userLat = null; userLng = null;
+    proximiteActive = false;
+    document.getElementById('btnProximite').classList.remove('active');
     history.replaceState(null, '', '/annuaire');
     doSearch();
 }
