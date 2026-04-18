@@ -206,6 +206,17 @@ final class AuthController
                 ->withErrors(['email' => 'Vous n\'avez pas acces a cet espace.']);
         }
 
+        // 2FA challenge: if enabled, logout and redirect to challenge page.
+        if ($user->two_factor_secret !== null && $user->two_factor_confirmed_at !== null) {
+            Auth::logout();
+
+            $request->session()->put('2fa_user_id', $user->id);
+            $request->session()->put('2fa_environment', $environment);
+            $request->session()->put('2fa_remember', $request->boolean('remember'));
+
+            return redirect()->route('2fa.challenge');
+        }
+
         $request->session()->regenerate();
 
         $audit->record(AuditLogger::ACTION_LOGIN, 'user', $user->uuid, [

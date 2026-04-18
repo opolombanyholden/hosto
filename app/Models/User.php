@@ -49,7 +49,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $updated_by
  * @property-read Collection<int, Role> $roles
  */
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at'])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
 class User extends Authenticatable
 {
