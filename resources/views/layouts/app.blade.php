@@ -87,6 +87,21 @@
         .navbar-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
         .navbar-toggle span { width: 24px; height: 2.5px; background: var(--green); border-radius: 4px; transition: all var(--transition); }
 
+        /* Breadcrumb */
+        .breadcrumb {
+            background: var(--gray-50); border-bottom: 1px solid var(--gray-200);
+            padding: 10px 0; font-size: .78rem;
+        }
+        .breadcrumb-list {
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+            list-style: none; margin: 0; padding: 0;
+        }
+        .breadcrumb-list li { display: flex; align-items: center; gap: 6px; }
+        .breadcrumb-list li a { color: var(--green); font-weight: 500; }
+        .breadcrumb-list li a:hover { text-decoration: underline; }
+        .breadcrumb-list li span.current { color: var(--gray-600); }
+        .breadcrumb-list li .sep { color: var(--gray-200); font-size: .7rem; }
+
         /* Footer */
         .footer { background: var(--dark); color: rgba(255,255,255,.7); padding: 48px 0 0; }
         .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,.08); }
@@ -148,6 +163,17 @@
         </div>
     </div>
 </nav>
+
+@hasSection('breadcrumb')
+<nav class="breadcrumb" aria-label="Fil d'Ariane">
+    <div class="container">
+        <ol class="breadcrumb-list">
+            <li><a href="/">Accueil</a></li>
+            @yield('breadcrumb')
+        </ol>
+    </div>
+</nav>
+@endif
 
 @yield('content')
 

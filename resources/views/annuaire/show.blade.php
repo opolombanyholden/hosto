@@ -84,6 +84,11 @@
 </style>
 @endsection
 
+@section('breadcrumb')
+<li><span class="sep">/</span> <a href="/annuaire">Annuaire</a></li>
+<li><span class="sep">/</span> <span class="current">{{ $hosto->name }}</span></li>
+@endsection
+
 @section('content')
 @php
     $profileImg = $hosto->profileImageUrl() ?: '/images/icons/icon-hopitaux.png';

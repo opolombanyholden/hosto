@@ -107,6 +107,10 @@
 </style>
 @endsection
 
+@section('breadcrumb')
+<li><span class="sep">/</span> <span class="current">Annuaire</span></li>
+@endsection
+
 @section('content')
 <div class="annuaire-header">
     <div class="container">
