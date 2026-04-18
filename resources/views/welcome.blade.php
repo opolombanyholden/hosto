@@ -392,7 +392,8 @@
             <a href="#services">Services</a>
             <a href="#fonctionnalites">Fonctionnalites</a>
             <a href="#ecosysteme">Ecosysteme</a>
-            <a href="#solutions">Solutions</a>
+            <a href="/annuaire">Annuaire</a>
+            <a href="#services">Services</a>
             <a href="#connexion" class="btn-nav">Connexion</a>
         </div>
         <div class="navbar-toggle" id="navToggle" onclick="document.getElementById('navMenu').classList.toggle('open')">
@@ -499,34 +500,30 @@
     </div>
 </section>
 
-<!-- SEARCH -->
+<!-- SEARCH (redirects to /annuaire) -->
 <div class="search-section">
     <div class="container">
-        <div class="search-bar">
+        <form class="search-bar" action="/annuaire" method="GET">
             <div class="search-field">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <input type="text" placeholder="Ville ou quartier...">
+                <input type="text" name="q" placeholder="Rechercher un hopital, une pharmacie, un medecin...">
             </div>
             <div class="search-field">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                <select>
+                <select name="type">
                     <option value="">Type de structure</option>
-                    <option>Hopital</option>
-                    <option>Clinique</option>
-                    <option>Pharmacie</option>
-                    <option>Laboratoire</option>
-                    <option>Cabinet medical</option>
+                    <option value="hopital">Hopital</option>
+                    <option value="clinique">Clinique</option>
+                    <option value="pharmacie">Pharmacie</option>
+                    <option value="laboratoire">Laboratoire</option>
+                    <option value="cabinet-medical">Cabinet medical</option>
                 </select>
             </div>
-            <div class="search-field">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                <input type="text" placeholder="Nom de la structure...">
-            </div>
-            <button class="search-btn">
+            <button type="submit" class="search-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
                 Rechercher
             </button>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -895,6 +892,18 @@ function switchTab(index) {
         panel.classList.toggle('active', i === index);
     });
 }
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('navMenu').classList.remove('open');
+        }
+    });
+});
+
 
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {

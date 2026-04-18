@@ -49,8 +49,13 @@ final class ModuleBoundariesTest extends TestCase
                     $matches,
                 );
 
+                // Allowed dependencies: own module, Core, and Referentiel
+                // (Referentiel is a shared read-only data layer consumed
+                // by all business modules — Annuaire, Pro, Pharma, etc.).
+                $allowedDeps = [$module, 'Core', 'Referentiel'];
+
                 foreach ($matches[1] as $usedModule) {
-                    if ($usedModule === $module || $usedModule === 'Core') {
+                    if (in_array($usedModule, $allowedDeps, true)) {
                         continue;
                     }
 
@@ -110,8 +115,11 @@ final class ModuleBoundariesTest extends TestCase
             foreach ($finder as $file) {
                 $content = file_get_contents($file->getPathname()) ?: '';
 
-                // Skip abstract base classes and interfaces.
-                if (preg_match('/\babstract\s+class\b/', $content) || str_contains($content, 'interface ')) {
+                // Skip abstract classes, interfaces, traits and concerns.
+                if (preg_match('/\babstract\s+class\b/', $content)
+                    || str_contains($content, 'interface ')
+                    || str_contains($content, 'trait ')
+                ) {
                     continue;
                 }
 
