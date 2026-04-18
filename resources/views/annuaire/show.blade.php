@@ -3,6 +3,14 @@
 @section('title', $hosto->name . ' — HOSTO')
 @section('description', ($hosto->description_fr ?: 'Fiche detaillee de ' . $hosto->name . ' sur HOSTO'))
 
+@section('og')
+<meta property="og:title" content="{{ $hosto->name }}">
+<meta property="og:description" content="{{ $hosto->structureTypes->pluck('name_fr')->join(', ') }} — {{ $hosto->city?->name_fr }}">
+<meta property="og:image" content="{{ $hosto->coverImageUrl() ?: $hosto->profileImageUrl() }}">
+<meta property="og:url" content="{{ url('/annuaire/' . $hosto->slug) }}">
+<meta property="og:type" content="place">
+@endsection
+
 @section('styles')
 <style>
     .detail-cover {

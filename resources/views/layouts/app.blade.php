@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#388E3C">
     <title>@yield('title', 'HOSTO — La Sante au bout du Click')</title>
     <meta name="description" content="@yield('description', 'HOSTO - Plateforme panafricaine de e-sante. Trouvez un hopital, un medecin, une pharmacie.')">
+    @yield('og')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
