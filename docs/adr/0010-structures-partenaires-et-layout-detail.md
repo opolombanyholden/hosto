@@ -15,7 +15,8 @@ HOSTO distingue deux catégories de structures dans l'annuaire. Cette distinctio
 |---|---|---|
 | **Icône** | Logo HOSTO **bleu** | Logo HOSTO **vert** |
 | **Visibilité annuaire** | Oui | Oui |
-| **Fiche détaillée** | Complète | Informations génériques uniquement |
+| **Fiche détaillée** | Complète | Complète |
+| **Onglets (5 tabs)** | ✅ | ✅ |
 | **Prise de rendez-vous** | ✅ | ❌ |
 | **Téléconsultation** | ✅ | ❌ |
 | **Paiement en ligne** | ✅ | ❌ |
@@ -28,10 +29,12 @@ HOSTO distingue deux catégories de structures dans l'annuaire. Cette distinctio
 
 Un partenaire est une structure qui a signé un accord avec Yubile Technologie. Le statut partenaire est distinct du statut vérifié (`is_verified`). Une structure peut être vérifiée (identité confirmée) sans être partenaire (pas d'accord commercial).
 
+La différence clé : les deux types affichent la fiche complète avec onglets, mais seules les structures partenaires donnent accès aux **fonctionnalités transactionnelles** (RDV, téléconsultation, paiement) et aux **interactions sociales** (like, partage, recommandation, évaluation).
+
 ```
 Non vérifiée        → pas affichée dans l'annuaire
-Vérifiée            → affichée, icône verte, informations génériques
-Vérifiée + Partenaire → affichée, icône bleue, toutes les fonctionnalités
+Vérifiée            → affichée, icône verte, fiche complète, consultation seule
+Vérifiée + Partenaire → affichée, icône bleue, fiche complète + transactionnel + social
 ```
 
 ### 2. Layout de la page détail (structure partenaire)
@@ -84,6 +87,12 @@ Vérifiée + Partenaire → affichée, icône bleue, toutes les fonctionnalités
 
 ### 3. Layout pour structure NON-partenaire
 
+Même structure que le partenaire (couverture, profil, onglets, carte, galerie) mais :
+- Icône **verte** au lieu de bleue
+- **Pas** de boutons Like / Partager / Recommander
+- **Pas** de boutons RDV / Téléconsultation / Paiement
+- Un bandeau CTA "Devenir partenaire" en bas de page
+
 ```
 ┌──────────────────────────────────────────────────────────┐
 │                   IMAGE DE COUVERTURE                     │
@@ -91,18 +100,20 @@ Vérifiée + Partenaire → affichée, icône bleue, toutes les fonctionnalités
 ├──────────────────────────────────────────────────────────┤
 │  [PROFIL]  Nom de la structure          [🟢 Vérifié]     │
 │            Type(s) — Ville — Quartier                     │
-│            📞 Téléphone   ✉ Email                        │
-│            🕐 Horaires                                    │
-│                                                          │
-│  (Pas de tabs, pas de Like/Partage/Recommander)          │
-│  (Pas de tarifs, pas de prise de RDV)                    │
-│                                                          │
-│  Spécialités : Cardiologie, Pédiatrie, ...               │
-│                                                          │
+│            📞 Téléphone   ✉ Email   🕐 Horaires          │
+│            (Pas de Like / Partager / Recommander)         │
+├──────────────────────────────────────────────────────────┤
+│  ┌─────────┬──────────┬────────┬───────┬──────────────┐  │
+│  │Prestations│Spécialités│Examens│ Soins │Médicaments   │  │
+│  └─────────┴──────────┴────────┴───────┴──────────────┘  │
+│  (Contenu identique au partenaire : tarifs, etc.)        │
+├──────────────────────────────────────────────────────────┤
 │  ┌──────────────────────────────────────────────────┐    │
 │  │              CARTE OPENSTREETMAP                  │    │
 │  └──────────────────────────────────────────────────┘    │
-│                                                          │
+├──────────────────────────────────────────────────────────┤
+│  Galerie (lightbox identique)                            │
+├──────────────────────────────────────────────────────────┤
 │  ┌─── Devenir partenaire HOSTO ──────────────────────┐   │
 │  │  Accédez à plus de fonctionnalités :               │   │
 │  │  rendez-vous, téléconsultation, paiement...        │   │
