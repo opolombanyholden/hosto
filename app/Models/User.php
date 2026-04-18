@@ -41,6 +41,10 @@ use Laravel\Sanctum\HasApiTokens;
  * @property CarbonImmutable|null $two_factor_confirmed_at
  * @property int $failed_login_attempts
  * @property CarbonImmutable|null $locked_until
+ * @property CarbonImmutable|null $pro_validated_at
+ * @property string|null $pro_validated_by
+ * @property string|null $pro_validation_status
+ * @property string|null $pro_rejection_reason
  * @property string|null $remember_token
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at

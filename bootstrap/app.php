@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Modules\Core\Http\Middleware\AssignRequestId;
 use App\Modules\Core\Http\Middleware\EnsureEnvironment;
+use App\Modules\Core\Http\Middleware\EnsureProValidated;
+use App\Modules\Core\Http\Middleware\EnsureVerified;
 use App\Modules\Core\Http\Middleware\ForceJsonResponse;
 use App\Modules\Core\Http\Middleware\SecurityHeaders;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -32,6 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'env' => EnsureEnvironment::class,
+            'verified' => EnsureVerified::class,
+            'pro.validated' => EnsureProValidated::class,
         ]);
 
         // Redirect unauthenticated users based on the URL prefix.

@@ -6,6 +6,7 @@ use App\Http\Controllers\AnnuaireWebController;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\ProfileController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // ---------------------------------------------------------------
@@ -88,6 +89,21 @@ Route::prefix('admin')->group(function (): void {
 // ---------------------------------------------------------------
 
 Route::post('/deconnexion', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// ---------------------------------------------------------------
+// Verification (email + phone)
+// ---------------------------------------------------------------
+
+Route::middleware('auth')->group(function (): void {
+    Route::get('/verification', function () {
+        return view('auth.verification-notice');
+    })->name('verification.notice');
+
+    Route::post('/verification/email', function (Request $request) {
+        // TODO: Phase 3.1 — Send actual OTP via email (SMTP + queue).
+        return back()->with('success', 'Un code de verification a ete envoye a votre adresse email.');
+    })->name('verification.send.email');
+});
 
 // ---------------------------------------------------------------
 // 2FA (shared — authenticated users)

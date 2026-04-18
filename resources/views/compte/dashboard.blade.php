@@ -32,10 +32,30 @@
 @endsection
 
 @section('content')
+@php $user = auth()->user(); @endphp
+
+@if(!$user->email_verified_at)
+<div style="background:#FFF3E0;border:1px solid #FFB74D;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:1.2rem;">&#9888;</span>
+    <div>
+        <div style="font-size:.85rem;font-weight:600;color:#E65100;">Verifiez votre adresse email</div>
+        <div style="font-size:.78rem;color:#BF360C;">Pour acceder a toutes les fonctionnalites, <a href="{{ route('verification.notice') }}" style="color:#E65100;font-weight:600;">verifiez votre compte</a>.</div>
+    </div>
+</div>
+@elseif(!$user->phone_verified_at)
+<div style="background:#FFF3E0;border:1px solid #FFB74D;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:1.2rem;">&#9888;</span>
+    <div>
+        <div style="font-size:.85rem;font-weight:600;color:#E65100;">Verifiez votre numero de telephone</div>
+        <div style="font-size:.78rem;color:#BF360C;">Completez votre <a href="{{ route('verification.notice') }}" style="color:#E65100;font-weight:600;">verification</a> pour profiter pleinement de HOSTO.</div>
+    </div>
+</div>
+@endif
+
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-bottom:32px;">
     <div style="background:white;border-radius:14px;padding:24px;border:1px solid #EEE;">
         <div style="font-size:.78rem;color:#757575;margin-bottom:4px;">Bienvenue</div>
-        <div style="font-size:1.2rem;font-weight:700;color:#1B2A1B;">{{ auth()->user()->name }}</div>
+        <div style="font-size:1.2rem;font-weight:700;color:#1B2A1B;">{{ $user->name }}</div>
     </div>
     <div style="background:white;border-radius:14px;padding:24px;border:1px solid #EEE;">
         <div style="font-size:.78rem;color:#757575;margin-bottom:4px;">Rendez-vous</div>
