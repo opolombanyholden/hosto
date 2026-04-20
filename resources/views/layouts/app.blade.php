@@ -154,10 +154,14 @@
         </a>
         <div class="navbar-nav" id="navMenu">
             <a href="/" class="{{ request()->is('/') ? 'active' : '' }}">Accueil</a>
-            <a href="/annuaire" class="{{ request()->is('annuaire*') ? 'active' : '' }}">Annuaire</a>
-            <a href="/#services">Services</a>
-            <a href="/#ecosysteme">Ecosysteme</a>
-            <a href="#" class="btn-nav">Connexion</a>
+            <a href="/annuaire" class="{{ request()->is('annuaire') || request()->is('annuaire/*') && !request()->is('annuaire/medecins*') ? 'active' : '' }}">Structures</a>
+            <a href="/annuaire/medecins" class="{{ request()->is('annuaire/medecins*') ? 'active' : '' }}">Medecins</a>
+            <a href="/medicaments" class="{{ request()->is('medicaments*') ? 'active' : '' }}">Medicaments</a>
+            @auth
+                <a href="/compte" class="btn-nav">Mon espace</a>
+            @else
+                <a href="/compte/connexion" class="btn-nav">Connexion</a>
+            @endauth
         </div>
         <div class="navbar-toggle" onclick="document.getElementById('navMenu').classList.toggle('open')">
             <span></span><span></span><span></span>

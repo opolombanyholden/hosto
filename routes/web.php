@@ -18,6 +18,9 @@ Route::get('/', function () {
 });
 
 Route::get('/annuaire', [AnnuaireWebController::class, 'index'])->name('annuaire.index');
+Route::get('/annuaire/medecins', [AnnuaireWebController::class, 'practitioners'])->name('annuaire.practitioners');
+Route::get('/annuaire/medecins/{slug}', [AnnuaireWebController::class, 'practitionerShow'])->name('annuaire.practitioner.show');
+Route::get('/medicaments', [AnnuaireWebController::class, 'medications'])->name('medications.index');
 Route::get('/annuaire/{slug}', [AnnuaireWebController::class, 'show'])->name('annuaire.show');
 
 // ---------------------------------------------------------------
@@ -36,6 +39,9 @@ Route::prefix('compte')->group(function (): void {
         Route::get('/', function () {
             return view('compte.dashboard');
         })->name('compte.dashboard');
+        Route::get('/rendez-vous', function () {
+            return view('compte.rendez-vous');
+        })->name('compte.rdv');
         Route::get('/profil', [ProfileController::class, 'show'])->name('compte.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);

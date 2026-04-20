@@ -5,18 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Modules\Annuaire\Models\Hosto;
+use App\Modules\Annuaire\Models\HostoRecommendation;
+use App\Modules\Annuaire\Models\Practitioner;
+use App\Modules\RendezVous\Models\TimeSlot;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-/**
- * Web controller for the public Annuaire pages.
- *
- * Serves Blade views. The actual data for the listing page is loaded
- * client-side from the API (annuaire/index.blade.php uses fetch).
- *
- * The detail page is server-rendered for SEO and sharing (meta tags
- * with the structure name, description, and coordinates).
- */
 final class AnnuaireWebController
 {
     public function index(): View
@@ -34,6 +29,56 @@ final class AnnuaireWebController
             throw new NotFoundHttpException('Structure introuvable.');
         }
 
-        return view('annuaire.show', compact('hosto'));
+        // Practitioners working at this structure.
+        $practitioners = Practitioner::active()
+            ->whereHas('structures', fn ($q) => $q->where('hostos.id', $hosto->id))
+            ->with('specialties')
+            ->orderBy('last_name')
+            ->get();
+
+        // Approved recommendations.
+        $recommendations = HostoRecommendation::where('hosto_id', $hosto->id)
+            ->approved()
+            ->with('user:id,name,uuid')
+            ->orderByDesc('approved_at')
+            ->limit(10)
+            ->get();
+
+        // User like status.
+        $userLiked = false;
+        if (auth()->check()) {
+            $userLiked = $hosto->likes()->where('user_id', auth()->id())->exists();
+        }
+
+        return view('annuaire.show', compact('hosto', 'practitioners', 'recommendations', 'userLiked'));
+    }
+
+    public function practitioners(Request $request): View
+    {
+        return view('annuaire.practitioners');
+    }
+
+    public function practitionerShow(string $slug): View
+    {
+        $practitioner = Practitioner::where('slug', $slug)
+            ->with(['specialties', 'structures.city.region', 'structures.structureTypes'])
+            ->firstOrFail();
+
+        // Available time slots for the next 7 days.
+        $slots = TimeSlot::where('practitioner_id', $practitioner->id)
+            ->available()
+            ->with('structure')
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->limit(40)
+            ->get()
+            ->groupBy(fn ($s) => $s->date->toDateString());
+
+        return view('annuaire.practitioner-show', compact('practitioner', 'slots'));
+    }
+
+    public function medications(): View
+    {
+        return view('annuaire.medications');
     }
 }

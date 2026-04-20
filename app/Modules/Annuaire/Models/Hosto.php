@@ -73,6 +73,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read Collection<int, Specialty> $specialties
  * @property-read Collection<int, Service> $services
  * @property-read Collection<int, HostoMedia> $media
+ * @property-read Collection<int, HostoLike> $likes
  */
 class Hosto extends Model
 {
@@ -199,6 +200,14 @@ class Hosto extends Model
     public function galleryImages(): Collection
     {
         return $this->media->where('type', 'gallery')->values();
+    }
+
+    /**
+     * @return HasMany<HostoLike, $this>
+     */
+    public function likes(): HasMany
+    {
+        return $this->hasMany(HostoLike::class);
     }
 
     // ---------------------------------------------------------------
