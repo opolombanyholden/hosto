@@ -38,7 +38,7 @@ return [
         'Usager' => env('HOSTO_MODULE_USAGER', false),
 
         // Phase 4
-        'RendezVous' => env('HOSTO_MODULE_RDV', false),
+        'RendezVous' => env('HOSTO_MODULE_RDV', true),
 
         // Phase 5+
         'Pro' => env('HOSTO_MODULE_PRO', false),
