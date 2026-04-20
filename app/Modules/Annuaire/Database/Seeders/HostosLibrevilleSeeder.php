@@ -42,6 +42,7 @@ final class HostosLibrevilleSeeder extends Seeder
                     'is_guard_service' => $data['is_guard_service'] ?? false,
                     'is_active' => true,
                     'is_verified' => true,
+                    'is_partner' => $data['is_partner'] ?? false,
                     'verified_at' => now(),
                     'opening_hours' => $data['opening_hours'] ?? $this->defaultHours(),
                 ],
@@ -93,6 +94,7 @@ final class HostosLibrevilleSeeder extends Seeder
         return [
             [
                 'name' => 'CHU de Libreville',
+                'is_partner' => true,
                 'address' => 'Boulevard Léon Mba',
                 'quarter' => 'Centre-ville',
                 'phone' => '+24101762244',
@@ -131,6 +133,7 @@ final class HostosLibrevilleSeeder extends Seeder
             ],
             [
                 'name' => 'Clinique El Rapha',
+                'is_partner' => true,
                 'quarter' => 'Nzeng-Ayong',
                 'phone' => '+24177123456',
                 'is_public' => false,
@@ -147,6 +150,7 @@ final class HostosLibrevilleSeeder extends Seeder
             ],
             [
                 'name' => 'Polyclinique Chambrier',
+                'is_partner' => true,
                 'address' => 'Boulevard Triomphal',
                 'quarter' => 'Centre-ville',
                 'phone' => '+24101724512',

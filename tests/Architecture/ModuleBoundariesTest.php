@@ -114,10 +114,12 @@ final class ModuleBoundariesTest extends TestCase
             foreach ($finder as $file) {
                 $content = file_get_contents($file->getPathname()) ?: '';
 
-                // Skip abstract classes, interfaces, traits and concerns.
+                // Skip abstract classes, interfaces, traits, concerns
+                // and simple pivot models (no UUID needed).
                 if (preg_match('/\babstract\s+class\b/', $content)
                     || str_contains($content, 'interface ')
                     || str_contains($content, 'trait ')
+                    || str_contains($content, '$timestamps = false') // simple pivot
                 ) {
                     continue;
                 }
