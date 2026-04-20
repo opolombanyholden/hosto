@@ -135,9 +135,40 @@
                 @if($hosto->quarter) ({{ $hosto->quarter }}) @endif
             </div>
             <div class="status-badges">
+                @if($hosto->is_partner) <span class="status-badge" style="background:#E3F2FD;color:#1565C0;">Partenaire HOSTO</span> @endif
                 @if($hosto->is_guard_service) <span class="status-badge status-guard">Service de garde</span> @endif
                 <span class="status-badge {{ $hosto->is_public ? 'status-public' : 'status-private' }}">{{ $hosto->is_public ? 'Public' : 'Prive' }}</span>
             </div>
+
+            {{-- Interaction buttons (partner only) --}}
+            @if($hosto->is_partner)
+            <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+                <button id="btnLike" onclick="toggleLike()" style="padding:8px 16px;border:2px solid {{ $userLiked ? '#E53935' : '#EEE' }};border-radius:100px;background:{{ $userLiked ? '#FFEBEE' : 'white' }};cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:600;color:{{ $userLiked ? '#E53935' : '#757575' }};display:flex;align-items:center;gap:6px;transition:all .2s;">
+                    <span id="likeIcon">{{ $userLiked ? '&#10084;' : '&#9825;' }}</span>
+                    <span id="likeText">{{ $userLiked ? 'Aime' : 'Aimer' }}</span>
+                    <span id="likeCount" style="background:#F5F5F5;padding:2px 8px;border-radius:100px;font-size:.7rem;">{{ $hosto->likes_count }}</span>
+                </button>
+                <button onclick="shareStructure()" style="padding:8px 16px;border:2px solid #EEE;border-radius:100px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:500;color:#757575;display:flex;align-items:center;gap:6px;">
+                    &#8599; Partager
+                </button>
+                <button onclick="document.getElementById('recoForm').style.display='block'" style="padding:8px 16px;border:2px solid #EEE;border-radius:100px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:500;color:#757575;display:flex;align-items:center;gap:6px;">
+                    &#11088; Recommander
+                </button>
+            </div>
+
+            {{-- Recommendation form (hidden by default) --}}
+            <div id="recoForm" style="display:none;margin-top:12px;background:#F5F5F5;border-radius:12px;padding:16px;">
+                <textarea id="recoContent" maxlength="500" placeholder="Partagez votre experience positive..." style="width:100%;height:80px;border:2px solid #EEE;border-radius:8px;padding:10px;font-family:Poppins,sans-serif;font-size:.85rem;resize:vertical;outline:none;"></textarea>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+                    <span style="font-size:.72rem;color:#757575;">Max 500 caracteres</span>
+                    <div style="display:flex;gap:8px;">
+                        <button onclick="document.getElementById('recoForm').style.display='none'" style="padding:6px 16px;border:1px solid #EEE;border-radius:8px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;">Annuler</button>
+                        <button onclick="submitRecommendation()" style="padding:6px 16px;border:none;border-radius:8px;background:#388E3C;color:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:600;">Envoyer</button>
+                    </div>
+                </div>
+                <div id="recoMessage" style="display:none;margin-top:8px;font-size:.82rem;padding:8px;border-radius:8px;"></div>
+            </div>
+            @endif
         </div>
     </div>
 </div>
@@ -208,6 +239,46 @@
                         <img src="{{ $media->url }}" alt="{{ $media->alt_text ?: $hosto->name }}">
                     @endforeach
                 </div>
+            </div>
+            @endif
+
+            {{-- Practitioners at this structure --}}
+            @if($practitioners->isNotEmpty())
+            <div class="detail-section">
+                <div class="detail-section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    Medecins et praticiens ({{ $practitioners->count() }})
+                </div>
+                @foreach($practitioners as $prac)
+                <a href="/annuaire/medecins/{{ $prac->slug }}" style="display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;transition:background .2s;text-decoration:none;color:inherit;">
+                    <div style="width:40px;height:40px;border-radius:10px;background:#E8F5E9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:.85rem;font-weight:600;color:#1B2A1B;">{{ $prac->full_name }}</div>
+                        <div style="font-size:.72rem;color:#757575;">{{ $prac->specialties->pluck('name_fr')->join(', ') }}</div>
+                    </div>
+                    @if($prac->does_teleconsultation)
+                    <span style="margin-left:auto;font-size:.65rem;background:#E3F2FD;color:#1565C0;padding:2px 8px;border-radius:100px;font-weight:600;">TC</span>
+                    @endif
+                </a>
+                @endforeach
+            </div>
+            @endif
+
+            {{-- Recommendations --}}
+            @if($recommendations->isNotEmpty())
+            <div class="detail-section">
+                <div class="detail-section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Recommandations
+                </div>
+                @foreach($recommendations as $reco)
+                <div style="padding:12px;background:#FAFAFA;border-radius:10px;margin-bottom:8px;">
+                    <p style="font-size:.82rem;color:#424242;line-height:1.6;">{{ $reco->content }}</p>
+                    <div style="font-size:.72rem;color:#757575;margin-top:6px;">{{ $reco->user->name }} &mdash; {{ $reco->approved_at?->format('d/m/Y') }}</div>
+                </div>
+                @endforeach
             </div>
             @endif
         </div>
@@ -304,6 +375,61 @@ document.addEventListener('DOMContentLoaded', function() {
         .bindPopup('<strong>{{ addslashes($hosto->name) }}</strong><br>{{ addslashes($types->pluck("name_fr")->join(", ")) }}')
         .openPopup();
 });
+</script>
+@endif
+
+@if($hosto->is_partner)
+<script>
+const hostoUuid = '{{ $hosto->uuid }}';
+
+async function toggleLike() {
+    try {
+        const res = await fetch(`/api/v1/annuaire/hostos/${hostoUuid}/like`, {
+            method: 'POST', headers: {'Accept':'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With':'XMLHttpRequest'}
+        });
+        if (res.status === 401) { window.location.href = '/compte/connexion'; return; }
+        const d = (await res.json()).data;
+        const btn = document.getElementById('btnLike');
+        document.getElementById('likeIcon').innerHTML = d.liked ? '&#10084;' : '&#9825;';
+        document.getElementById('likeText').textContent = d.liked ? 'Aime' : 'Aimer';
+        document.getElementById('likeCount').textContent = d.likes_count;
+        btn.style.borderColor = d.liked ? '#E53935' : '#EEE';
+        btn.style.background = d.liked ? '#FFEBEE' : 'white';
+        btn.style.color = d.liked ? '#E53935' : '#757575';
+    } catch(e) { console.error(e); }
+}
+
+function shareStructure() {
+    const url = window.location.href;
+    const title = '{{ addslashes($hosto->name) }}';
+    if (navigator.share) {
+        navigator.share({title, url}).catch(()=>{});
+    } else {
+        navigator.clipboard.writeText(url).then(()=> alert('Lien copie dans le presse-papiers !'));
+    }
+}
+
+async function submitRecommendation() {
+    const content = document.getElementById('recoContent').value.trim();
+    if (!content) return;
+    const msg = document.getElementById('recoMessage');
+    try {
+        const res = await fetch(`/api/v1/annuaire/hostos/${hostoUuid}/recommend`, {
+            method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','X-Requested-With':'XMLHttpRequest'},
+            body: JSON.stringify({content})
+        });
+        if (res.status === 401) { window.location.href = '/compte/connexion'; return; }
+        const data = await res.json();
+        if (res.ok) {
+            msg.style.display = 'block'; msg.style.background = '#E8F5E9'; msg.style.color = '#2E7D32';
+            msg.textContent = data.data.message;
+            document.getElementById('recoContent').value = '';
+        } else {
+            msg.style.display = 'block'; msg.style.background = '#FFEBEE'; msg.style.color = '#C62828';
+            msg.textContent = data.error?.message || 'Erreur.';
+        }
+    } catch(e) { console.error(e); }
+}
 </script>
 @endif
 @endsection
