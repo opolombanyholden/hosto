@@ -56,6 +56,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $cover_image_url
  * @property bool $is_active
  * @property bool $is_verified
+ * @property bool $is_partner
+ * @property int $likes_count
  * @property CarbonImmutable|null $verified_at
  * @property string|null $verified_by
  * @property string $origin
