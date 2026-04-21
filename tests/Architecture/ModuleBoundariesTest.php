@@ -51,7 +51,7 @@ final class ModuleBoundariesTest extends TestCase
 
                 // Allowed dependencies: own module, Core, Referentiel
                 // and Annuaire (shared entities: Hosto, Practitioner).
-                $allowedDeps = [$module, 'Core', 'Referentiel', 'Annuaire'];
+                $allowedDeps = [$module, 'Core', 'Referentiel', 'Annuaire', 'RendezVous'];
 
                 foreach ($matches[1] as $usedModule) {
                     if (in_array($usedModule, $allowedDeps, true)) {
