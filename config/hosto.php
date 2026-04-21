@@ -42,7 +42,7 @@ return [
 
         // Phase 5+
         'Pro' => env('HOSTO_MODULE_PRO', true),
-        'Pharma' => env('HOSTO_MODULE_PHARMA', false),
+        'Pharma' => env('HOSTO_MODULE_PHARMA', true),
         'Lab' => env('HOSTO_MODULE_LAB', false),
         'Assur' => env('HOSTO_MODULE_ASSUR', false),
         'Mwana' => env('HOSTO_MODULE_MWANA', false),

@@ -7,7 +7,9 @@ namespace Database\Seeders;
 use App\Modules\Annuaire\Database\Seeders\HostoMediaSeeder;
 use App\Modules\Annuaire\Database\Seeders\HostosLibrevilleSeeder;
 use App\Modules\Annuaire\Database\Seeders\PractitionersSeeder;
+use App\Modules\Core\Database\Seeders\DemoAccountsSeeder;
 use App\Modules\Core\Database\Seeders\RolesSeeder;
+use App\Modules\Pharma\Database\Seeders\PharmacyStockSeeder;
 use App\Modules\Referentiel\Database\Seeders\GabonSeeder;
 use App\Modules\Referentiel\Database\Seeders\MedicationsSeeder;
 use App\Modules\Referentiel\Database\Seeders\ServicesSeeder;
@@ -34,6 +36,12 @@ class DatabaseSeeder extends Seeder
             HostosLibrevilleSeeder::class,
             HostoMediaSeeder::class,
             PractitionersSeeder::class,
+
+            // Pharma
+            PharmacyStockSeeder::class,
+
+            // Comptes demo
+            DemoAccountsSeeder::class,
         ]);
     }
 }
