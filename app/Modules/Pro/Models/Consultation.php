@@ -43,8 +43,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read User $patient
  * @property-read Hosto $structure
  * @property-read Appointment|null $appointment
- * @property-read Collection<int, Prescription> $prescriptions
  * @property-read Collection<int, ExamRequest> $examRequests
+ * @property-read Collection<int, CareAct> $careActs
+ * @property-read Collection<int, Treatment> $treatments
+ * @property-read Collection<int, Prescription> $prescriptions
  */
 class Consultation extends Model
 {
@@ -104,6 +106,22 @@ class Consultation extends Model
     public function examRequests(): HasMany
     {
         return $this->hasMany(ExamRequest::class);
+    }
+
+    /**
+     * @return HasMany<CareAct, $this>
+     */
+    public function careActs(): HasMany
+    {
+        return $this->hasMany(CareAct::class);
+    }
+
+    /**
+     * @return HasMany<Treatment, $this>
+     */
+    public function treatments(): HasMany
+    {
+        return $this->hasMany(Treatment::class);
     }
 
     /**

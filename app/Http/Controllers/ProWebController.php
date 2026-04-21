@@ -7,9 +7,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Services\AuditLogger;
+use App\Modules\Pro\Models\CareAct;
 use App\Modules\Pro\Models\Consultation;
+use App\Modules\Pro\Models\ExamRequest;
 use App\Modules\Pro\Models\Prescription;
 use App\Modules\Pro\Models\PrescriptionItem;
+use App\Modules\Pro\Models\Treatment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -98,7 +101,7 @@ final class ProWebController
         $practitioner = $this->currentPractitioner($request);
         $consultation = Consultation::whereUuid($uuid)
             ->where('practitioner_id', $practitioner?->id)
-            ->with(['patient', 'structure', 'prescriptions.items', 'examRequests'])
+            ->with(['patient', 'structure', 'examRequests', 'careActs', 'treatments', 'prescriptions.items'])
             ->firstOrFail();
 
         return view('pro.consultation-show', compact('consultation', 'practitioner'));
@@ -154,6 +157,87 @@ final class ProWebController
         ]);
 
         return redirect("/pro/consultations/{$consultationUuid}")->with('success', "Ordonnance {$prescription->reference} creee.");
+    }
+
+    /**
+     * Add an exam request.
+     */
+    public function storeExamRequest(Request $request, string $uuid, AuditLogger $audit): RedirectResponse
+    {
+        $practitioner = $this->currentPractitioner($request);
+        $consultation = Consultation::whereUuid($uuid)->where('practitioner_id', $practitioner?->id)->firstOrFail();
+
+        $data = $request->validate([
+            'exam_type' => 'required|string|max:255',
+            'clinical_info' => 'nullable|string',
+            'urgency' => 'in:normal,urgent',
+        ]);
+
+        ExamRequest::create([
+            'consultation_id' => $consultation->id,
+            'practitioner_id' => $practitioner->id,
+            'patient_id' => $consultation->patient_id,
+            'exam_type' => $data['exam_type'],
+            'clinical_info' => $data['clinical_info'] ?? null,
+            'urgency' => $data['urgency'] ?? 'normal',
+            'status' => 'requested',
+        ]);
+
+        return redirect("/pro/consultations/{$uuid}")->with('success', 'Examen prescrit.');
+    }
+
+    /**
+     * Add a care act (soin).
+     */
+    public function storeCareAct(Request $request, string $uuid, AuditLogger $audit): RedirectResponse
+    {
+        $practitioner = $this->currentPractitioner($request);
+        $consultation = Consultation::whereUuid($uuid)->where('practitioner_id', $practitioner?->id)->firstOrFail();
+
+        $data = $request->validate([
+            'care_type' => 'required|string|max:50',
+            'description' => 'required|string',
+            'instructions' => 'nullable|string',
+        ]);
+
+        CareAct::create([
+            'consultation_id' => $consultation->id,
+            'practitioner_id' => $practitioner->id,
+            'patient_id' => $consultation->patient_id,
+            'care_type' => $data['care_type'],
+            'description' => $data['description'],
+            'instructions' => $data['instructions'] ?? null,
+            'status' => 'prescribed',
+        ]);
+
+        return redirect("/pro/consultations/{$uuid}")->with('success', 'Soin prescrit.');
+    }
+
+    /**
+     * Add a treatment plan.
+     */
+    public function storeTreatment(Request $request, string $uuid, AuditLogger $audit): RedirectResponse
+    {
+        $practitioner = $this->currentPractitioner($request);
+        $consultation = Consultation::whereUuid($uuid)->where('practitioner_id', $practitioner?->id)->firstOrFail();
+
+        $data = $request->validate([
+            'type' => 'required|string|max:30',
+            'description' => 'required|string',
+            'instructions' => 'nullable|string',
+            'frequency' => 'nullable|string|max:100',
+            'duration' => 'nullable|string|max:100',
+        ]);
+
+        Treatment::create([
+            'consultation_id' => $consultation->id,
+            'practitioner_id' => $practitioner->id,
+            'patient_id' => $consultation->patient_id,
+            ...$data,
+            'status' => 'prescribed',
+        ]);
+
+        return redirect("/pro/consultations/{$uuid}")->with('success', 'Traitement prescrit.');
     }
 
     private function currentPractitioner(Request $request): ?Practitioner

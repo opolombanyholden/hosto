@@ -77,6 +77,9 @@ Route::prefix('pro')->group(function (): void {
         Route::get('/consultations/nouvelle', [ProWebController::class, 'newConsultation'])->name('pro.consultation.create');
         Route::post('/consultations', [ProWebController::class, 'storeConsultation']);
         Route::get('/consultations/{uuid}', [ProWebController::class, 'showConsultation'])->name('pro.consultation.show');
+        Route::post('/consultations/{uuid}/examen', [ProWebController::class, 'storeExamRequest']);
+        Route::post('/consultations/{uuid}/soin', [ProWebController::class, 'storeCareAct']);
+        Route::post('/consultations/{uuid}/traitement', [ProWebController::class, 'storeTreatment']);
         Route::post('/consultations/{uuid}/ordonnance', [ProWebController::class, 'storePrescription'])->name('pro.prescription.store');
         Route::get('/enregistrer-structure', [ClaimsWebController::class, 'claimForm'])->name('pro.claim');
         Route::post('/enregistrer-structure', [ClaimsWebController::class, 'submitClaim']);
