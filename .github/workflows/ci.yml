@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_DB: hosto_testing
+          POSTGRES_USER: hosto
+          POSTGRES_PASSWORD: hosto_secret_2025
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:8-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_pgsql, pgsql, redis, gd, intl, bcmath, zip
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Copy .env
+        run: cp .env.testing .env
+
+      - name: Generate key
+        run: php artisan key:generate
+
+      - name: Run migrations
+        run: php artisan migrate --force
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: hosto_testing
+          DB_USERNAME: hosto
+          DB_PASSWORD: hosto_secret_2025
+
+      - name: Pint (code style)
+        run: ./vendor/bin/pint --test
+
+      - name: PHPStan (static analysis)
+        run: ./vendor/bin/phpstan analyse --memory-limit=512M --no-progress
+
+      - name: Tests
+        run: php artisan test
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: hosto_testing
+          DB_USERNAME: hosto
+          DB_PASSWORD: hosto_secret_2025
+          REDIS_CLIENT: phpredis
+          REDIS_HOST: 127.0.0.1

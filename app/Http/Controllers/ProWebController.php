@@ -76,12 +76,12 @@ final class ProWebController
             'hosto_id' => $data['hosto_id'],
             'status' => 'completed',
             'motif' => $data['motif'],
-            'anamnesis' => $data['anamnesis'],
-            'examen_clinique' => $data['examen_clinique'],
-            'diagnostic' => $data['diagnostic'],
-            'diagnostic_code' => $data['diagnostic_code'],
-            'conduite_a_tenir' => $data['conduite_a_tenir'],
-            'notes_internes' => $data['notes_internes'],
+            'anamnesis' => $data['anamnesis'] ?? null,
+            'examen_clinique' => $data['examen_clinique'] ?? null,
+            'diagnostic' => $data['diagnostic'] ?? null,
+            'diagnostic_code' => $data['diagnostic_code'] ?? null,
+            'conduite_a_tenir' => $data['conduite_a_tenir'] ?? null,
+            'notes_internes' => $data['notes_internes'] ?? null,
             'started_at' => now(),
             'completed_at' => now(),
         ]);
@@ -135,7 +135,7 @@ final class ProWebController
             'status' => 'active',
             'reference' => Prescription::generateReference(),
             'valid_until' => now()->addMonths(3),
-            'notes' => $data['notes'],
+            'notes' => $data['notes'] ?? null,
         ]);
 
         foreach ($data['items'] as $i => $item) {
