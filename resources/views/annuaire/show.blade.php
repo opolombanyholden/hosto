@@ -384,7 +384,7 @@ const hostoUuid = '{{ $hosto->uuid }}';
 
 async function toggleLike() {
     try {
-        const res = await fetch(`/api/v1/annuaire/hostos/${hostoUuid}/like`, {
+        const res = await fetch(`/web/like/${hostoUuid}`, {
             method: 'POST', headers: {'Accept':'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With':'XMLHttpRequest'}
         });
         if (res.status === 401) { window.location.href = '/compte/connexion'; return; }
@@ -414,7 +414,7 @@ async function submitRecommendation() {
     if (!content) return;
     const msg = document.getElementById('recoMessage');
     try {
-        const res = await fetch(`/api/v1/annuaire/hostos/${hostoUuid}/recommend`, {
+        const res = await fetch(`/web/recommend/${hostoUuid}`, {
             method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','X-Requested-With':'XMLHttpRequest'},
             body: JSON.stringify({content})
         });

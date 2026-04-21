@@ -146,7 +146,7 @@ async function submitBooking() {
     const msg = document.getElementById('bookingMessage');
 
     try {
-        const res = await fetch(`${API}/rdv/appointments`, {
+        const res = await fetch('/web/rdv/book', {
             method: 'POST',
             headers: {'Content-Type':'application/json', 'Accept':'application/json', 'X-CSRF-TOKEN':'{{ csrf_token() }}', 'X-Requested-With':'XMLHttpRequest'},
             body: JSON.stringify({time_slot_uuid: uuid, reason: reason || null}),

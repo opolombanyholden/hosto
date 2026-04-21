@@ -393,8 +393,9 @@
             <a href="#fonctionnalites">Fonctionnalites</a>
             <a href="#ecosysteme">Ecosysteme</a>
             <a href="/annuaire">Annuaire</a>
-            <a href="#services">Services</a>
-            <a href="#connexion" class="btn-nav">Connexion</a>
+            <a href="/annuaire/medecins">Medecins</a>
+            <a href="/medicaments">Medicaments</a>
+            <a href="/compte/connexion" class="btn-nav">Connexion</a>
         </div>
         <div class="navbar-toggle" id="navToggle" onclick="document.getElementById('navMenu').classList.toggle('open')">
             <span></span><span></span><span></span>

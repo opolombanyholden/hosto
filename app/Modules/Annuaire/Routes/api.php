@@ -6,6 +6,7 @@ use App\Modules\Annuaire\Http\Controllers\HostosController;
 use App\Modules\Annuaire\Http\Controllers\InteractionsController;
 use App\Modules\Annuaire\Http\Controllers\PractitionersController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,8 +28,8 @@ Route::get('practitioners/{slug}', [PractitionersController::class, 'show'])->na
 // Recommendations (public read)
 Route::get('hostos/{uuid}/recommendations', [InteractionsController::class, 'recommendations'])->name('hostos.recommendations');
 
-// Interactions (authenticated)
-Route::middleware('auth:sanctum')->group(function (): void {
+// Interactions (authenticated via web session or API token).
+Route::middleware([EnsureFrontendRequestsAreStateful::class, 'auth:sanctum'])->group(function (): void {
     Route::post('hostos/{uuid}/like', [InteractionsController::class, 'toggleLike'])->name('hostos.like');
     Route::get('hostos/{uuid}/like-status', [InteractionsController::class, 'likeStatus'])->name('hostos.like-status');
     Route::post('hostos/{uuid}/recommend', [InteractionsController::class, 'recommend'])->name('hostos.recommend');
