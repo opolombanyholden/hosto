@@ -41,7 +41,7 @@ return [
         'RendezVous' => env('HOSTO_MODULE_RDV', true),
 
         // Phase 5+
-        'Pro' => env('HOSTO_MODULE_PRO', false),
+        'Pro' => env('HOSTO_MODULE_PRO', true),
         'Pharma' => env('HOSTO_MODULE_PHARMA', false),
         'Lab' => env('HOSTO_MODULE_LAB', false),
         'Assur' => env('HOSTO_MODULE_ASSUR', false),
