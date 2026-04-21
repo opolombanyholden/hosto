@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\AnnuaireWebController;
 use App\Http\Controllers\BookingWebController;
+use App\Http\Controllers\ClaimsWebController;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\ProfileController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
@@ -71,6 +72,9 @@ Route::prefix('pro')->group(function (): void {
         Route::get('/', function () {
             return view('pro.dashboard');
         })->name('pro.dashboard');
+        Route::get('/enregistrer-structure', [ClaimsWebController::class, 'claimForm'])->name('pro.claim');
+        Route::post('/enregistrer-structure', [ClaimsWebController::class, 'submitClaim']);
+        Route::get('/mes-demandes', [ClaimsWebController::class, 'myClaims'])->name('pro.claims');
         Route::get('/profil', [ProfileController::class, 'show'])->name('pro.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
@@ -112,6 +116,7 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/web/rdv/{uuid}/cancel', [BookingWebController::class, 'cancelAppointment'])->name('web.rdv.cancel');
     Route::post('/web/like/{uuid}', [BookingWebController::class, 'toggleLike'])->name('web.like');
     Route::post('/web/recommend/{uuid}', [BookingWebController::class, 'recommend'])->name('web.recommend');
+    Route::post('/web/evaluate/{uuid}', [ClaimsWebController::class, 'submitEvaluation'])->name('web.evaluate');
 });
 
 // ---------------------------------------------------------------
