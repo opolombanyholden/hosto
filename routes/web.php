@@ -7,6 +7,7 @@ use App\Http\Controllers\AnnuaireWebController;
 use App\Http\Controllers\BookingWebController;
 use App\Http\Controllers\ClaimsWebController;
 use App\Http\Controllers\ProWebController;
+use App\Http\Controllers\TeleconWebController;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\ProfileController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
@@ -143,6 +144,11 @@ Route::post('/deconnexion', [AuthController::class, 'logout'])->middleware('auth
 // ---------------------------------------------------------------
 
 Route::middleware('auth')->group(function (): void {
+    // Teleconsultation
+    Route::get('/teleconsultation/{uuid}', [TeleconWebController::class, 'room'])->name('telecon.room');
+    Route::post('/web/telecon/{uuid}/join', [TeleconWebController::class, 'markJoined']);
+    Route::post('/web/telecon/{uuid}/end', [TeleconWebController::class, 'endSession']);
+
     Route::post('/web/rdv/book', [BookingWebController::class, 'bookAppointment'])->name('web.rdv.book');
     Route::post('/web/rdv/{uuid}/cancel', [BookingWebController::class, 'cancelAppointment'])->name('web.rdv.cancel');
     Route::post('/web/like/{uuid}', [BookingWebController::class, 'toggleLike'])->name('web.like');

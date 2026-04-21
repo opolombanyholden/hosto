@@ -44,6 +44,7 @@ return [
         'Pro' => env('HOSTO_MODULE_PRO', true),
         'Pharma' => env('HOSTO_MODULE_PHARMA', true),
         'Lab' => env('HOSTO_MODULE_LAB', true),
+        'Telecon' => env('HOSTO_MODULE_TELECON', true),
         'Assur' => env('HOSTO_MODULE_ASSUR', false),
         'Mwana' => env('HOSTO_MODULE_MWANA', false),
         'Analytic' => env('HOSTO_MODULE_ANALYTIC', false),
