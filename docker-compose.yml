@@ -1,0 +1,47 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8010:8000"
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
+    depends_on:
+      - pgsql
+      - redis
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: pgsql
+      DB_PORT: 5432
+      DB_DATABASE: hosto
+      DB_USERNAME: hosto
+      DB_PASSWORD: hosto_secret_2025
+      REDIS_HOST: redis
+      REDIS_CLIENT: predis
+      CACHE_STORE: redis
+      SESSION_DRIVER: redis
+      QUEUE_CONNECTION: redis
+
+  pgsql:
+    image: postgis/postgis:17-3.5
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: hosto
+      POSTGRES_USER: hosto
+      POSTGRES_PASSWORD: hosto_secret_2025
+    volumes:
+      - pgsql_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgsql_data:

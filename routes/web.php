@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AdminWebController;
 use App\Http\Controllers\AnnuaireWebController;
 use App\Http\Controllers\BookingWebController;
 use App\Http\Controllers\ClaimsWebController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\ProWebController;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\ProfileController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
+use App\Modules\Pro\Models\Consultation;
 use App\Modules\RendezVous\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +53,22 @@ Route::prefix('compte')->group(function (): void {
 
             return view('compte.rendez-vous', compact('appointments'));
         })->name('compte.rdv');
+        Route::get('/dossier-medical', function () {
+            $consultations = Consultation::where('patient_id', auth()->id())
+                ->with(['practitioner', 'structure', 'prescriptions.items', 'examRequests', 'careActs', 'treatments'])
+                ->orderByDesc('created_at')
+                ->get();
+
+            return view('compte.dossier-medical', compact('consultations'));
+        })->name('compte.dossier');
+        Route::get('/dossier-medical/{uuid}', function (string $uuid) {
+            $consultation = Consultation::where('patient_id', auth()->id())
+                ->whereUuid($uuid)
+                ->with(['practitioner', 'structure', 'prescriptions.items', 'examRequests', 'careActs', 'treatments'])
+                ->firstOrFail();
+
+            return view('compte.consultation-detail', compact('consultation'));
+        })->name('compte.consultation');
         Route::get('/profil', [ProfileController::class, 'show'])->name('compte.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
@@ -104,6 +122,10 @@ Route::prefix('admin')->group(function (): void {
         Route::get('/', function () {
             return view('admin.dashboard');
         })->name('admin.dashboard');
+        Route::get('/utilisateurs', [AdminWebController::class, 'users'])->name('admin.users');
+        Route::get('/structures', [AdminWebController::class, 'structures'])->name('admin.structures');
+        Route::get('/demandes', [AdminWebController::class, 'claims'])->name('admin.claims');
+        Route::post('/demandes/{uuid}/review', [AdminWebController::class, 'reviewClaim'])->name('admin.claims.review');
         Route::get('/profil', [ProfileController::class, 'show'])->name('admin.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
