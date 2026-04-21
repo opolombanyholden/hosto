@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AnnuaireWebController;
+use App\Http\Controllers\BookingWebController;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\ProfileController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
+use App\Modules\RendezVous\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,7 +42,12 @@ Route::prefix('compte')->group(function (): void {
             return view('compte.dashboard');
         })->name('compte.dashboard');
         Route::get('/rendez-vous', function () {
-            return view('compte.rendez-vous');
+            $appointments = Appointment::where('patient_id', auth()->id())
+                ->with(['timeSlot', 'practitioner', 'structure'])
+                ->orderByDesc('created_at')
+                ->get();
+
+            return view('compte.rendez-vous', compact('appointments'));
         })->name('compte.rdv');
         Route::get('/profil', [ProfileController::class, 'show'])->name('compte.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
@@ -95,6 +102,17 @@ Route::prefix('admin')->group(function (): void {
 // ---------------------------------------------------------------
 
 Route::post('/deconnexion', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// ---------------------------------------------------------------
+// Actions interactives (web session, auth requise)
+// ---------------------------------------------------------------
+
+Route::middleware('auth')->group(function (): void {
+    Route::post('/web/rdv/book', [BookingWebController::class, 'bookAppointment'])->name('web.rdv.book');
+    Route::post('/web/rdv/{uuid}/cancel', [BookingWebController::class, 'cancelAppointment'])->name('web.rdv.cancel');
+    Route::post('/web/like/{uuid}', [BookingWebController::class, 'toggleLike'])->name('web.like');
+    Route::post('/web/recommend/{uuid}', [BookingWebController::class, 'recommend'])->name('web.recommend');
+});
 
 // ---------------------------------------------------------------
 // Verification (email + phone)
