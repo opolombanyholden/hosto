@@ -11,6 +11,10 @@
 <h1>Connexion administrateur</h1>
 <p class="subtitle">Espace reserve — acces controle</p>
 
+@if(session('success'))
+<div class="auth-alert" style="background:#FFEBEE;color:#B71C1C;border:1px solid #EF9A9A;">{{ session('success') }}</div>
+@endif
+
 @if($errors->any())
 <div class="auth-alert auth-alert-error">{{ $errors->first() }}</div>
 @endif
@@ -24,6 +28,9 @@
     <div class="field">
         <label for="password">Mot de passe</label>
         <input type="password" id="password" name="password" required>
+    </div>
+    <div style="text-align:right;margin-bottom:12px;">
+        <a href="/mot-de-passe/oublie" style="font-size:.78rem;color:#B71C1C;font-weight:500;">Mot de passe oublie ?</a>
     </div>
     <button type="submit" class="auth-btn">Se connecter</button>
 </form>
