@@ -57,7 +57,7 @@ return [
         'HostoPlus' => env('HOSTO_MODULE_HOSTOPLUS', true),
 
         // Phase 12+
-        'Analytic' => env('HOSTO_MODULE_ANALYTIC', false),
+        'Analytic' => env('HOSTO_MODULE_ANALYTIC', true),
     ],
 
     /*
