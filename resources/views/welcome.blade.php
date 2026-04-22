@@ -395,6 +395,7 @@
             <a href="/annuaire">Annuaire</a>
             <a href="/annuaire/medecins">Medecins</a>
             <a href="/medicaments">Medicaments</a>
+            <a href="/examens">Examens</a>
             <a href="/compte/connexion" class="btn-nav">Connexion</a>
         </div>
         <div class="navbar-toggle" id="navToggle" onclick="document.getElementById('navMenu').classList.toggle('open')">

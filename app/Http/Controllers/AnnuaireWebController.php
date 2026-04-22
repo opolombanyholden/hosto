@@ -92,4 +92,9 @@ final class AnnuaireWebController
     {
         return view('annuaire.medications');
     }
+
+    public function exams(): View
+    {
+        return view('annuaire.exams');
+    }
 }
