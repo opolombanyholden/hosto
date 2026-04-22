@@ -31,6 +31,7 @@ Route::get('regions/{uuid}', [RegionsController::class, 'show'])->name('regions.
 Route::get('regions/{uuid}/cities', [RegionsController::class, 'cities'])->name('regions.cities');
 
 // Cities
+Route::get('cities', [CitiesController::class, 'index'])->name('cities.index');
 Route::get('cities/{uuid}', [CitiesController::class, 'show'])->name('cities.show');
 
 // Structure types
