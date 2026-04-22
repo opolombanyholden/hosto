@@ -46,6 +46,7 @@ return [
         'Lab' => env('HOSTO_MODULE_LAB', true),
         'Telecon' => env('HOSTO_MODULE_TELECON', true),
         'Billing' => env('HOSTO_MODULE_BILLING', true),
+        'Sync' => env('HOSTO_MODULE_SYNC', true),
         'Mwana' => env('HOSTO_MODULE_MWANA', false),
         'Analytic' => env('HOSTO_MODULE_ANALYTIC', false),
     ],
