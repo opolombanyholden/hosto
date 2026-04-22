@@ -11,43 +11,35 @@
 
 @section('styles')
 <style>
-    /* Cover */
+    /* === Cover (style Facebook) === */
     .prac-cover {
-        position:relative; height:220px; overflow:hidden;
+        position:relative; height:280px; overflow:hidden;
         background:linear-gradient(135deg, #0D47A1, #1565C0, #1E88E5);
-        margin-top:0;
     }
+    .prac-cover img { width:100%; height:100%; object-fit:cover; }
     .prac-cover .back-btn {
-        position:absolute; top:16px; left:16px; background:rgba(255,255,255,.15); color:white;
+        position:absolute; top:16px; left:16px; background:rgba(0,0,0,.35); color:white;
         border:none; padding:8px 16px; border-radius:100px; cursor:pointer;
         font-family:Poppins,sans-serif; font-size:.82rem; backdrop-filter:blur(4px);
-        display:flex; align-items:center; gap:6px; text-decoration:none; z-index:3;
+        display:flex; align-items:center; gap:6px; text-decoration:none;
     }
-    .prac-cover .back-btn:hover { background:rgba(255,255,255,.25); }
-    .prac-cover-pattern {
-        position:absolute; inset:0; opacity:.06;
-        background-image:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff'%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3C/g%3E%3C/svg%3E");
-    }
-    .prac-cover-info {
-        position:absolute; bottom:70px; left:0; right:0; text-align:center; color:white; z-index:2;
-    }
-    .prac-cover-info h2 { font-size:1.1rem; font-weight:600; opacity:.9; }
+    .prac-cover .back-btn:hover { background:rgba(0,0,0,.55); }
 
-    /* Profile section */
-    .prac-profile-wrap { max-width:900px; margin:0 auto; padding:0 24px; }
-    .prac-profile {
-        margin-top:-55px; display:flex; gap:20px; align-items:flex-end; flex-wrap:wrap;
-        position:relative; z-index:4;
+    /* === Profile bar (sous la cover) === */
+    .prac-profile-bar { background:white; border-bottom:1px solid #EEE; padding-bottom:16px; }
+    .prac-profile-inner {
+        max-width:900px; margin:0 auto; padding:0 24px;
+        display:flex; gap:20px; align-items:flex-end; flex-wrap:wrap;
     }
     .prac-avatar {
-        width:110px; height:110px; border-radius:22px; border:4px solid white;
+        width:120px; height:120px; border-radius:50%; border:4px solid white;
         background:#E3F2FD; display:flex; align-items:center; justify-content:center;
-        flex-shrink:0; box-shadow:0 4px 16px rgba(0,0,0,.12); overflow:hidden;
+        flex-shrink:0; box-shadow:0 2px 12px rgba(0,0,0,.15); overflow:hidden;
+        margin-top:-60px; position:relative; z-index:5;
     }
     .prac-avatar img { width:100%; height:100%; object-fit:cover; }
-    .prac-info { padding-bottom:8px; }
-    .prac-title-label { font-size:.72rem; color:#1565C0; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
-    .prac-name { font-size:1.5rem; font-weight:700; color:#1B2A1B; line-height:1.2; }
+    .prac-info { padding-bottom:4px; flex:1; }
+    .prac-name { font-size:1.4rem; font-weight:700; color:#1B2A1B; line-height:1.2; }
     .prac-specs { font-size:.88rem; color:#1565C0; font-weight:500; margin-top:2px; }
     .prac-meta { font-size:.78rem; color:#757575; margin-top:2px; }
     .prac-badges { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
@@ -55,9 +47,8 @@
     .badge-telecon { background:#E3F2FD; color:#1565C0; }
     .badge-new { background:#E8F5E9; color:#2E7D32; }
     .badge-fee { background:#FFF3E0; color:#E65100; }
-    .badge-reg { background:#F5F5F5; color:#757575; }
 
-    /* Body */
+    /* === Body === */
     .prac-body { max-width:900px; margin:0 auto; padding:24px 24px 60px; }
     .prac-grid { display:grid; grid-template-columns:1.3fr .7fr; gap:28px; }
 
@@ -113,11 +104,11 @@
     .booking-slot-info { font-size:.82rem; color:#1565C0; font-weight:500; }
     .booking-field { margin-bottom:12px; }
     .booking-field label { display:block; font-size:.78rem; font-weight:500; color:#424242; margin-bottom:4px; }
-    .booking-field input, .booking-field textarea {
+    .booking-field textarea {
         width:100%; padding:10px 14px; border:2px solid #EEE; border-radius:8px;
         font-family:Poppins,sans-serif; font-size:.85rem; outline:none;
     }
-    .booking-field input:focus, .booking-field textarea:focus { border-color:#1565C0; }
+    .booking-field textarea:focus { border-color:#1565C0; }
     .btn-primary {
         padding:10px 24px; background:#1565C0; color:white; border:none; border-radius:8px;
         font-family:Poppins,sans-serif; font-size:.85rem; font-weight:600; cursor:pointer;
@@ -127,13 +118,13 @@
         padding:10px 24px; border:1px solid #E0E0E0; border-radius:8px; background:white;
         cursor:pointer; font-family:Poppins,sans-serif; font-size:.85rem; color:#757575;
     }
-
     .no-slots { font-size:.85rem; color:#757575; text-align:center; padding:20px; }
 
     @media(max-width:768px) {
         .prac-cover { height:180px; }
-        .prac-profile { flex-direction:column; align-items:center; text-align:center; }
-        .prac-avatar { width:90px; height:90px; }
+        .prac-profile-inner { flex-direction:column; align-items:center; text-align:center; }
+        .prac-avatar { width:100px; height:100px; margin-top:-50px; }
+        .prac-info { text-align:center; }
         .prac-badges { justify-content:center; }
         .prac-grid { grid-template-columns:1fr; }
         .prac-body { padding:20px 16px 40px; }
@@ -147,41 +138,34 @@
     $structTypes = fn($s) => $s->structureTypes->pluck('name_fr')->join(', ');
 @endphp
 
-<!-- Cover -->
+<!-- Cover (style Facebook) -->
 <div class="prac-cover">
-    <div class="prac-cover-pattern"></div>
+    @if($practitioner->profile_image_url)
+        {{-- Si le praticien a une image, on l'utilise en fond flou --}}
+    @endif
     <a href="/annuaire/medecins" class="back-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Medecins
+        Retour
     </a>
-    <div class="prac-cover-info">
-        <h2>{{ $practitioner->specialties->pluck('name_fr')->join(' · ') }}</h2>
-    </div>
 </div>
 
-<!-- Profile -->
-<div class="prac-profile-wrap">
-    <div class="prac-profile">
+<!-- Profile bar -->
+<div class="prac-profile-bar">
+    <div class="prac-profile-inner">
         <div class="prac-avatar">
             @if($practitioner->profile_image_url)
                 <img src="{{ $practitioner->profile_image_url }}" alt="{{ $practitioner->full_name }}">
             @else
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             @endif
         </div>
         <div class="prac-info">
-            <div class="prac-title-label">{{ ucfirst($practitioner->practitioner_type) }}</div>
             <div class="prac-name">{{ $practitioner->full_name }}</div>
             <div class="prac-specs">{{ $practitioner->specialties->pluck('name_fr')->join(' · ') }}</div>
-            @if($practitioner->registration_number)
-                <div class="prac-meta">N° {{ $practitioner->registration_number }}</div>
-            @endif
+            <div class="prac-meta">{{ ucfirst($practitioner->practitioner_type) }}@if($practitioner->registration_number) — N° {{ $practitioner->registration_number }}@endif</div>
             <div class="prac-badges">
                 @if($practitioner->does_teleconsultation)
-                    <span class="prac-badge badge-telecon">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:3px;"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94"/><path d="M22 16.92v3a2 2 0 0 1-2.18 2"/></svg>
-                        Teleconsultation
-                    </span>
+                    <span class="prac-badge badge-telecon">Teleconsultation</span>
                 @endif
                 @if($practitioner->accepts_new_patients)
                     <span class="prac-badge badge-new">Accepte nouveaux patients</span>
@@ -232,14 +216,13 @@
                     </div>
                     @endforeach
 
-                    {{-- Booking form --}}
                     <div class="booking-form" id="bookingForm">
                         <div class="booking-title">Prendre rendez-vous</div>
                         <div class="booking-slot-info" id="bookingSlotInfo"></div>
                         <input type="hidden" id="bookingSlotUuid">
                         <div class="booking-field" style="margin-top:12px;">
                             <label>Motif de consultation</label>
-                            <textarea id="bookingReason" rows="2" placeholder="Decrivez brievement le motif de votre consultation..." maxlength="500"></textarea>
+                            <textarea id="bookingReason" rows="2" placeholder="Decrivez brievement le motif..." maxlength="500"></textarea>
                         </div>
                         <div style="display:flex;gap:8px;">
                             <button onclick="submitBooking()" class="btn-primary">Confirmer</button>
@@ -283,7 +266,7 @@
                 </div>
                 @endif
                 @if(!$practitioner->phone && !$practitioner->email)
-                <p style="font-size:.82rem;color:#757575;">Aucune information de contact disponible.</p>
+                <p style="font-size:.82rem;color:#757575;">Aucune information de contact.</p>
                 @endif
             </div>
 
@@ -309,9 +292,8 @@
             </div>
             @endif
 
-            {{-- Quick actions --}}
             <div class="section-card" style="text-align:center;">
-                <a href="/annuaire/medecins" style="display:inline-block;font-size:.82rem;color:#1565C0;font-weight:500;text-decoration:none;">Voir tous les medecins</a>
+                <a href="/annuaire/medecins" style="font-size:.82rem;color:#1565C0;font-weight:500;text-decoration:none;">Voir tous les medecins</a>
             </div>
         </div>
     </div>

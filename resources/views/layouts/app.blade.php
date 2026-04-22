@@ -92,6 +92,7 @@
         .breadcrumb {
             background: var(--gray-50); border-bottom: 1px solid var(--gray-200);
             padding: 10px 0; font-size: .78rem;
+            position: relative; z-index: 10;
         }
         .breadcrumb-list {
             display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
