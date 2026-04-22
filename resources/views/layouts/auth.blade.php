@@ -96,6 +96,10 @@
     </div>
     <div class="auth-form-side">
         <div class="auth-form">
+            <a href="/" style="display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:#757575;text-decoration:none;margin-bottom:20px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Retour a l'accueil
+            </a>
             @if(session('success'))
                 <div class="auth-alert auth-alert-success">{{ session('success') }}</div>
             @endif
