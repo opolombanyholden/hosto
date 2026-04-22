@@ -11,6 +11,7 @@ use App\Http\Controllers\TeleconWebController;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\PasswordResetController;
 use App\Modules\Core\Http\Controllers\ProfileController;
+use App\Modules\Core\Http\Controllers\SocialAuthController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
 use App\Modules\Pro\Models\Consultation;
 use App\Modules\RendezVous\Models\Appointment;
@@ -42,6 +43,10 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/mot-de-passe/oublie', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
     Route::get('/mot-de-passe/reinitialiser', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
     Route::post('/mot-de-passe/reinitialiser', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+
+    // Social login (OAuth)
+    Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])->name('social.redirect');
+    Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
 });
 
 // ---------------------------------------------------------------
