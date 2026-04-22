@@ -77,6 +77,17 @@ final class AnnuaireWebController
         return view('annuaire.practitioner-show', compact('practitioner', 'slots'));
     }
 
+    public function bookRdv(string $slug): View
+    {
+        $hosto = Hosto::where('slug', $slug)
+            ->with('specialties')
+            ->firstOrFail();
+
+        $specialties = $hosto->specialties;
+
+        return view('annuaire.book-rdv', compact('hosto', 'specialties'));
+    }
+
     public function medications(): View
     {
         return view('annuaire.medications');
