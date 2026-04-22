@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -43,6 +44,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property bool $does_teleconsultation
  * @property bool $is_active
  * @property bool $is_verified
+ * @property array<string, bool>|null $visibility_settings
+ * @property array<string, bool>|null $offered_services
+ * @property string|null $cover_image_url
  * @property string $origin
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
@@ -51,6 +55,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read User|null $user
  * @property-read Collection<int, Hosto> $structures
  * @property-read Collection<int, Specialty> $specialties
+ * @property-read Collection<int, PractitionerPublication> $publications
  */
 class Practitioner extends Model
 {
@@ -69,6 +74,7 @@ class Practitioner extends Model
         'consultation_fee_min', 'consultation_fee_max',
         'accepts_new_patients', 'does_teleconsultation',
         'is_active', 'is_verified',
+        'visibility_settings', 'offered_services', 'cover_image_url',
     ];
 
     public function getRouteKeyName(): string
@@ -110,6 +116,40 @@ class Practitioner extends Model
     }
 
     /**
+     * @return HasMany<PractitionerPublication, $this>
+     */
+    public function publications(): HasMany
+    {
+        return $this->hasMany(PractitionerPublication::class)->orderByDesc('published_at');
+    }
+
+    /**
+     * Check if a profile field is publicly visible.
+     */
+    public function isFieldVisible(string $field): bool
+    {
+        $settings = $this->visibility_settings;
+        if ($settings === null) {
+            return true; // Default: everything visible.
+        }
+
+        return (bool) ($settings[$field] ?? true);
+    }
+
+    /**
+     * Check if a service is offered.
+     */
+    public function offersService(string $service): bool
+    {
+        $services = $this->offered_services;
+        if ($services === null) {
+            return true; // Default: all services offered.
+        }
+
+        return (bool) ($services[$service] ?? false);
+    }
+
+    /**
      * @param  Builder<self>  $query
      * @return Builder<self>
      */
@@ -142,6 +182,8 @@ class Practitioner extends Model
             'is_active' => 'boolean',
             'is_verified' => 'boolean',
             'accepts_new_patients' => 'boolean',
+            'visibility_settings' => 'array',
+            'offered_services' => 'array',
             'does_teleconsultation' => 'boolean',
         ];
     }

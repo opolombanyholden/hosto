@@ -6,7 +6,9 @@ use App\Http\Controllers\AdminWebController;
 use App\Http\Controllers\AnnuaireWebController;
 use App\Http\Controllers\BookingWebController;
 use App\Http\Controllers\ClaimsWebController;
+use App\Http\Controllers\PractitionerProfileController;
 use App\Http\Controllers\ProWebController;
+use App\Http\Controllers\PublicationInteractionController;
 use App\Http\Controllers\TeleconWebController;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\PasswordResetController;
@@ -135,6 +137,17 @@ Route::prefix('pro')->group(function (): void {
         Route::get('/profil', [ProfileController::class, 'show'])->name('pro.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
+
+        // Visibility & services settings
+        Route::get('/visibility', [PractitionerProfileController::class, 'visibilityPage'])->name('pro.visibility');
+        Route::put('/visibility/settings', [PractitionerProfileController::class, 'updateVisibility']);
+        Route::put('/visibility/services', [PractitionerProfileController::class, 'updateServices']);
+
+        // Publications CRUD
+        Route::get('/publications', [PractitionerProfileController::class, 'publicationsPage'])->name('pro.publications');
+        Route::post('/publications', [PractitionerProfileController::class, 'storePublication']);
+        Route::put('/publications/{uuid}', [PractitionerProfileController::class, 'updatePublication']);
+        Route::delete('/publications/{uuid}', [PractitionerProfileController::class, 'deletePublication']);
     });
 });
 
@@ -184,6 +197,8 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/web/rdv/book', [BookingWebController::class, 'bookAppointment'])->middleware('phone.verified')->name('web.rdv.book');
     Route::post('/web/rdv/{uuid}/cancel', [BookingWebController::class, 'cancelAppointment'])->name('web.rdv.cancel');
     Route::post('/web/like/{uuid}', [BookingWebController::class, 'toggleLike'])->name('web.like');
+    Route::post('/web/publication/{uuid}/like', [PublicationInteractionController::class, 'toggleLike'])->name('web.pub.like');
+    Route::post('/web/publication/{uuid}/comment', [PublicationInteractionController::class, 'addComment'])->name('web.pub.comment');
     Route::post('/web/recommend/{uuid}', [BookingWebController::class, 'recommend'])->name('web.recommend');
     Route::post('/web/evaluate/{uuid}', [ClaimsWebController::class, 'submitEvaluation'])->name('web.evaluate');
 });
