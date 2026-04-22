@@ -54,7 +54,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $nip
  * @property string|null $id_document_type
  * @property string|null $id_document_number
- * @property \Carbon\CarbonImmutable|null $date_of_birth
+ * @property CarbonImmutable|null $date_of_birth
  * @property string|null $gender
  * @property string|null $blood_group
  * @property string|null $country_of_residence
@@ -69,7 +69,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $created_by
  * @property string|null $updated_by
  * @property-read Collection<int, Role> $roles
- * @property-read Collection<int, \App\Modules\Core\Models\EmergencyContact> $emergencyContacts
+ * @property-read Collection<int, EmergencyContact> $emergencyContacts
  */
 #[Fillable([
     'name', 'email', 'phone', 'password',
