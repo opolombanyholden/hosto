@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Annuaire\Models\HostoRecommendation;
 use App\Modules\Annuaire\Models\Practitioner;
+use App\Modules\Annuaire\Models\PractitionerPublication;
 use App\Modules\RendezVous\Models\TimeSlot;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -74,7 +75,13 @@ final class AnnuaireWebController
             ->get()
             ->groupBy(fn ($s) => $s->date->toDateString());
 
-        return view('annuaire.practitioner-show', compact('practitioner', 'slots'));
+        $publications = PractitionerPublication::where('practitioner_id', $practitioner->id)
+            ->published()
+            ->orderByDesc('published_at')
+            ->limit(10)
+            ->get();
+
+        return view('annuaire.practitioner-show', compact('practitioner', 'slots', 'publications'));
     }
 
     public function bookRdv(string $slug): View

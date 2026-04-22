@@ -120,6 +120,30 @@
     }
     .no-slots { font-size:.85rem; color:#757575; text-align:center; padding:20px; }
 
+    /* Publications */
+    .pub-item { padding:20px 0; border-bottom:1px solid #F5F5F5; }
+    .pub-item:last-child { border-bottom:none; }
+    .pub-type-badge { padding:3px 10px; border-radius:100px; font-size:.65rem; font-weight:600; }
+    .pub-title { font-size:.88rem; font-weight:600; color:#1B2A1B; margin-top:6px; }
+    .pub-content { font-size:.82rem; color:#424242; line-height:1.7; margin-top:4px; white-space:pre-line; }
+    .pub-video { margin-top:8px; border-radius:10px; overflow:hidden; }
+    .pub-video iframe { width:100%; height:280px; border:none; }
+    .pub-actions { display:flex; gap:16px; margin-top:12px; align-items:center; }
+    .pub-action-btn { display:flex; align-items:center; gap:4px; background:none; border:none; cursor:pointer; font-family:Poppins,sans-serif; font-size:.78rem; color:#757575; padding:4px 8px; border-radius:6px; transition:all .2s; }
+    .pub-action-btn:hover { background:#F5F5F5; color:#1565C0; }
+    .pub-action-btn.liked { color:#E53935; }
+    .pub-action-btn svg { width:16px; height:16px; }
+    .pub-date { font-size:.7rem; color:#BDBDBD; margin-left:auto; }
+    .pub-comments-section { margin-top:12px; padding-top:12px; border-top:1px solid #F5F5F5; }
+    .pub-comment { display:flex; gap:10px; padding:8px 0; font-size:.82rem; }
+    .pub-comment-author { font-weight:600; color:#1B2A1B; }
+    .pub-comment-text { color:#424242; }
+    .pub-comment-date { font-size:.68rem; color:#BDBDBD; }
+    .pub-comment-form { display:flex; gap:8px; margin-top:8px; }
+    .pub-comment-form input { flex:1; padding:8px 12px; border:2px solid #EEE; border-radius:8px; font-family:Poppins,sans-serif; font-size:.82rem; outline:none; }
+    .pub-comment-form input:focus { border-color:#1565C0; }
+    .pub-comment-form button { padding:8px 16px; background:#1565C0; color:white; border:none; border-radius:8px; font-family:Poppins,sans-serif; font-size:.78rem; font-weight:600; cursor:pointer; }
+
     @media(max-width:768px) {
         .prac-cover { height:180px; }
         .prac-profile-inner { flex-direction:column; align-items:center; text-align:center; }
@@ -239,6 +263,76 @@
             </div>
         </div>
 
+            {{-- Publications --}}
+            @if($publications->isNotEmpty())
+            <div class="section-card">
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    Publications
+                </div>
+
+                @foreach($publications as $pub)
+                @php
+                    $typeLabels = ['activity' => 'Activite', 'research' => 'Travaux', 'tip' => 'Conseil', 'video' => 'Video'];
+                    $typeBg = ['activity' => '#E8F5E9;color:#2E7D32', 'research' => '#E3F2FD;color:#1565C0', 'tip' => '#FFF3E0;color:#E65100', 'video' => '#F3E5F5;color:#6A1B9A'];
+                    $userLiked = $pub->isLikedBy(auth()->user());
+                @endphp
+                <div class="pub-item" id="pub-{{ $pub->uuid }}">
+                    <span class="pub-type-badge" style="background:{{ $typeBg[$pub->type] ?? '#F5F5F5;color:#757575' }};">{{ $typeLabels[$pub->type] ?? $pub->type }}</span>
+                    @if($pub->title) <div class="pub-title">{{ $pub->title }}</div> @endif
+                    <div class="pub-content">{{ $pub->content }}</div>
+
+                    @if($pub->video_url)
+                    @php
+                        $videoEmbed = $pub->video_url;
+                        if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $videoEmbed, $m)) {
+                            $videoEmbed = 'https://www.youtube.com/embed/' . $m[1];
+                        }
+                    @endphp
+                    <div class="pub-video"><iframe src="{{ $videoEmbed }}" allowfullscreen loading="lazy"></iframe></div>
+                    @endif
+
+                    <div class="pub-actions">
+                        <button class="pub-action-btn {{ $userLiked ? 'liked' : '' }}" onclick="togglePubLike('{{ $pub->uuid }}', this)" data-uuid="{{ $pub->uuid }}">
+                            <svg viewBox="0 0 24 24" fill="{{ $userLiked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <span class="like-count">{{ $pub->likes_count }}</span>
+                        </button>
+                        <button class="pub-action-btn" onclick="sharePub('{{ $pub->uuid }}', '{{ addslashes($pub->title ?: $practitioner->full_name) }}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                            Partager
+                        </button>
+                        @if($pub->allow_comments)
+                        <button class="pub-action-btn" onclick="toggleComments('{{ $pub->uuid }}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>{{ $pub->comments_count }}</span>
+                        </button>
+                        @endif
+                        <span class="pub-date">{{ $pub->published_at?->format('d/m/Y') }}</span>
+                    </div>
+
+                    @if($pub->allow_comments)
+                    <div class="pub-comments-section" id="comments-{{ $pub->uuid }}" style="display:none;">
+                        @foreach($pub->comments()->with('user:id,name')->where('is_approved', true)->orderBy('created_at')->limit(20)->get() as $comment)
+                        <div class="pub-comment">
+                            <div><span class="pub-comment-author">{{ $comment->user->name }}</span> <span class="pub-comment-text">{{ $comment->content }}</span><br><span class="pub-comment-date">{{ $comment->created_at->format('d/m/Y H:i') }}</span></div>
+                        </div>
+                        @endforeach
+                        @auth
+                        <div class="pub-comment-form">
+                            <input type="text" id="comment-input-{{ $pub->uuid }}" placeholder="Ecrire un commentaire..." maxlength="1000">
+                            <button onclick="submitComment('{{ $pub->uuid }}')">Envoyer</button>
+                        </div>
+                        @else
+                        <p style="font-size:.78rem;color:#757575;margin-top:8px;"><a href="/compte/connexion" style="color:#1565C0;">Connectez-vous</a> pour commenter.</p>
+                        @endauth
+                    </div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+            @endif
+        </div>
+
         <!-- Right column (sidebar) -->
         <div>
             {{-- Contact --}}
@@ -349,6 +443,54 @@ async function submitBooking() {
         msg.style.display = 'block'; msg.style.background = '#FFEBEE'; msg.style.color = '#C62828';
         msg.textContent = 'Erreur de connexion.';
     }
+}
+
+// --- Publications interactions ---
+const pubHeaders = {'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','X-Requested-With':'XMLHttpRequest'};
+
+async function togglePubLike(uuid, btn) {
+    try {
+        const res = await fetch(`/web/publication/${uuid}/like`, { method:'POST', headers:pubHeaders });
+        if (res.status === 401) { window.location.href = '/compte/connexion'; return; }
+        const data = await res.json();
+        btn.classList.toggle('liked', data.data.liked);
+        btn.querySelector('svg').setAttribute('fill', data.data.liked ? 'currentColor' : 'none');
+        btn.querySelector('.like-count').textContent = data.data.likes_count;
+    } catch(e) { console.error(e); }
+}
+
+function sharePub(uuid, title) {
+    const url = window.location.href + '#pub-' + uuid;
+    if (navigator.share) { navigator.share({title, url}).catch(()=>{}); }
+    else { navigator.clipboard.writeText(url).then(()=> alert('Lien copie !')); }
+}
+
+function toggleComments(uuid) {
+    const el = document.getElementById('comments-' + uuid);
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitComment(uuid) {
+    const input = document.getElementById('comment-input-' + uuid);
+    const content = input.value.trim();
+    if (!content) return;
+    try {
+        const res = await fetch(`/web/publication/${uuid}/comment`, {
+            method:'POST', headers:pubHeaders, body:JSON.stringify({content})
+        });
+        if (res.status === 401) { window.location.href = '/compte/connexion'; return; }
+        const data = await res.json();
+        if (res.ok) {
+            const c = data.data.comment;
+            const section = document.getElementById('comments-' + uuid);
+            const form = section.querySelector('.pub-comment-form');
+            const div = document.createElement('div');
+            div.className = 'pub-comment';
+            div.innerHTML = `<div><span class="pub-comment-author">${c.user_name}</span> <span class="pub-comment-text">${c.content}</span><br><span class="pub-comment-date">${c.created_at}</span></div>`;
+            section.insertBefore(div, form);
+            input.value = '';
+        }
+    } catch(e) { console.error(e); }
 }
 </script>
 @endsection
