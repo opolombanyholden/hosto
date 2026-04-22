@@ -48,6 +48,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $pro_validation_status
  * @property string|null $pro_rejection_reason
  * @property string|null $remember_token
+ * @property string|null $oauth_provider
+ * @property string|null $oauth_provider_id
+ * @property string|null $avatar_url
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
  * @property CarbonImmutable|null $deleted_at
@@ -79,6 +82,7 @@ use Laravel\Sanctum\HasApiTokens;
     'country_of_residence', 'city_of_residence', 'address_of_residence',
     'profile_photo_path', 'security_question', 'security_answer',
     'medical_pin', 'medical_pin_set_at', 'profile_completed_at',
+    'oauth_provider', 'oauth_provider_id', 'avatar_url',
 ])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes', 'security_answer', 'medical_pin'])]
 class User extends Authenticatable
