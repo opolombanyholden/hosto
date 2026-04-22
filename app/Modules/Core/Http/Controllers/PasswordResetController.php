@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
@@ -69,6 +70,9 @@ final class PasswordResetController
         // Build reset URL.
         $resetUrl = url("/mot-de-passe/reinitialiser?token={$token}&email=".urlencode($email));
 
+        // Log for development.
+        Log::info("[HOSTO DEV] Lien de reinitialisation pour {$email} : {$resetUrl}");
+
         // Send email.
         Mail::raw(
             "Bonjour {$user->name},\n\n"
@@ -87,7 +91,12 @@ final class PasswordResetController
             'action' => 'password_reset_requested',
         ]);
 
-        return back()->with('success', $successMsg);
+        $flash = ['success' => $successMsg];
+        if (config('app.debug')) {
+            $flash['dev_reset_url'] = $resetUrl;
+        }
+
+        return back()->with($flash);
     }
 
     /**

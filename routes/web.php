@@ -15,9 +15,9 @@ use App\Modules\Core\Http\Controllers\PasswordResetController;
 use App\Modules\Core\Http\Controllers\ProfileController;
 use App\Modules\Core\Http\Controllers\SocialAuthController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
+use App\Modules\Core\Http\Controllers\VerificationController;
 use App\Modules\Pro\Models\Consultation;
 use App\Modules\RendezVous\Models\Appointment;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // ---------------------------------------------------------------
@@ -208,14 +208,11 @@ Route::middleware('auth')->group(function (): void {
 // ---------------------------------------------------------------
 
 Route::middleware('auth')->group(function (): void {
-    Route::get('/verification', function () {
-        return view('auth.verification-notice');
-    })->name('verification.notice');
-
-    Route::post('/verification/email', function (Request $request) {
-        // TODO: Phase 3.1 — Send actual OTP via email (SMTP + queue).
-        return back()->with('success', 'Un code de verification a ete envoye a votre adresse email.');
-    })->name('verification.send.email');
+    Route::get('/verification', [VerificationController::class, 'show'])->name('verification.notice');
+    Route::post('/verification/email/send', [VerificationController::class, 'sendEmailOtp'])->name('verification.send.email');
+    Route::post('/verification/email/verify', [VerificationController::class, 'verifyEmailOtp'])->name('verification.verify.email');
+    Route::post('/verification/phone/send', [VerificationController::class, 'sendPhoneOtp'])->name('verification.send.phone');
+    Route::post('/verification/phone/verify', [VerificationController::class, 'verifyPhoneOtp'])->name('verification.verify.phone');
 });
 
 // ---------------------------------------------------------------

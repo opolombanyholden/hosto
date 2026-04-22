@@ -10,6 +10,15 @@
 <h1>Reinitialiser le mot de passe</h1>
 <p class="subtitle">Entrez l'adresse email associee a votre compte</p>
 
+@if(config('app.debug') && session('dev_reset_url'))
+<div style="background:#FFF8E1;border:2px dashed #FFB300;border-radius:10px;padding:14px;margin-bottom:16px;">
+    <div style="font-size:.75rem;font-weight:700;color:#F57F17;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Mode developpement</div>
+    <div style="font-size:.82rem;color:#424242;margin-bottom:6px;">Lien de reinitialisation :</div>
+    <a href="{{ session('dev_reset_url') }}" style="font-size:.78rem;color:#1565C0;word-break:break-all;">{{ session('dev_reset_url') }}</a>
+    <div style="font-size:.68rem;color:#757575;margin-top:6px;">Ce bandeau n'apparait qu'en mode debug.</div>
+</div>
+@endif
+
 @if($errors->any())
 <div class="auth-alert auth-alert-error">{{ $errors->first() }}</div>
 @endif
