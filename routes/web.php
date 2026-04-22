@@ -70,10 +70,20 @@ Route::prefix('compte')->group(function (): void {
                 ->firstOrFail();
 
             return view('compte.consultation-detail', compact('consultation'));
-        })->name('compte.consultation');
+        })->middleware('medical.pin')->name('compte.consultation');
         Route::get('/profil', [ProfileController::class, 'show'])->name('compte.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
+
+        // Complete profile flow
+        Route::get('/profil/completer', [ProfileController::class, 'completeProfile'])->name('compte.complete-profile');
+        Route::put('/profil/identite', [ProfileController::class, 'updateIdentity'])->name('compte.profil.identity');
+        Route::put('/profil/residence', [ProfileController::class, 'updateResidence'])->name('compte.profil.residence');
+        Route::put('/profil/question-secrete', [ProfileController::class, 'updateSecurityQuestion'])->name('compte.profil.security-question');
+        Route::put('/profil/pin-medical', [ProfileController::class, 'updateMedicalPin'])->name('compte.profil.medical-pin');
+        Route::post('/profil/pin-medical/verify', [ProfileController::class, 'verifyMedicalPin'])->name('compte.profil.verify-pin');
+        Route::put('/profil/contacts-urgence', [ProfileController::class, 'updateEmergencyContacts'])->name('compte.profil.emergency');
+        Route::post('/profil/photo', [ProfileController::class, 'updatePhoto'])->name('compte.profil.photo');
     });
 });
 
@@ -145,12 +155,15 @@ Route::post('/deconnexion', [AuthController::class, 'logout'])->middleware('auth
 // ---------------------------------------------------------------
 
 Route::middleware('auth')->group(function (): void {
-    // Teleconsultation
-    Route::get('/teleconsultation/{uuid}', [TeleconWebController::class, 'room'])->name('telecon.room');
-    Route::post('/web/telecon/{uuid}/join', [TeleconWebController::class, 'markJoined']);
-    Route::post('/web/telecon/{uuid}/end', [TeleconWebController::class, 'endSession']);
+    // Teleconsultation (requires phone verification)
+    Route::middleware('phone.verified')->group(function (): void {
+        Route::get('/teleconsultation/{uuid}', [TeleconWebController::class, 'room'])->name('telecon.room');
+        Route::post('/web/telecon/{uuid}/join', [TeleconWebController::class, 'markJoined']);
+        Route::post('/web/telecon/{uuid}/end', [TeleconWebController::class, 'endSession']);
+    });
 
-    Route::post('/web/rdv/book', [BookingWebController::class, 'bookAppointment'])->name('web.rdv.book');
+    // RDV booking (requires phone verification)
+    Route::post('/web/rdv/book', [BookingWebController::class, 'bookAppointment'])->middleware('phone.verified')->name('web.rdv.book');
     Route::post('/web/rdv/{uuid}/cancel', [BookingWebController::class, 'cancelAppointment'])->name('web.rdv.cancel');
     Route::post('/web/like/{uuid}', [BookingWebController::class, 'toggleLike'])->name('web.like');
     Route::post('/web/recommend/{uuid}', [BookingWebController::class, 'recommend'])->name('web.recommend');
