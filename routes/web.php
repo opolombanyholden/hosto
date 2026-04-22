@@ -28,6 +28,7 @@ Route::get('/annuaire', [AnnuaireWebController::class, 'index'])->name('annuaire
 Route::get('/annuaire/medecins', [AnnuaireWebController::class, 'practitioners'])->name('annuaire.practitioners');
 Route::get('/annuaire/medecins/{slug}', [AnnuaireWebController::class, 'practitionerShow'])->name('annuaire.practitioner.show');
 Route::get('/medicaments', [AnnuaireWebController::class, 'medications'])->name('medications.index');
+Route::get('/annuaire/{slug}/rendez-vous', [AnnuaireWebController::class, 'bookRdv'])->name('annuaire.book-rdv');
 Route::get('/annuaire/{slug}', [AnnuaireWebController::class, 'show'])->name('annuaire.show');
 
 // ---------------------------------------------------------------

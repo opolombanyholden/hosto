@@ -140,6 +140,14 @@
                 <span class="status-badge {{ $hosto->is_public ? 'status-public' : 'status-private' }}">{{ $hosto->is_public ? 'Public' : 'Prive' }}</span>
             </div>
 
+            {{-- Book appointment button --}}
+            <div style="margin-top:12px;">
+                <a href="/annuaire/{{ $hosto->slug }}/rendez-vous" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#388E3C;color:white;border-radius:100px;font-family:Poppins,sans-serif;font-size:.85rem;font-weight:600;text-decoration:none;transition:background .2s;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    Prendre rendez-vous
+                </a>
+            </div>
+
             {{-- Interaction buttons (partner only) --}}
             @if($hosto->is_partner)
             <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">

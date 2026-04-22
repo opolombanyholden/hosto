@@ -47,9 +47,12 @@ class Appointment extends Model
 
     protected $fillable = [
         'time_slot_id', 'patient_id', 'practitioner_id', 'hosto_id',
-        'status', 'reason', 'notes', 'is_teleconsultation',
+        'specialty_code', 'status', 'reason', 'notes', 'is_teleconsultation',
         'cancellation_reason', 'cancelled_at', 'cancelled_by',
         'confirmed_at', 'completed_at',
+        'is_for_third_party', 'third_party_name', 'third_party_age',
+        'third_party_gender', 'third_party_relation', 'third_party_address',
+        'third_party_city', 'third_party_phone', 'third_party_notes',
     ];
 
     public function getRouteKeyName(): string

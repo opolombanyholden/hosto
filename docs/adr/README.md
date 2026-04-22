@@ -35,3 +35,4 @@ Chaque ADR documente : le **contexte**, la **décision**, les **alternatives con
 | 0012 | [Workflow de vérification des comptes](0012-verification-compte-workflow.md) | Accepté |
 | 0013 | [Workflow complet consultation et DPE](0013-workflow-consultation-dpe.md) | Accepté |
 | 0014 | [Synchronisation offline et instances locales](0014-synchronisation-offline.md) | Accepté |
+| 0015 | [Workflow de prise de rendez-vous par l'usager](0015-workflow-prise-rendez-vous.md) | Accepté |
