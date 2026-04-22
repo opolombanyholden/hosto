@@ -47,7 +47,16 @@ return [
         'Telecon' => env('HOSTO_MODULE_TELECON', true),
         'Billing' => env('HOSTO_MODULE_BILLING', true),
         'Sync' => env('HOSTO_MODULE_SYNC', true),
-        'Mwana' => env('HOSTO_MODULE_MWANA', false),
+
+        // Phase 11 — Modules specialises
+        'Mwana' => env('HOSTO_MODULE_MWANA', true),
+        'EVax' => env('HOSTO_MODULE_EVAX', true),
+        'Lost' => env('HOSTO_MODULE_LOST', true),
+        'Humanity' => env('HOSTO_MODULE_HUMANITY', true),
+        'Connect' => env('HOSTO_MODULE_CONNECT', true),
+        'HostoPlus' => env('HOSTO_MODULE_HOSTOPLUS', true),
+
+        // Phase 12+
         'Analytic' => env('HOSTO_MODULE_ANALYTIC', false),
     ],
 
