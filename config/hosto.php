@@ -58,6 +58,7 @@ return [
 
         // Phase 12+
         'Analytic' => env('HOSTO_MODULE_ANALYTIC', true),
+        'AI' => env('HOSTO_MODULE_AI', true),
     ],
 
     /*
