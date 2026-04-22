@@ -34,3 +34,4 @@ Chaque ADR documente : le **contexte**, la **décision**, les **alternatives con
 | 0011 | [Trois environnements d'authentification séparés](0011-trois-environnements-authentification.md) | Accepté |
 | 0012 | [Workflow de vérification des comptes](0012-verification-compte-workflow.md) | Accepté |
 | 0013 | [Workflow complet consultation et DPE](0013-workflow-consultation-dpe.md) | Accepté |
+| 0014 | [Synchronisation offline et instances locales](0014-synchronisation-offline.md) | Accepté |
