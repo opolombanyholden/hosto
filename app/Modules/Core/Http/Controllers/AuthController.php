@@ -35,10 +35,7 @@ final class AuthController
 
     public function compteConnexion(Request $request, AuditLogger $audit): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $credentials = $this->resolveCredentials($request);
 
         return $this->attemptLogin($credentials, 'usager', '/compte', '/compte/connexion', $request, $audit);
     }
@@ -87,10 +84,7 @@ final class AuthController
 
     public function proConnexion(Request $request, AuditLogger $audit): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $credentials = $this->resolveCredentials($request);
 
         return $this->attemptLogin($credentials, 'pro', '/pro', '/pro/connexion', $request, $audit);
     }
@@ -143,10 +137,7 @@ final class AuthController
 
     public function adminConnexion(Request $request, AuditLogger $audit): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $credentials = $this->resolveCredentials($request);
 
         return $this->attemptLogin($credentials, 'admin', '/admin', '/admin/connexion', $request, $audit);
     }
@@ -174,6 +165,37 @@ final class AuthController
     // ---------------------------------------------------------------
 
     /**
+     * Resolve login credentials from the request.
+     *
+     * Supports email or phone (with country prefix) login.
+     *
+     * @return array<string, string>
+     */
+    private function resolveCredentials(Request $request): array
+    {
+        $loginMode = $request->input('login_mode', 'email');
+
+        if ($loginMode === 'phone') {
+            $request->validate([
+                'country_code' => 'required|string|max:5',
+                'phone_number' => 'required|string|max:30',
+                'password' => 'required',
+            ]);
+
+            $fullPhone = $request->input('country_code').$request->input('phone_number');
+
+            return ['phone' => $fullPhone, 'password' => $request->input('password')];
+        }
+
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        return ['email' => $request->input('email'), 'password' => $request->input('password')];
+    }
+
+    /**
      * @param  array<string, string>  $credentials
      */
     private function attemptLogin(
@@ -184,15 +206,17 @@ final class AuthController
         Request $request,
         AuditLogger $audit,
     ): RedirectResponse {
+        $identifier = $credentials['email'] ?? $credentials['phone'] ?? '';
+
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             $audit->record(AuditLogger::ACTION_LOGIN_FAILED, 'user', null, [
-                'email' => $credentials['email'],
+                'identifier' => $identifier,
                 'environment' => $environment,
             ]);
 
             return redirect($failUrl)
-                ->withInput(['email' => $credentials['email']])
-                ->withErrors(['email' => 'Identifiants incorrects.']);
+                ->withInput($request->only('email', 'login_mode', 'country_code', 'phone_number'))
+                ->withErrors(['login' => 'Identifiants incorrects.']);
         }
 
         $user = Auth::user();
@@ -202,8 +226,8 @@ final class AuthController
             Auth::logout();
 
             return redirect($failUrl)
-                ->withInput(['email' => $credentials['email']])
-                ->withErrors(['email' => 'Vous n\'avez pas acces a cet espace.']);
+                ->withInput($request->only('email', 'login_mode', 'country_code', 'phone_number'))
+                ->withErrors(['login' => 'Vous n\'avez pas acces a cet espace.']);
         }
 
         // 2FA challenge: if enabled, logout and redirect to challenge page.

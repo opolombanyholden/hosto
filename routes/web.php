@@ -6,10 +6,14 @@ use App\Http\Controllers\AdminWebController;
 use App\Http\Controllers\AnnuaireWebController;
 use App\Http\Controllers\BookingWebController;
 use App\Http\Controllers\ClaimsWebController;
+use App\Http\Controllers\PractitionerProfileController;
 use App\Http\Controllers\ProWebController;
+use App\Http\Controllers\PublicationInteractionController;
 use App\Http\Controllers\TeleconWebController;
 use App\Modules\Core\Http\Controllers\AuthController;
+use App\Modules\Core\Http\Controllers\PasswordResetController;
 use App\Modules\Core\Http\Controllers\ProfileController;
+use App\Modules\Core\Http\Controllers\SocialAuthController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
 use App\Modules\Pro\Models\Consultation;
 use App\Modules\RendezVous\Models\Appointment;
@@ -28,7 +32,24 @@ Route::get('/annuaire', [AnnuaireWebController::class, 'index'])->name('annuaire
 Route::get('/annuaire/medecins', [AnnuaireWebController::class, 'practitioners'])->name('annuaire.practitioners');
 Route::get('/annuaire/medecins/{slug}', [AnnuaireWebController::class, 'practitionerShow'])->name('annuaire.practitioner.show');
 Route::get('/medicaments', [AnnuaireWebController::class, 'medications'])->name('medications.index');
+Route::get('/examens', [AnnuaireWebController::class, 'exams'])->name('exams.index');
+Route::get('/annuaire/{slug}/rendez-vous', [AnnuaireWebController::class, 'bookRdv'])->name('annuaire.book-rdv');
 Route::get('/annuaire/{slug}', [AnnuaireWebController::class, 'show'])->name('annuaire.show');
+
+// ---------------------------------------------------------------
+// Password reset (shared, guest only)
+// ---------------------------------------------------------------
+
+Route::middleware('guest')->group(function (): void {
+    Route::get('/mot-de-passe/oublie', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
+    Route::post('/mot-de-passe/oublie', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/mot-de-passe/reinitialiser', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/mot-de-passe/reinitialiser', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+
+    // Social login (OAuth)
+    Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])->name('social.redirect');
+    Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
+});
 
 // ---------------------------------------------------------------
 // Auth : Usager (patient)
@@ -69,10 +90,20 @@ Route::prefix('compte')->group(function (): void {
                 ->firstOrFail();
 
             return view('compte.consultation-detail', compact('consultation'));
-        })->name('compte.consultation');
+        })->middleware('medical.pin')->name('compte.consultation');
         Route::get('/profil', [ProfileController::class, 'show'])->name('compte.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
+
+        // Complete profile flow
+        Route::get('/profil/completer', [ProfileController::class, 'completeProfile'])->name('compte.complete-profile');
+        Route::put('/profil/identite', [ProfileController::class, 'updateIdentity'])->name('compte.profil.identity');
+        Route::put('/profil/residence', [ProfileController::class, 'updateResidence'])->name('compte.profil.residence');
+        Route::put('/profil/question-secrete', [ProfileController::class, 'updateSecurityQuestion'])->name('compte.profil.security-question');
+        Route::put('/profil/pin-medical', [ProfileController::class, 'updateMedicalPin'])->name('compte.profil.medical-pin');
+        Route::post('/profil/pin-medical/verify', [ProfileController::class, 'verifyMedicalPin'])->name('compte.profil.verify-pin');
+        Route::put('/profil/contacts-urgence', [ProfileController::class, 'updateEmergencyContacts'])->name('compte.profil.emergency');
+        Route::post('/profil/photo', [ProfileController::class, 'updatePhoto'])->name('compte.profil.photo');
     });
 });
 
@@ -106,6 +137,17 @@ Route::prefix('pro')->group(function (): void {
         Route::get('/profil', [ProfileController::class, 'show'])->name('pro.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
+
+        // Visibility & services settings
+        Route::get('/visibility', [PractitionerProfileController::class, 'visibilityPage'])->name('pro.visibility');
+        Route::put('/visibility/settings', [PractitionerProfileController::class, 'updateVisibility']);
+        Route::put('/visibility/services', [PractitionerProfileController::class, 'updateServices']);
+
+        // Publications CRUD
+        Route::get('/publications', [PractitionerProfileController::class, 'publicationsPage'])->name('pro.publications');
+        Route::post('/publications', [PractitionerProfileController::class, 'storePublication']);
+        Route::put('/publications/{uuid}', [PractitionerProfileController::class, 'updatePublication']);
+        Route::delete('/publications/{uuid}', [PractitionerProfileController::class, 'deletePublication']);
     });
 });
 
@@ -144,14 +186,19 @@ Route::post('/deconnexion', [AuthController::class, 'logout'])->middleware('auth
 // ---------------------------------------------------------------
 
 Route::middleware('auth')->group(function (): void {
-    // Teleconsultation
-    Route::get('/teleconsultation/{uuid}', [TeleconWebController::class, 'room'])->name('telecon.room');
-    Route::post('/web/telecon/{uuid}/join', [TeleconWebController::class, 'markJoined']);
-    Route::post('/web/telecon/{uuid}/end', [TeleconWebController::class, 'endSession']);
+    // Teleconsultation (requires phone verification)
+    Route::middleware('phone.verified')->group(function (): void {
+        Route::get('/teleconsultation/{uuid}', [TeleconWebController::class, 'room'])->name('telecon.room');
+        Route::post('/web/telecon/{uuid}/join', [TeleconWebController::class, 'markJoined']);
+        Route::post('/web/telecon/{uuid}/end', [TeleconWebController::class, 'endSession']);
+    });
 
-    Route::post('/web/rdv/book', [BookingWebController::class, 'bookAppointment'])->name('web.rdv.book');
+    // RDV booking (requires phone verification)
+    Route::post('/web/rdv/book', [BookingWebController::class, 'bookAppointment'])->middleware('phone.verified')->name('web.rdv.book');
     Route::post('/web/rdv/{uuid}/cancel', [BookingWebController::class, 'cancelAppointment'])->name('web.rdv.cancel');
     Route::post('/web/like/{uuid}', [BookingWebController::class, 'toggleLike'])->name('web.like');
+    Route::post('/web/publication/{uuid}/like', [PublicationInteractionController::class, 'toggleLike'])->name('web.pub.like');
+    Route::post('/web/publication/{uuid}/comment', [PublicationInteractionController::class, 'addComment'])->name('web.pub.comment');
     Route::post('/web/recommend/{uuid}', [BookingWebController::class, 'recommend'])->name('web.recommend');
     Route::post('/web/evaluate/{uuid}', [ClaimsWebController::class, 'submitEvaluation'])->name('web.evaluate');
 });

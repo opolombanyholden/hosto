@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Modules\Core\Models\EmergencyContact;
 use App\Modules\Core\Models\Role;
 use App\Modules\Core\Traits\HasUuid;
 use Carbon\CarbonImmutable;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -46,15 +48,43 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $pro_validation_status
  * @property string|null $pro_rejection_reason
  * @property string|null $remember_token
+ * @property string|null $oauth_provider
+ * @property string|null $oauth_provider_id
+ * @property string|null $avatar_url
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
  * @property CarbonImmutable|null $deleted_at
+ * @property string|null $nip
+ * @property string|null $id_document_type
+ * @property string|null $id_document_number
+ * @property CarbonImmutable|null $date_of_birth
+ * @property string|null $gender
+ * @property string|null $blood_group
+ * @property string|null $country_of_residence
+ * @property string|null $city_of_residence
+ * @property string|null $address_of_residence
+ * @property string|null $profile_photo_path
+ * @property string|null $security_question
+ * @property string|null $security_answer
+ * @property string|null $medical_pin
+ * @property CarbonImmutable|null $medical_pin_set_at
+ * @property CarbonImmutable|null $profile_completed_at
  * @property string|null $created_by
  * @property string|null $updated_by
  * @property-read Collection<int, Role> $roles
+ * @property-read Collection<int, EmergencyContact> $emergencyContacts
  */
-#[Fillable(['name', 'email', 'phone', 'password', 'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at'])]
-#[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'])]
+#[Fillable([
+    'name', 'email', 'phone', 'password',
+    'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at',
+    'nip', 'id_document_type', 'id_document_number',
+    'date_of_birth', 'gender', 'blood_group',
+    'country_of_residence', 'city_of_residence', 'address_of_residence',
+    'profile_photo_path', 'security_question', 'security_answer',
+    'medical_pin', 'medical_pin_set_at', 'profile_completed_at',
+    'oauth_provider', 'oauth_provider_id', 'avatar_url',
+])]
+#[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes', 'security_answer', 'medical_pin'])]
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -101,6 +131,54 @@ class User extends Authenticatable
         return $this->roles->contains('environment', $environment);
     }
 
+    // ---------------------------------------------------------------
+    // Emergency contacts
+    // ---------------------------------------------------------------
+
+    /**
+     * @return HasMany<EmergencyContact, $this>
+     */
+    public function emergencyContacts(): HasMany
+    {
+        return $this->hasMany(EmergencyContact::class)->orderBy('priority');
+    }
+
+    // ---------------------------------------------------------------
+    // Profile helpers
+    // ---------------------------------------------------------------
+
+    /**
+     * Check if the user has completed all required profile sections.
+     */
+    public function isProfileComplete(): bool
+    {
+        return $this->profile_completed_at !== null;
+    }
+
+    /**
+     * Percentage of profile completion (0–100).
+     */
+    public function profileCompletionPercent(): int
+    {
+        $checks = [
+            $this->email_verified_at !== null,
+            $this->phone_verified_at !== null,
+            $this->nip !== null || $this->id_document_number !== null,
+            $this->date_of_birth !== null && $this->gender !== null,
+            $this->country_of_residence !== null,
+            $this->security_question !== null,
+            $this->medical_pin !== null,
+            $this->emergencyContacts()->exists(),
+        ];
+
+        return (int) round(array_sum(array_map('intval', $checks)) / count($checks) * 100);
+    }
+
+    public function hasMedicalPin(): bool
+    {
+        return $this->medical_pin !== null;
+    }
+
     /**
      * @return array<string, string>
      */
@@ -111,6 +189,9 @@ class User extends Authenticatable
             'phone_verified_at' => 'immutable_datetime',
             'two_factor_confirmed_at' => 'immutable_datetime',
             'locked_until' => 'immutable_datetime',
+            'medical_pin_set_at' => 'immutable_datetime',
+            'profile_completed_at' => 'immutable_datetime',
+            'date_of_birth' => 'date',
             'password' => 'hashed',
         ];
     }

@@ -11,6 +11,7 @@ use Database\Factories\Referentiel\ServiceFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -37,6 +38,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable $updated_at
  * @property CarbonImmutable|null $deleted_at
  * @property-read string $name
+ * @property-read Pivot|null $pivot
  */
 class Service extends Model
 {

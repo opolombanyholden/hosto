@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Modules\Lab\Http\Controllers\ExamSearchController;
 use App\Modules\Lab\Http\Controllers\LabController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+
+// Public: search exam availability across labs.
+Route::get('exams/search', [ExamSearchController::class, 'search'])->name('exams.search');
 
 // Authenticated: patient views their own results.
 Route::middleware([EnsureFrontendRequestsAreStateful::class, 'auth:sanctum'])->group(function (): void {

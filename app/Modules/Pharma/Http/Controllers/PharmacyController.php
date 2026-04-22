@@ -15,14 +15,22 @@ final class PharmacyController
 {
     /**
      * Search medication availability across all pharmacies.
+     *
+     * Filters: medication (DCI or brand), city, pharmacy UUID.
+     * Returns: pharmacy info, price, stock, accepted insurances.
      */
     public function stock(Request $request): JsonResponse
     {
         $query = PharmacyStock::available()->with(['pharmacy.city', 'medication.brands']);
 
         if ($request->filled('medication')) {
-            $query->whereHas('medication', fn ($q) => $q->where('dci', 'ILIKE', '%'.$request->input('medication').'%')
-                ->orWhereHas('brands', fn ($bq) => $bq->where('brand_name', 'ILIKE', '%'.$request->input('medication').'%')));
+            $term = $request->input('medication');
+            $query->whereHas('medication', fn ($q) => $q->where('dci', 'ILIKE', '%'.$term.'%')
+                ->orWhereHas('brands', fn ($bq) => $bq->where('brand_name', 'ILIKE', '%'.$term.'%')));
+        }
+
+        if ($request->filled('city')) {
+            $query->whereHas('pharmacy.city', fn ($q) => $q->where('name_fr', 'ILIKE', '%'.$request->input('city').'%'));
         }
 
         if ($request->filled('pharmacy')) {
@@ -33,14 +41,36 @@ final class PharmacyController
 
         return response()->json([
             'data' => $stocks->map(fn ($s) => [
-                'medication' => ['dci' => $s->medication->dci, 'strength' => $s->medication->strength],
-                'pharmacy' => ['uuid' => $s->pharmacy->uuid, 'name' => $s->pharmacy->name, 'city' => $s->pharmacy->city->name_fr ?? null],
-                'quantity_in_stock' => $s->quantity_in_stock,
+                'medication' => [
+                    'uuid' => $s->medication->uuid,
+                    'dci' => $s->medication->dci,
+                    'strength' => $s->medication->strength,
+                    'dosage_form' => $s->medication->dosage_form,
+                    'prescription_required' => $s->medication->prescription_required,
+                    'brands' => array_values($s->medication->brands->map(fn ($b) => [
+                        'name' => $b->brand_name,
+                        'manufacturer' => $b->manufacturer,
+                    ])->toArray()),
+                ],
+                'pharmacy' => [
+                    'uuid' => $s->pharmacy->uuid,
+                    'name' => $s->pharmacy->name,
+                    'slug' => $s->pharmacy->slug,
+                    'city' => $s->pharmacy->city->name_fr ?? null,
+                    'address' => $s->pharmacy->address,
+                    'phone' => $s->pharmacy->phone,
+                    'accepted_insurances' => $s->pharmacy->accepted_insurances ?? [],
+                ],
                 'unit_price' => $s->unit_price,
                 'currency' => $s->currency_code,
+                'quantity_in_stock' => $s->quantity_in_stock,
                 'is_available' => $s->is_available,
             ]),
-            'meta' => ['total' => $stocks->total(), 'current_page' => $stocks->currentPage(), 'last_page' => $stocks->lastPage()],
+            'meta' => [
+                'total' => $stocks->total(),
+                'current_page' => $stocks->currentPage(),
+                'last_page' => $stocks->lastPage(),
+            ],
         ]);
     }
 
