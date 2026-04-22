@@ -12,6 +12,10 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
     Tableau de bord
 </a>
+<a href="/compte/profil/completer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Completer mon profil
+</a>
 <a href="/annuaire">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
     Annuaire
@@ -34,6 +38,24 @@
 @section('content')
 @php $user = auth()->user(); @endphp
 
+{{-- Profile completion banner --}}
+@php $pct = $user->profileCompletionPercent(); @endphp
+@if($pct < 100)
+<div style="background:white;border:1px solid #EEE;border-radius:14px;padding:20px;margin-bottom:20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div>
+            <div style="font-size:.88rem;font-weight:600;color:#1B2A1B;">Completez votre profil</div>
+            <div style="font-size:.78rem;color:#757575;">Remplissez vos informations pour profiter de tous les services.</div>
+        </div>
+        <a href="{{ route('compte.complete-profile') }}" style="padding:8px 18px;background:#388E3C;color:white;border-radius:100px;font-size:.78rem;font-weight:600;text-decoration:none;white-space:nowrap;">Completer</a>
+    </div>
+    <div style="background:#EEE;border-radius:100px;height:6px;overflow:hidden;">
+        <div style="height:100%;width:{{ $pct }}%;background:linear-gradient(90deg,#66BB6A,#388E3C);border-radius:100px;transition:width .5s;"></div>
+    </div>
+    <div style="font-size:.72rem;color:#757575;margin-top:4px;">{{ $pct }}% complete</div>
+</div>
+@endif
+
 @if(!$user->email_verified_at)
 <div style="background:#FFF3E0;border:1px solid #FFB74D;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
     <span style="font-size:1.2rem;">&#9888;</span>
@@ -47,7 +69,7 @@
     <span style="font-size:1.2rem;">&#9888;</span>
     <div>
         <div style="font-size:.85rem;font-weight:600;color:#E65100;">Verifiez votre numero de telephone</div>
-        <div style="font-size:.78rem;color:#BF360C;">Completez votre <a href="{{ route('verification.notice') }}" style="color:#E65100;font-weight:600;">verification</a> pour profiter pleinement de HOSTO.</div>
+        <div style="font-size:.78rem;color:#BF360C;">La verification du telephone est obligatoire pour prendre un rendez-vous, utiliser la teleconsultation ou acheter des medicaments. <a href="{{ route('compte.complete-profile') }}" style="color:#E65100;font-weight:600;">Completer mon profil</a>.</div>
     </div>
 </div>
 @endif
