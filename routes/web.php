@@ -9,6 +9,7 @@ use App\Http\Controllers\ClaimsWebController;
 use App\Http\Controllers\ProWebController;
 use App\Http\Controllers\TeleconWebController;
 use App\Modules\Core\Http\Controllers\AuthController;
+use App\Modules\Core\Http\Controllers\PasswordResetController;
 use App\Modules\Core\Http\Controllers\ProfileController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
 use App\Modules\Pro\Models\Consultation;
@@ -31,6 +32,17 @@ Route::get('/medicaments', [AnnuaireWebController::class, 'medications'])->name(
 Route::get('/examens', [AnnuaireWebController::class, 'exams'])->name('exams.index');
 Route::get('/annuaire/{slug}/rendez-vous', [AnnuaireWebController::class, 'bookRdv'])->name('annuaire.book-rdv');
 Route::get('/annuaire/{slug}', [AnnuaireWebController::class, 'show'])->name('annuaire.show');
+
+// ---------------------------------------------------------------
+// Password reset (shared, guest only)
+// ---------------------------------------------------------------
+
+Route::middleware('guest')->group(function (): void {
+    Route::get('/mot-de-passe/oublie', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
+    Route::post('/mot-de-passe/oublie', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/mot-de-passe/reinitialiser', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/mot-de-passe/reinitialiser', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+});
 
 // ---------------------------------------------------------------
 // Auth : Usager (patient)

@@ -10,6 +10,10 @@
 <h1>Connexion</h1>
 <p class="subtitle">Connectez-vous a votre espace patient</p>
 
+@if(session('success'))
+<div class="auth-alert" style="background:#E8F5E9;color:#2E7D32;border:1px solid #C8E6C9;">{{ session('success') }}</div>
+@endif
+
 @if($errors->any())
 <div class="auth-alert auth-alert-error">{{ $errors->first() }}</div>
 @endif
@@ -24,9 +28,12 @@
         <label for="password">Mot de passe</label>
         <input type="password" id="password" name="password" required>
     </div>
-    <div class="remember-row">
-        <input type="checkbox" id="remember" name="remember">
-        <label for="remember">Se souvenir de moi</label>
+    <div class="remember-row" style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+            <input type="checkbox" id="remember" name="remember">
+            <label for="remember">Se souvenir de moi</label>
+        </div>
+        <a href="/mot-de-passe/oublie" style="font-size:.78rem;color:#388E3C;font-weight:500;">Mot de passe oublie ?</a>
     </div>
     <button type="submit" class="auth-btn">Se connecter</button>
 </form>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Lab\Http\Controllers;
 
 use App\Modules\Annuaire\Models\Hosto;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -70,7 +71,7 @@ final class ExamSearchController
                         'accepted_insurances' => $hosto->accepted_insurances ?? [],
                     ],
                     'exams' => $exams->map(function ($s) {
-                        /** @var \Illuminate\Database\Eloquent\Relations\Pivot $pivot */
+                        /** @var Pivot $pivot */
                         $pivot = $s->getRelation('pivot');
 
                         return [
