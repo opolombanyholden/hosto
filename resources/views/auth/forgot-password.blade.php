@@ -10,12 +10,6 @@
 <h1>Reinitialiser le mot de passe</h1>
 <p class="subtitle">Entrez l'adresse email associee a votre compte</p>
 
-@if(session('success'))
-<div class="auth-alert" style="background:#E8F5E9;color:#2E7D32;border:1px solid #C8E6C9;">
-    {{ session('success') }}
-</div>
-@endif
-
 @if($errors->any())
 <div class="auth-alert auth-alert-error">{{ $errors->first() }}</div>
 @endif

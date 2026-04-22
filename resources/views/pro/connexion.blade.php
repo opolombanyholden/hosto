@@ -11,10 +11,6 @@
 <h1>Connexion professionnelle</h1>
 <p class="subtitle">Accedez a votre espace professionnel</p>
 
-@if(session('success'))
-<div class="auth-alert" style="background:#E3F2FD;color:#1565C0;border:1px solid #BBDEFB;">{{ session('success') }}</div>
-@endif
-
 @if($errors->any())
 <div class="auth-alert auth-alert-error">{{ $errors->first() }}</div>
 @endif
