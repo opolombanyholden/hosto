@@ -57,6 +57,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property bool $is_active
  * @property bool $is_verified
  * @property bool $is_partner
+ * @property array<int, string>|null $accepted_insurances
  * @property int $likes_count
  * @property CarbonImmutable|null $verified_at
  * @property string|null $verified_by
@@ -109,6 +110,7 @@ class Hosto extends Model
         'cover_image_url',
         'is_active',
         'is_verified',
+        'accepted_insurances',
     ];
 
     public function getRouteKeyName(): string
@@ -324,6 +326,7 @@ class Hosto extends Model
             'is_verified' => 'boolean',
             'verified_at' => 'immutable_datetime',
             'opening_hours' => 'array',
+            'accepted_insurances' => 'array',
         ];
     }
 }
