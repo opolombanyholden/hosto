@@ -157,6 +157,7 @@
             <a href="/annuaire" class="{{ request()->is('annuaire') || request()->is('annuaire/*') && !request()->is('annuaire/medecins*') ? 'active' : '' }}">Structures</a>
             <a href="/annuaire/medecins" class="{{ request()->is('annuaire/medecins*') ? 'active' : '' }}">Medecins</a>
             <a href="/medicaments" class="{{ request()->is('medicaments*') ? 'active' : '' }}">Medicaments</a>
+            <a href="/examens" class="{{ request()->is('examens*') ? 'active' : '' }}">Examens</a>
             @auth
                 <a href="/compte" class="btn-nav">Mon espace</a>
             @else

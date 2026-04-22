@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable $updated_at
  * @property CarbonImmutable|null $deleted_at
  * @property-read string $name
+ * @property-read \Illuminate\Database\Eloquent\Relations\Pivot|null $pivot
  */
 class Service extends Model
 {
