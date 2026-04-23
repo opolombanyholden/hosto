@@ -8,7 +8,7 @@
 
 @section('styles')
 <style>
-    .profile-container { max-width:1100px; margin:0 auto; padding:32px 5vw 60px; }
+    .profile-container { max-width:1100px; margin:0 2%; padding:32px 0 60px; }
     .sections-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
 
     /* Header card */
@@ -73,7 +73,7 @@
     .pin-input { letter-spacing:12px; text-align:center; font-size:1.4rem; font-weight:700; max-width:200px; }
 
     @media(max-width:768px) {
-        .profile-container { padding:20px 24px 40px; }
+        .profile-container { margin:0 2%; padding:20px 0 40px; }
         .sections-grid { grid-template-columns:1fr; }
         .field-row, .field-row-3 { grid-template-columns:1fr; }
         .progress-circle { display:none; }
