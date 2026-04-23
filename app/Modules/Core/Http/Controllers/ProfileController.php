@@ -7,6 +7,7 @@ namespace App\Modules\Core\Http\Controllers;
 use App\Modules\Core\Models\EmergencyContact;
 use App\Modules\Core\Services\AuditLogger;
 use App\Modules\Core\Services\TwoFactorService;
+use App\Modules\Referentiel\Models\ReferenceData;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,6 +43,12 @@ final class ProfileController
         return view('compte.complete-profile', [
             'user' => $user,
             'completionPercent' => $user->profileCompletionPercent(),
+            'idDocumentTypes' => ReferenceData::forCategory('id_document_type'),
+            'genders' => ReferenceData::forCategory('gender'),
+            'bloodGroups' => ReferenceData::forCategory('blood_group'),
+            'securityQuestions' => ReferenceData::forCategory('security_question'),
+            'contactRelations' => ReferenceData::forCategory('contact_relation'),
+            'countryCodes' => ReferenceData::forCategory('country_code'),
         ]);
     }
 

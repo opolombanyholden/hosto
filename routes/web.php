@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AdminReferenceController;
 use App\Http\Controllers\AdminWebController;
 use App\Http\Controllers\AnnuaireWebController;
 use App\Http\Controllers\BookingWebController;
@@ -172,6 +173,27 @@ Route::prefix('admin')->group(function (): void {
         Route::get('/profil', [ProfileController::class, 'show'])->name('admin.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
+
+        // CRUD: Structure Types
+        Route::get('/structure-types', [AdminReferenceController::class, 'structureTypes'])->name('admin.structure-types');
+        Route::post('/structure-types', [AdminReferenceController::class, 'storeStructureType']);
+        Route::put('/structure-types/{id}', [AdminReferenceController::class, 'updateStructureType']);
+
+        // CRUD: Specialties
+        Route::get('/specialties', [AdminReferenceController::class, 'specialties'])->name('admin.specialties');
+        Route::post('/specialties', [AdminReferenceController::class, 'storeSpecialty']);
+        Route::put('/specialties/{id}', [AdminReferenceController::class, 'updateSpecialty']);
+
+        // CRUD: Services
+        Route::get('/services', [AdminReferenceController::class, 'services'])->name('admin.services');
+        Route::post('/services', [AdminReferenceController::class, 'storeService']);
+        Route::put('/services/{id}', [AdminReferenceController::class, 'updateService']);
+
+        // CRUD: Reference Data (generic enums)
+        Route::get('/references/{category}', [AdminReferenceController::class, 'referenceData'])->name('admin.references');
+        Route::post('/references/{category}', [AdminReferenceController::class, 'storeReferenceData']);
+        Route::put('/references/item/{id}', [AdminReferenceController::class, 'updateReferenceData']);
+        Route::delete('/references/item/{id}', [AdminReferenceController::class, 'deleteReferenceData']);
     });
 });
 

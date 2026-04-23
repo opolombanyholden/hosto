@@ -176,10 +176,9 @@
                     <label>Type de piece d'identite</label>
                     <select id="idDocType">
                         <option value="">— Choisir —</option>
-                        <option value="cni" {{ $user->id_document_type === 'cni' ? 'selected' : '' }}>Carte Nationale d'Identite</option>
-                        <option value="passeport" {{ $user->id_document_type === 'passeport' ? 'selected' : '' }}>Passeport</option>
-                        <option value="carte_sejour" {{ $user->id_document_type === 'carte_sejour' ? 'selected' : '' }}>Carte de sejour</option>
-                        <option value="permis_conduire" {{ $user->id_document_type === 'permis_conduire' ? 'selected' : '' }}>Permis de conduire</option>
+                        @foreach($idDocumentTypes as $dt)
+                            <option value="{{ $dt->code }}" {{ $user->id_document_type === $dt->code ? 'selected' : '' }}>{{ $dt->label_fr }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="field">
@@ -196,16 +195,17 @@
                     <label>Sexe</label>
                     <select id="gender">
                         <option value="">—</option>
-                        <option value="male" {{ $user->gender === 'male' ? 'selected' : '' }}>Masculin</option>
-                        <option value="female" {{ $user->gender === 'female' ? 'selected' : '' }}>Feminin</option>
+                        @foreach($genders as $g)
+                            <option value="{{ $g->code }}" {{ $user->gender === $g->code ? 'selected' : '' }}>{{ $g->label_fr }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="field">
                     <label>Groupe sanguin</label>
                     <select id="bloodGroup">
                         <option value="">—</option>
-                        @foreach(['A+','A-','B+','B-','AB+','AB-','O+','O-'] as $bg)
-                            <option value="{{ $bg }}" {{ $user->blood_group === $bg ? 'selected' : '' }}>{{ $bg }}</option>
+                        @foreach($bloodGroups as $bg)
+                            <option value="{{ $bg->code }}" {{ $user->blood_group === $bg->code ? 'selected' : '' }}>{{ $bg->label_fr }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -293,8 +293,8 @@
                 <label>Question</label>
                 <select id="secQuestion">
                     <option value="">— Choisir une question —</option>
-                    @foreach(['Quel est le nom de votre premier animal de compagnie ?','Quel est le nom de jeune fille de votre mere ?','Dans quelle ville etes-vous ne(e) ?','Quel est le nom de votre meilleur ami d\'enfance ?','Quel est le nom de votre premiere ecole ?','Quel est votre plat prefere ?'] as $q)
-                        <option value="{{ $q }}" {{ $user->security_question === $q ? 'selected' : '' }}>{{ $q }}</option>
+                    @foreach($securityQuestions as $sq)
+                        <option value="{{ $sq->label_fr }}" {{ $user->security_question === $sq->label_fr ? 'selected' : '' }}>{{ $sq->label_fr }}</option>
                     @endforeach
                 </select>
             </div>
@@ -367,8 +367,8 @@
                             <label>Lien</label>
                             <select class="ec-relation">
                                 <option value="">—</option>
-                                @foreach(['enfant'=>'Enfant','parent'=>'Parent','conjoint'=>'Conjoint(e)','frere_soeur'=>'Frere / Soeur','ami'=>'Ami(e)','autre'=>'Autre'] as $val => $lbl)
-                                    <option value="{{ $val }}" {{ $ec->relation === $val ? 'selected' : '' }}>{{ $lbl }}</option>
+                                @foreach($contactRelations as $rel)
+                                    <option value="{{ $rel->code }}" {{ $ec->relation === $rel->code ? 'selected' : '' }}>{{ $rel->label_fr }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -392,7 +392,9 @@
                             <label>Lien</label>
                             <select class="ec-relation">
                                 <option value="">—</option>
-                                <option value="enfant">Enfant</option><option value="parent">Parent</option><option value="conjoint">Conjoint(e)</option><option value="frere_soeur">Frere / Soeur</option><option value="ami">Ami(e)</option><option value="autre">Autre</option>
+                                @foreach($contactRelations as $rel)
+                                    <option value="{{ $rel->code }}">{{ $rel->label_fr }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="field" style="display:flex;align-items:center;gap:8px;padding-top:20px;">
@@ -421,6 +423,7 @@
 @section('scripts')
 <script>
 const CSRF = '{{ csrf_token() }}';
+const RELATIONS = @json($contactRelations->map(fn($r) => ['code' => $r->code, 'label' => $r->label_fr]));
 const headers = {'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest'};
 
 function toggleSection(header) {
@@ -534,6 +537,7 @@ async function uploadPhoto() {
 function addContact() {
     const list = document.getElementById('contactsList');
     if (list.children.length >= 5) { alert('Maximum 5 contacts.'); return; }
+    const relOpts = RELATIONS.map(r => `<option value="${r.code}">${r.label}</option>`).join('');
     list.insertAdjacentHTML('beforeend', `<div class="contact-block">
         <button class="remove-contact" onclick="removeContact(this)" type="button">&#10005;</button>
         <div class="field-row">
@@ -541,7 +545,7 @@ function addContact() {
             <div class="field"><label>Telephone *</label><input type="tel" class="ec-phone" placeholder="+241..."></div>
         </div>
         <div class="field-row">
-            <div class="field"><label>Lien</label><select class="ec-relation"><option value="">—</option><option value="enfant">Enfant</option><option value="parent">Parent</option><option value="conjoint">Conjoint(e)</option><option value="frere_soeur">Frere / Soeur</option><option value="ami">Ami(e)</option><option value="autre">Autre</option></select></div>
+            <div class="field"><label>Lien</label><select class="ec-relation"><option value="">—</option>${relOpts}</select></div>
             <div class="field" style="display:flex;align-items:center;gap:8px;padding-top:20px;"><label style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;"><input type="checkbox" class="ec-access"> Acces au dossier medical</label></div>
         </div>
     </div>`);
