@@ -8,7 +8,8 @@
 
 @section('styles')
 <style>
-    .profile-container { max-width:740px; margin:0 auto; padding:24px 24px 60px; }
+    .profile-container { max-width:1000px; margin:0 auto; padding:24px 24px 60px; }
+    .sections-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
 
     /* Header card */
     .profile-header { background:white; border:1px solid #EEE; border-radius:16px; padding:24px; margin-bottom:24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
@@ -27,7 +28,7 @@
     .progress-bar-fill { height:100%; background:linear-gradient(90deg,#66BB6A,#388E3C); border-radius:100px; transition:width .5s; }
 
     /* Sections */
-    .section-card { background:white; border:1px solid #EEE; border-radius:14px; margin-bottom:12px; overflow:hidden; transition:border-color .2s; }
+    .section-card { background:white; border:1px solid #EEE; border-radius:14px; overflow:hidden; transition:border-color .2s; }
     .section-card.active { border-color:#C8E6C9; }
     .section-header { padding:16px 20px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:background .2s; user-select:none; }
     .section-header:hover { background:#FAFAFA; }
@@ -73,6 +74,7 @@
 
     @media(max-width:768px) {
         .profile-container { padding:16px 16px 40px; }
+        .sections-grid { grid-template-columns:1fr; }
         .field-row, .field-row-3 { grid-template-columns:1fr; }
         .progress-circle { display:none; }
         .progress-bar-mobile { display:block; }
@@ -126,6 +128,7 @@
         </div>
     </div>
 
+    <div class="sections-grid">
     {{-- ====== Section 1 : Verification ====== --}}
     <div class="section-card {{ $firstIncomplete && $firstIncomplete['id'] === 'sec1' ? 'active' : '' }}" data-section="sec1">
         <div class="section-header" onclick="toggleSection(this)">
@@ -409,6 +412,8 @@
         </div>
     </div>
 
+    </div>{{-- /sections-grid --}}
+
     <p style="text-align:center;margin-top:20px;"><a href="/compte" style="font-size:.82rem;color:#388E3C;font-weight:500;">Retour a mon espace</a></p>
 </div>
 @endsection
@@ -420,11 +425,7 @@ const headers = {'Content-Type':'application/json','Accept':'application/json','
 
 function toggleSection(header) {
     const card = header.closest('.section-card');
-    const wasActive = card.classList.contains('active');
-    // Close all
-    document.querySelectorAll('.section-card').forEach(c => c.classList.remove('active'));
-    // Toggle clicked
-    if (!wasActive) card.classList.add('active');
+    card.classList.toggle('active');
 }
 
 function showMsg(id, ok, text) {
