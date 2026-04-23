@@ -76,6 +76,7 @@ use Laravel\Sanctum\HasApiTokens;
  */
 #[Fillable([
     'name', 'email', 'phone', 'password',
+    'email_verified_at', 'phone_verified_at',
     'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at',
     'nip', 'id_document_type', 'id_document_number',
     'date_of_birth', 'gender', 'blood_group',
