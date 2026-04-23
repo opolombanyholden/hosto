@@ -92,6 +92,7 @@ final class VerificationController
         }
 
         $user->update(['email_verified_at' => now()]);
+        $request->user()->refresh();
         Cache::forget($cacheKey);
         session()->forget($cacheKey);
 
@@ -99,7 +100,7 @@ final class VerificationController
             'action' => 'email_verified',
         ]);
 
-        return back()->with('success', 'Adresse email verifiee avec succes !');
+        return redirect()->route('verification.notice')->with('success', 'Adresse email verifiee avec succes !');
     }
 
     /**
@@ -158,6 +159,7 @@ final class VerificationController
         }
 
         $user->update(['phone_verified_at' => now()]);
+        $request->user()->refresh();
         Cache::forget($cacheKey);
         session()->forget($cacheKey);
 
@@ -165,7 +167,7 @@ final class VerificationController
             'action' => 'phone_verified',
         ]);
 
-        return back()->with('success', 'Numero de telephone verifie avec succes !');
+        return redirect()->route('verification.notice')->with('success', 'Numero de telephone verifie avec succes !');
     }
 
     private function generateOtp(): string
