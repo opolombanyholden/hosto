@@ -44,7 +44,10 @@
 
     <div class="field">
         <label for="password">Mot de passe</label>
-        <input type="password" id="password" name="password" required>
+        <div style="position:relative;">
+            <input type="password" id="password" name="password" required>
+            <button type="button" onclick="togglePassword()" id="togglePwBtn" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#757575;font-size:.78rem;font-family:Poppins,sans-serif;">Afficher</button>
+        </div>
     </div>
     <div class="remember-row" style="display:flex;justify-content:space-between;align-items:center;">
         <div>
@@ -66,6 +69,12 @@
 </style>
 
 <script>
+function togglePassword() {
+    const input = document.getElementById('password');
+    const btn = document.getElementById('togglePwBtn');
+    if (input.type === 'password') { input.type = 'text'; btn.textContent = 'Masquer'; }
+    else { input.type = 'password'; btn.textContent = 'Afficher'; }
+}
 function switchMode(mode) {
     document.getElementById('loginMode').value = mode;
     document.getElementById('tabEmail').classList.toggle('active', mode === 'email');
