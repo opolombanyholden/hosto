@@ -46,6 +46,7 @@ final class VerificationController
         $otp = $this->generateOtp();
         $cacheKey = "email_otp_{$user->id}";
         Cache::put($cacheKey, $otp, now()->addMinutes(self::OTP_TTL_MINUTES));
+        session([$cacheKey => $otp]);
 
         // Log OTP for development.
         Log::info("[HOSTO DEV] Code de verification EMAIL pour {$user->email} : {$otp}");
@@ -84,14 +85,15 @@ final class VerificationController
 
         $user = $request->user();
         $cacheKey = "email_otp_{$user->id}";
-        $storedOtp = Cache::get($cacheKey);
+        $storedOtp = Cache::get($cacheKey) ?? session($cacheKey);
 
-        if ($storedOtp === null || $storedOtp !== $request->input('email_otp')) {
-            return back()->withErrors(['email_otp' => 'Code incorrect ou expire.']);
+        if ($storedOtp === null || (string) $storedOtp !== (string) $request->input('email_otp')) {
+            return back()->withErrors(['email_otp' => 'Code incorrect ou expire. Renvoyez un nouveau code.']);
         }
 
         $user->update(['email_verified_at' => now()]);
         Cache::forget($cacheKey);
+        session()->forget($cacheKey);
 
         $audit->record(AuditLogger::ACTION_UPDATE, 'user', $user->uuid, [
             'action' => 'email_verified',
@@ -118,6 +120,7 @@ final class VerificationController
         $otp = $this->generateOtp();
         $cacheKey = "phone_otp_{$user->id}";
         Cache::put($cacheKey, $otp, now()->addMinutes(self::OTP_TTL_MINUTES));
+        session([$cacheKey => $otp]);
 
         // Log OTP for development.
         Log::info("[HOSTO DEV] Code de verification TELEPHONE pour {$user->phone} : {$otp}");
@@ -148,14 +151,15 @@ final class VerificationController
 
         $user = $request->user();
         $cacheKey = "phone_otp_{$user->id}";
-        $storedOtp = Cache::get($cacheKey);
+        $storedOtp = Cache::get($cacheKey) ?? session($cacheKey);
 
-        if ($storedOtp === null || $storedOtp !== $request->input('phone_otp')) {
-            return back()->withErrors(['phone_otp' => 'Code incorrect ou expire.']);
+        if ($storedOtp === null || (string) $storedOtp !== (string) $request->input('phone_otp')) {
+            return back()->withErrors(['phone_otp' => 'Code incorrect ou expire. Renvoyez un nouveau code.']);
         }
 
         $user->update(['phone_verified_at' => now()]);
         Cache::forget($cacheKey);
+        session()->forget($cacheKey);
 
         $audit->record(AuditLogger::ACTION_UPDATE, 'user', $user->uuid, [
             'action' => 'phone_verified',
