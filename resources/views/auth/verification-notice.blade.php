@@ -19,7 +19,7 @@
 </div>
 @endif
 
-@php $user = auth()->user(); @endphp
+@php $user = auth()->user()->fresh(); @endphp
 
 {{-- ===== Dev mode banner ===== --}}
 @if(config('app.debug') && (session('dev_email_otp') || session('dev_phone_otp')))
@@ -43,6 +43,7 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
             </div>
             <span style="font-weight:600;color:#2E7D32;">Email verifie</span>
+            <span style="font-size:.72rem;color:#757575;margin-left:auto;">{{ $user->email_verified_at->format('d/m/Y H:i') }}</span>
         @else
             <div style="width:24px;height:24px;background:#FF9800;border-radius:50%;display:flex;align-items:center;justify-content:center;">
                 <span style="color:white;font-weight:700;font-size:.82rem;">!</span>
@@ -79,6 +80,7 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
             </div>
             <span style="font-weight:600;color:#2E7D32;">Telephone verifie</span>
+            <span style="font-size:.72rem;color:#757575;margin-left:auto;">{{ $user->phone_verified_at->format('d/m/Y H:i') }}</span>
         @else
             <div style="width:24px;height:24px;background:#FF9800;border-radius:50%;display:flex;align-items:center;justify-content:center;">
                 <span style="color:white;font-weight:700;font-size:.82rem;">!</span>
