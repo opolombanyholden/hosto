@@ -60,13 +60,13 @@
         </form>
 
         {{-- Verify OTP --}}
-        <form method="POST" action="{{ route('verification.verify.email') }}" style="margin-top:12px;display:flex;gap:8px;align-items:end;">
+        <form method="POST" action="{{ route('verification.verify.email') }}" style="margin-top:12px;">
             @csrf
-            <div style="flex:1;">
-                <label style="font-size:.75rem;font-weight:500;color:#424242;display:block;margin-bottom:4px;">Code a 6 chiffres</label>
-                <input type="text" name="email_otp" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="000000" style="width:100%;padding:10px 14px;border:2px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:1rem;letter-spacing:6px;text-align:center;outline:none;" required>
+            <label style="font-size:.75rem;font-weight:500;color:#424242;display:block;margin-bottom:4px;">Code de verification</label>
+            <div style="display:flex;gap:8px;">
+                <input type="text" name="email_otp" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="000000" style="flex:1;min-width:160px;padding:10px 14px;border:2px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:1.1rem;letter-spacing:8px;text-align:center;outline:none;" required>
+                <button type="submit" class="auth-btn" style="padding:10px 20px;font-size:.82rem;white-space:nowrap;">Verifier</button>
             </div>
-            <button type="submit" class="auth-btn" style="padding:10px 20px;font-size:.82rem;white-space:nowrap;">Verifier</button>
         </form>
     @endunless
 </div>
@@ -96,13 +96,13 @@
         </form>
 
         {{-- Verify OTP --}}
-        <form method="POST" action="{{ route('verification.verify.phone') }}" style="margin-top:12px;display:flex;gap:8px;align-items:end;">
+        <form method="POST" action="{{ route('verification.verify.phone') }}" style="margin-top:12px;">
             @csrf
-            <div style="flex:1;">
-                <label style="font-size:.75rem;font-weight:500;color:#424242;display:block;margin-bottom:4px;">Code a 6 chiffres</label>
-                <input type="text" name="phone_otp" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="000000" style="width:100%;padding:10px 14px;border:2px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:1rem;letter-spacing:6px;text-align:center;outline:none;" required>
+            <label style="font-size:.75rem;font-weight:500;color:#424242;display:block;margin-bottom:4px;">Code de verification</label>
+            <div style="display:flex;gap:8px;">
+                <input type="text" name="phone_otp" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="000000" style="flex:1;min-width:160px;padding:10px 14px;border:2px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:1.1rem;letter-spacing:8px;text-align:center;outline:none;" required>
+                <button type="submit" class="auth-btn" style="padding:10px 20px;font-size:.82rem;white-space:nowrap;">Verifier</button>
             </div>
-            <button type="submit" class="auth-btn" style="padding:10px 20px;font-size:.82rem;white-space:nowrap;">Verifier</button>
         </form>
     @elseif(!$user->phone)
         <p style="font-size:.78rem;color:#E65100;margin-top:8px;">Ajoutez votre numero dans <a href="{{ route('compte.complete-profile') }}" style="color:#388E3C;font-weight:500;">votre profil</a> d'abord.</p>
