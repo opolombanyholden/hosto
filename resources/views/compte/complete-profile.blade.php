@@ -8,22 +8,47 @@
 
 @section('styles')
 <style>
-    .profile-container { max-width:740px; margin:32px auto; padding:0 24px; }
-    .progress-bar-wrap { background:#EEE; border-radius:100px; height:8px; margin-bottom:24px; overflow:hidden; }
+    .profile-container { max-width:740px; margin:0 auto; padding:24px 24px 60px; }
+
+    /* Header card */
+    .profile-header { background:white; border:1px solid #EEE; border-radius:16px; padding:24px; margin-bottom:24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+    .profile-header-avatar { width:64px; height:64px; border-radius:50%; background:#E8F5E9; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; border:3px solid #C8E6C9; }
+    .profile-header-avatar img { width:100%; height:100%; object-fit:cover; }
+    .profile-header-info { flex:1; min-width:200px; }
+    .profile-header-info h1 { font-size:1.15rem; font-weight:700; color:#1B2A1B; margin-bottom:2px; }
+    .profile-header-info p { font-size:.82rem; color:#757575; }
+    .progress-circle { position:relative; width:56px; height:56px; flex-shrink:0; }
+    .progress-circle svg { transform:rotate(-90deg); }
+    .progress-circle-text { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; color:#388E3C; }
+
+    /* Progress bar (mobile) */
+    .progress-bar-mobile { display:none; margin-top:12px; }
+    .progress-bar-wrap { background:#EEE; border-radius:100px; height:6px; overflow:hidden; }
     .progress-bar-fill { height:100%; background:linear-gradient(90deg,#66BB6A,#388E3C); border-radius:100px; transition:width .5s; }
-    .progress-label { font-size:.78rem; color:#757575; margin-bottom:6px; }
 
-    .section-card { background:white; border:1px solid #EEE; border-radius:14px; margin-bottom:16px; overflow:hidden; }
-    .section-header { padding:16px 20px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; }
+    /* Sections */
+    .section-card { background:white; border:1px solid #EEE; border-radius:14px; margin-bottom:12px; overflow:hidden; transition:border-color .2s; }
+    .section-card.active { border-color:#C8E6C9; }
+    .section-header { padding:16px 20px; cursor:pointer; display:flex; align-items:center; gap:12px; transition:background .2s; user-select:none; }
     .section-header:hover { background:#FAFAFA; }
-    .section-title { display:flex; align-items:center; gap:10px; font-size:.88rem; font-weight:600; color:#1B2A1B; }
-    .section-num { width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:white; }
-    .section-num.done { background:#388E3C; }
-    .section-num.todo { background:#BDBDBD; }
-    .section-check { font-size:1rem; }
+    .section-icon { width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .section-icon.done { background:#E8F5E9; }
+    .section-icon.done svg { stroke:#388E3C; }
+    .section-icon.todo { background:#F5F5F5; }
+    .section-icon.todo svg { stroke:#BDBDBD; }
+    .section-label { flex:1; }
+    .section-label-title { font-size:.88rem; font-weight:600; color:#1B2A1B; }
+    .section-label-sub { font-size:.72rem; color:#757575; margin-top:1px; }
+    .section-status { display:flex; align-items:center; gap:6px; }
+    .section-chevron { width:20px; height:20px; color:#BDBDBD; transition:transform .2s; }
+    .section-card.active .section-chevron { transform:rotate(180deg); color:#388E3C; }
+    .verify-badge { display:inline-flex; align-items:center; gap:3px; padding:3px 10px; border-radius:100px; font-size:.68rem; font-weight:600; }
+    .verify-ok { background:#E8F5E9; color:#2E7D32; }
+    .verify-pending { background:#FFF3E0; color:#E65100; }
     .section-body { padding:0 20px 20px; display:none; }
-    .section-body.open { display:block; }
+    .section-card.active .section-body { display:block; }
 
+    /* Fields */
     .field { margin-bottom:14px; }
     .field label { display:block; font-size:.8rem; font-weight:500; color:#424242; margin-bottom:5px; }
     .field input, .field select, .field textarea { width:100%; padding:10px 14px; border:2px solid #EEE; border-radius:8px; font-family:Poppins,sans-serif; font-size:.85rem; outline:none; box-sizing:border-box; }
@@ -31,17 +56,12 @@
     .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .field-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
 
-    .save-btn { padding:10px 24px; background:#388E3C; color:white; border:none; border-radius:8px; font-family:Poppins,sans-serif; font-size:.82rem; font-weight:600; cursor:pointer; }
+    .save-btn { padding:10px 24px; background:#388E3C; color:white; border:none; border-radius:8px; font-family:Poppins,sans-serif; font-size:.82rem; font-weight:600; cursor:pointer; transition:background .2s; }
     .save-btn:hover { background:#2E7D32; }
-    .save-btn:disabled { opacity:.5; cursor:not-allowed; }
 
     .msg { padding:10px 14px; border-radius:8px; font-size:.82rem; margin-bottom:12px; display:none; }
     .msg-ok { background:#E8F5E9; color:#2E7D32; }
     .msg-err { background:#FFEBEE; color:#C62828; }
-
-    .verify-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:100px; font-size:.7rem; font-weight:600; }
-    .verify-ok { background:#E8F5E9; color:#2E7D32; }
-    .verify-pending { background:#FFF3E0; color:#E65100; }
 
     .contact-block { background:#F5F5F5; border-radius:10px; padding:14px; margin-bottom:10px; position:relative; }
     .remove-contact { position:absolute; top:10px; right:10px; background:none; border:none; cursor:pointer; color:#E53935; font-size:.82rem; font-weight:600; }
@@ -52,70 +72,95 @@
     .pin-input { letter-spacing:12px; text-align:center; font-size:1.4rem; font-weight:700; max-width:200px; }
 
     @media(max-width:768px) {
-        .profile-container { padding:0 16px; }
+        .profile-container { padding:16px 16px 40px; }
         .field-row, .field-row-3 { grid-template-columns:1fr; }
+        .progress-circle { display:none; }
+        .progress-bar-mobile { display:block; }
+        .profile-header { flex-direction:column; text-align:center; }
     }
 </style>
 @endsection
 
 @section('content')
+@php
+    $pct = $completionPercent;
+    $circumference = 2 * 3.14159 * 22;
+    $dashOffset = $circumference - ($pct / 100) * $circumference;
+
+    $sections = [
+        ['id' => 'sec1', 'done' => $user->email_verified_at && $user->phone_verified_at, 'icon' => '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/>', 'title' => 'Verification', 'sub' => 'Email et telephone'],
+        ['id' => 'sec2', 'done' => $user->nip || $user->id_document_number, 'icon' => '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4M7 12h10M7 16h6"/>', 'title' => 'Identification', 'sub' => 'NIP, piece d\'identite, date naissance'],
+        ['id' => 'sec3', 'done' => (bool) $user->country_of_residence, 'icon' => '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>', 'title' => 'Residence', 'sub' => 'Pays, ville, adresse'],
+        ['id' => 'sec4', 'done' => (bool) $user->profile_photo_path, 'icon' => '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>', 'title' => 'Photo de profil', 'sub' => 'JPG, PNG ou WebP'],
+        ['id' => 'sec5', 'done' => (bool) $user->security_question, 'icon' => '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', 'title' => 'Question secrete', 'sub' => 'Securite du compte'],
+        ['id' => 'sec6', 'done' => (bool) $user->medical_pin, 'icon' => '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>', 'title' => 'PIN dossier medical', 'sub' => 'Code secret 4-6 chiffres'],
+        ['id' => 'sec7', 'done' => $user->emergencyContacts->isNotEmpty(), 'icon' => '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>', 'title' => 'Contacts d\'urgence', 'sub' => 'Personnes a prevenir'],
+    ];
+    $firstIncomplete = collect($sections)->first(fn($s) => !$s['done']);
+@endphp
+
 <div class="profile-container">
-    <h1 style="font-size:1.3rem;font-weight:700;color:#1B2A1B;margin-bottom:4px;">Completer mon profil</h1>
-    <p style="font-size:.85rem;color:#757575;margin-bottom:16px;">Remplissez ces informations pour profiter de tous les services HOSTO.</p>
-
-    {{-- Progress bar --}}
-    <div class="progress-label"><span id="progressPct">{{ $completionPercent }}</span>% complete</div>
-    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:{{ $completionPercent }}%"></div></div>
-
-    {{-- ====== Section 1 : Verification ====== --}}
-    <div class="section-card">
-        <div class="section-header" onclick="toggleSection('sec1')">
-            <div class="section-title">
-                <span class="section-num {{ $user->email_verified_at && $user->phone_verified_at ? 'done' : 'todo' }}">1</span>
-                Verification email et telephone
-            </div>
-            <div>
-                @if($user->email_verified_at)<span class="verify-badge verify-ok">Email &#10003;</span>@else<span class="verify-badge verify-pending">Email &#9888;</span>@endif
-                @if($user->phone_verified_at)<span class="verify-badge verify-ok">Tel &#10003;</span>@else<span class="verify-badge verify-pending">Tel &#9888;</span>@endif
+    {{-- Header --}}
+    <div class="profile-header">
+        <div class="profile-header-avatar">
+            @if($user->profile_photo_path)
+                <img src="{{ asset('storage/'.$user->profile_photo_path) }}" alt="{{ $user->name }}">
+            @else
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            @endif
+        </div>
+        <div class="profile-header-info">
+            <h1>{{ $user->name }}</h1>
+            <p>Completez votre profil pour profiter de tous les services HOSTO.</p>
+            <div class="progress-bar-mobile">
+                <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBarM" style="width:{{ $pct }}%"></div></div>
+                <div style="font-size:.72rem;color:#757575;margin-top:4px;"><span id="progressPctM">{{ $pct }}</span>% complete</div>
             </div>
         </div>
-        <div class="section-body" id="sec1">
-            <p style="font-size:.82rem;color:#757575;margin-bottom:12px;">
-                La verification de votre telephone est obligatoire pour prendre un rendez-vous, utiliser la teleconsultation ou acheter des medicaments en ligne.
-            </p>
-            <div class="field-row">
-                <div>
-                    <div style="font-size:.82rem;font-weight:600;margin-bottom:4px;">Email : {{ $user->email }}</div>
-                    @if($user->email_verified_at)
-                        <span class="verify-badge verify-ok">Verifie le {{ $user->email_verified_at->format('d/m/Y') }}</span>
-                    @else
-                        <form method="POST" action="/verification/email" style="display:inline;">@csrf
-                            <button type="submit" class="save-btn" style="padding:6px 14px;font-size:.78rem;">Envoyer le code</button>
-                        </form>
-                    @endif
-                </div>
-                <div>
-                    <div style="font-size:.82rem;font-weight:600;margin-bottom:4px;">Telephone : {{ $user->phone ?: 'Non renseigne' }}</div>
-                    @if($user->phone_verified_at)
-                        <span class="verify-badge verify-ok">Verifie le {{ $user->phone_verified_at->format('d/m/Y') }}</span>
-                    @elseif($user->phone)
-                        <button class="save-btn" style="padding:6px 14px;font-size:.78rem;" onclick="alert('Verification SMS bientot disponible.')">Verifier</button>
-                    @else
-                        <p style="font-size:.78rem;color:#E65100;">Ajoutez votre numero dans votre profil d'abord.</p>
-                    @endif
-                </div>
+        <div class="progress-circle">
+            <svg width="56" height="56" viewBox="0 0 50 50">
+                <circle cx="25" cy="25" r="22" fill="none" stroke="#EEE" stroke-width="4"/>
+                <circle cx="25" cy="25" r="22" fill="none" stroke="#388E3C" stroke-width="4" stroke-linecap="round" stroke-dasharray="{{ $circumference }}" stroke-dashoffset="{{ $dashOffset }}" id="progressCircle"/>
+            </svg>
+            <div class="progress-circle-text"><span id="progressPct">{{ $pct }}</span>%</div>
+        </div>
+    </div>
+
+    {{-- ====== Section 1 : Verification ====== --}}
+    <div class="section-card {{ $firstIncomplete && $firstIncomplete['id'] === 'sec1' ? 'active' : '' }}" data-section="sec1">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-icon {{ $sections[0]['done'] ? 'done' : 'todo' }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2">{!! $sections[0]['icon'] !!}</svg>
             </div>
+            <div class="section-label">
+                <div class="section-label-title">Verification email et telephone</div>
+                <div class="section-label-sub">Obligatoire pour RDV, teleconsultation, achats</div>
+            </div>
+            <div class="section-status">
+                @if($user->email_verified_at)<span class="verify-badge verify-ok">Email &#10003;</span>@else<span class="verify-badge verify-pending">Email</span>@endif
+                @if($user->phone_verified_at)<span class="verify-badge verify-ok">Tel &#10003;</span>@else<span class="verify-badge verify-pending">Tel</span>@endif
+            </div>
+            <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body" id="sec1">
+            <p style="font-size:.82rem;color:#757575;margin-bottom:14px;">
+                Rendez-vous sur la <a href="/verification" style="color:#388E3C;font-weight:600;">page de verification</a> pour confirmer votre email et votre telephone.
+            </p>
+            <a href="/verification" class="save-btn" style="display:inline-block;text-decoration:none;">Verifier mon compte</a>
         </div>
     </div>
 
     {{-- ====== Section 2 : Identite ====== --}}
-    <div class="section-card">
-        <div class="section-header" onclick="toggleSection('sec2')">
-            <div class="section-title">
-                <span class="section-num {{ ($user->nip || $user->id_document_number) ? 'done' : 'todo' }}">2</span>
-                Identification personnelle
+    <div class="section-card {{ $firstIncomplete && $firstIncomplete['id'] === 'sec2' ? 'active' : '' }}" data-section="sec2">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-icon {{ $sections[1]['done'] ? 'done' : 'todo' }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2">{!! $sections[1]['icon'] !!}</svg>
             </div>
-            <span class="section-check">{{ ($user->nip || $user->id_document_number) ? '&#10003;' : '' }}</span>
+            <div class="section-label">
+                <div class="section-label-title">Identification personnelle</div>
+                <div class="section-label-sub">NIP, piece d'identite, date de naissance, sexe, groupe sanguin</div>
+            </div>
+            <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
         <div class="section-body" id="sec2">
             <div id="msgIdentity" class="msg"></div>
@@ -167,13 +212,16 @@
     </div>
 
     {{-- ====== Section 3 : Residence ====== --}}
-    <div class="section-card">
-        <div class="section-header" onclick="toggleSection('sec3')">
-            <div class="section-title">
-                <span class="section-num {{ $user->country_of_residence ? 'done' : 'todo' }}">3</span>
-                Pays de residence
+    <div class="section-card {{ $firstIncomplete && $firstIncomplete['id'] === 'sec3' ? 'active' : '' }}" data-section="sec3">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-icon {{ $sections[2]['done'] ? 'done' : 'todo' }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2">{!! $sections[2]['icon'] !!}</svg>
             </div>
-            <span class="section-check">{{ $user->country_of_residence ? '&#10003;' : '' }}</span>
+            <div class="section-label">
+                <div class="section-label-title">Pays de residence</div>
+                <div class="section-label-sub">Pays, ville, adresse</div>
+            </div>
+            <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
         <div class="section-body" id="sec3">
             <div id="msgResidence" class="msg"></div>
@@ -182,23 +230,9 @@
                     <label>Pays</label>
                     <select id="country">
                         <option value="">— Choisir —</option>
-                        <option value="GA" {{ $user->country_of_residence === 'GA' ? 'selected' : '' }}>Gabon</option>
-                        <option value="CM" {{ $user->country_of_residence === 'CM' ? 'selected' : '' }}>Cameroun</option>
-                        <option value="CG" {{ $user->country_of_residence === 'CG' ? 'selected' : '' }}>Congo</option>
-                        <option value="CD" {{ $user->country_of_residence === 'CD' ? 'selected' : '' }}>RD Congo</option>
-                        <option value="GQ" {{ $user->country_of_residence === 'GQ' ? 'selected' : '' }}>Guinee Equatoriale</option>
-                        <option value="TD" {{ $user->country_of_residence === 'TD' ? 'selected' : '' }}>Tchad</option>
-                        <option value="CF" {{ $user->country_of_residence === 'CF' ? 'selected' : '' }}>Centrafrique</option>
-                        <option value="SN" {{ $user->country_of_residence === 'SN' ? 'selected' : '' }}>Senegal</option>
-                        <option value="CI" {{ $user->country_of_residence === 'CI' ? 'selected' : '' }}>Cote d'Ivoire</option>
-                        <option value="BJ" {{ $user->country_of_residence === 'BJ' ? 'selected' : '' }}>Benin</option>
-                        <option value="TG" {{ $user->country_of_residence === 'TG' ? 'selected' : '' }}>Togo</option>
-                        <option value="ML" {{ $user->country_of_residence === 'ML' ? 'selected' : '' }}>Mali</option>
-                        <option value="BF" {{ $user->country_of_residence === 'BF' ? 'selected' : '' }}>Burkina Faso</option>
-                        <option value="NE" {{ $user->country_of_residence === 'NE' ? 'selected' : '' }}>Niger</option>
-                        <option value="MG" {{ $user->country_of_residence === 'MG' ? 'selected' : '' }}>Madagascar</option>
-                        <option value="FR" {{ $user->country_of_residence === 'FR' ? 'selected' : '' }}>France</option>
-                        <option value="XX" {{ $user->country_of_residence === 'XX' ? 'selected' : '' }}>Autre</option>
+                        @foreach(['GA'=>'Gabon','CM'=>'Cameroun','CG'=>'Congo','CD'=>'RD Congo','GQ'=>'Guinee Equatoriale','TD'=>'Tchad','CF'=>'Centrafrique','SN'=>'Senegal','CI'=>"Cote d'Ivoire",'BJ'=>'Benin','TG'=>'Togo','ML'=>'Mali','BF'=>'Burkina Faso','NE'=>'Niger','MG'=>'Madagascar','FR'=>'France','XX'=>'Autre'] as $code => $name)
+                            <option value="{{ $code }}" {{ $user->country_of_residence === $code ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="field">
@@ -214,14 +248,17 @@
         </div>
     </div>
 
-    {{-- ====== Section 4 : Photo de profil ====== --}}
-    <div class="section-card">
-        <div class="section-header" onclick="toggleSection('sec4')">
-            <div class="section-title">
-                <span class="section-num {{ $user->profile_photo_path ? 'done' : 'todo' }}">4</span>
-                Photo de profil
+    {{-- ====== Section 4 : Photo ====== --}}
+    <div class="section-card {{ $firstIncomplete && $firstIncomplete['id'] === 'sec4' ? 'active' : '' }}" data-section="sec4">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-icon {{ $sections[3]['done'] ? 'done' : 'todo' }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2">{!! $sections[3]['icon'] !!}</svg>
             </div>
-            <span class="section-check">{{ $user->profile_photo_path ? '&#10003;' : '' }}</span>
+            <div class="section-label">
+                <div class="section-label-title">Photo de profil</div>
+                <div class="section-label-sub">JPG, PNG ou WebP — max 2 Mo</div>
+            </div>
+            <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
         <div class="section-body" id="sec4">
             <div id="msgPhoto" class="msg"></div>
@@ -230,34 +267,32 @@
                 <div>
                     <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="uploadPhoto()">
                     <button class="save-btn" onclick="document.getElementById('photoInput').click()">Choisir une photo</button>
-                    <p style="font-size:.72rem;color:#757575;margin-top:6px;">JPG, PNG ou WebP. Max 2 Mo.</p>
                 </div>
             </div>
         </div>
     </div>
 
     {{-- ====== Section 5 : Question secrete ====== --}}
-    <div class="section-card">
-        <div class="section-header" onclick="toggleSection('sec5')">
-            <div class="section-title">
-                <span class="section-num {{ $user->security_question ? 'done' : 'todo' }}">5</span>
-                Question secrete
+    <div class="section-card {{ $firstIncomplete && $firstIncomplete['id'] === 'sec5' ? 'active' : '' }}" data-section="sec5">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-icon {{ $sections[4]['done'] ? 'done' : 'todo' }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2">{!! $sections[4]['icon'] !!}</svg>
             </div>
-            <span class="section-check">{{ $user->security_question ? '&#10003;' : '' }}</span>
+            <div class="section-label">
+                <div class="section-label-title">Question secrete</div>
+                <div class="section-label-sub">Recuperation du compte en cas de perte d'acces</div>
+            </div>
+            <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
         <div class="section-body" id="sec5">
             <div id="msgSecurity" class="msg"></div>
-            <p style="font-size:.82rem;color:#757575;margin-bottom:12px;">Cette question sera utilisee pour verifier votre identite en cas de perte d'acces a votre compte.</p>
             <div class="field">
                 <label>Question</label>
                 <select id="secQuestion">
                     <option value="">— Choisir une question —</option>
-                    <option value="Quel est le nom de votre premier animal de compagnie ?" {{ $user->security_question === 'Quel est le nom de votre premier animal de compagnie ?' ? 'selected' : '' }}>Quel est le nom de votre premier animal de compagnie ?</option>
-                    <option value="Quel est le nom de jeune fille de votre mere ?" {{ $user->security_question === 'Quel est le nom de jeune fille de votre mere ?' ? 'selected' : '' }}>Quel est le nom de jeune fille de votre mere ?</option>
-                    <option value="Dans quelle ville etes-vous ne(e) ?" {{ $user->security_question === 'Dans quelle ville etes-vous ne(e) ?' ? 'selected' : '' }}>Dans quelle ville etes-vous ne(e) ?</option>
-                    <option value="Quel est le nom de votre meilleur ami d'enfance ?" {{ $user->security_question === 'Quel est le nom de votre meilleur ami d\'enfance ?' ? 'selected' : '' }}>Quel est le nom de votre meilleur ami d'enfance ?</option>
-                    <option value="Quel est le nom de votre premiere ecole ?" {{ $user->security_question === 'Quel est le nom de votre premiere ecole ?' ? 'selected' : '' }}>Quel est le nom de votre premiere ecole ?</option>
-                    <option value="Quel est votre plat prefere ?" {{ $user->security_question === 'Quel est votre plat prefere ?' ? 'selected' : '' }}>Quel est votre plat prefere ?</option>
+                    @foreach(['Quel est le nom de votre premier animal de compagnie ?','Quel est le nom de jeune fille de votre mere ?','Dans quelle ville etes-vous ne(e) ?','Quel est le nom de votre meilleur ami d\'enfance ?','Quel est le nom de votre premiere ecole ?','Quel est votre plat prefere ?'] as $q)
+                        <option value="{{ $q }}" {{ $user->security_question === $q ? 'selected' : '' }}>{{ $q }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="field">
@@ -268,20 +303,20 @@
         </div>
     </div>
 
-    {{-- ====== Section 6 : PIN medical ====== --}}
-    <div class="section-card">
-        <div class="section-header" onclick="toggleSection('sec6')">
-            <div class="section-title">
-                <span class="section-num {{ $user->medical_pin ? 'done' : 'todo' }}">6</span>
-                PIN du dossier medical
+    {{-- ====== Section 6 : PIN ====== --}}
+    <div class="section-card {{ $firstIncomplete && $firstIncomplete['id'] === 'sec6' ? 'active' : '' }}" data-section="sec6">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-icon {{ $sections[5]['done'] ? 'done' : 'todo' }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2">{!! $sections[5]['icon'] !!}</svg>
             </div>
-            <span class="section-check">{{ $user->medical_pin ? '&#10003;' : '' }}</span>
+            <div class="section-label">
+                <div class="section-label-title">PIN du dossier medical</div>
+                <div class="section-label-sub">Code secret pour proteger vos donnees de sante</div>
+            </div>
+            <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
         <div class="section-body" id="sec6">
             <div id="msgPin" class="msg"></div>
-            <p style="font-size:.82rem;color:#757575;margin-bottom:12px;">
-                Ce code secret (4 a 6 chiffres) sera demande chaque fois que vous souhaitez consulter votre dossier medical. Il protege vos donnees de sante meme si quelqu'un accede a votre compte.
-            </p>
             @if($user->medical_pin)
             <div class="field">
                 <label>PIN actuel</label>
@@ -303,22 +338,22 @@
     </div>
 
     {{-- ====== Section 7 : Contacts d'urgence ====== --}}
-    <div class="section-card">
-        <div class="section-header" onclick="toggleSection('sec7')">
-            <div class="section-title">
-                <span class="section-num {{ $user->emergencyContacts->isNotEmpty() ? 'done' : 'todo' }}">7</span>
-                Contacts d'urgence
+    <div class="section-card {{ $firstIncomplete && $firstIncomplete['id'] === 'sec7' ? 'active' : '' }}" data-section="sec7">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-icon {{ $sections[6]['done'] ? 'done' : 'todo' }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2">{!! $sections[6]['icon'] !!}</svg>
             </div>
-            <span class="section-check">{{ $user->emergencyContacts->isNotEmpty() ? '&#10003;' : '' }}</span>
+            <div class="section-label">
+                <div class="section-label-title">Contacts d'urgence</div>
+                <div class="section-label-sub">Personnes a prevenir ou autorisees a acceder au dossier</div>
+            </div>
+            <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
         <div class="section-body" id="sec7">
             <div id="msgContacts" class="msg"></div>
-            <p style="font-size:.82rem;color:#757575;margin-bottom:12px;">
-                Personnes a contacter en cas d'urgence ou autorisees a consulter votre dossier medical en cas d'incapacite.
-            </p>
             <div id="contactsList">
                 @forelse($user->emergencyContacts as $ec)
-                <div class="contact-block" data-idx="{{ $loop->index }}">
+                <div class="contact-block">
                     <button class="remove-contact" onclick="removeContact(this)" type="button">&#10005;</button>
                     <div class="field-row">
                         <div class="field"><label>Nom complet *</label><input type="text" class="ec-name" value="{{ $ec->name }}"></div>
@@ -329,46 +364,38 @@
                             <label>Lien</label>
                             <select class="ec-relation">
                                 <option value="">—</option>
-                                <option value="enfant" {{ $ec->relation === 'enfant' ? 'selected' : '' }}>Enfant</option>
-                                <option value="parent" {{ $ec->relation === 'parent' ? 'selected' : '' }}>Parent</option>
-                                <option value="conjoint" {{ $ec->relation === 'conjoint' ? 'selected' : '' }}>Conjoint(e)</option>
-                                <option value="frere_soeur" {{ $ec->relation === 'frere_soeur' ? 'selected' : '' }}>Frere / Soeur</option>
-                                <option value="ami" {{ $ec->relation === 'ami' ? 'selected' : '' }}>Ami(e)</option>
-                                <option value="autre" {{ $ec->relation === 'autre' ? 'selected' : '' }}>Autre</option>
+                                @foreach(['enfant'=>'Enfant','parent'=>'Parent','conjoint'=>'Conjoint(e)','frere_soeur'=>'Frere / Soeur','ami'=>'Ami(e)','autre'=>'Autre'] as $val => $lbl)
+                                    <option value="{{ $val }}" {{ $ec->relation === $val ? 'selected' : '' }}>{{ $lbl }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="field" style="display:flex;align-items:center;gap:8px;padding-top:20px;">
                             <label style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;">
                                 <input type="checkbox" class="ec-access" {{ $ec->can_access_medical_record ? 'checked' : '' }}>
-                                Peut acceder au dossier medical
+                                Acces au dossier medical
                             </label>
                         </div>
                     </div>
                 </div>
                 @empty
-                <div class="contact-block" data-idx="0">
+                <div class="contact-block">
                     <button class="remove-contact" onclick="removeContact(this)" type="button">&#10005;</button>
                     <div class="field-row">
-                        <div class="field"><label>Nom complet *</label><input type="text" class="ec-name" value=""></div>
-                        <div class="field"><label>Telephone *</label><input type="tel" class="ec-phone" value="" placeholder="+241..."></div>
+                        <div class="field"><label>Nom complet *</label><input type="text" class="ec-name"></div>
+                        <div class="field"><label>Telephone *</label><input type="tel" class="ec-phone" placeholder="+241..."></div>
                     </div>
                     <div class="field-row">
                         <div class="field">
                             <label>Lien</label>
                             <select class="ec-relation">
                                 <option value="">—</option>
-                                <option value="enfant">Enfant</option>
-                                <option value="parent">Parent</option>
-                                <option value="conjoint">Conjoint(e)</option>
-                                <option value="frere_soeur">Frere / Soeur</option>
-                                <option value="ami">Ami(e)</option>
-                                <option value="autre">Autre</option>
+                                <option value="enfant">Enfant</option><option value="parent">Parent</option><option value="conjoint">Conjoint(e)</option><option value="frere_soeur">Frere / Soeur</option><option value="ami">Ami(e)</option><option value="autre">Autre</option>
                             </select>
                         </div>
                         <div class="field" style="display:flex;align-items:center;gap:8px;padding-top:20px;">
                             <label style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;">
                                 <input type="checkbox" class="ec-access">
-                                Peut acceder au dossier medical
+                                Acces au dossier medical
                             </label>
                         </div>
                     </div>
@@ -382,7 +409,7 @@
         </div>
     </div>
 
-    <p style="text-align:center;margin-top:16px;"><a href="/compte" style="font-size:.82rem;color:#388E3C;font-weight:500;">Retour a mon espace</a></p>
+    <p style="text-align:center;margin-top:20px;"><a href="/compte" style="font-size:.82rem;color:#388E3C;font-weight:500;">Retour a mon espace</a></p>
 </div>
 @endsection
 
@@ -391,9 +418,13 @@
 const CSRF = '{{ csrf_token() }}';
 const headers = {'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest'};
 
-function toggleSection(id) {
-    const el = document.getElementById(id);
-    el.classList.toggle('open');
+function toggleSection(header) {
+    const card = header.closest('.section-card');
+    const wasActive = card.classList.contains('active');
+    // Close all
+    document.querySelectorAll('.section-card').forEach(c => c.classList.remove('active'));
+    // Toggle clicked
+    if (!wasActive) card.classList.add('active');
 }
 
 function showMsg(id, ok, text) {
@@ -401,12 +432,21 @@ function showMsg(id, ok, text) {
     el.style.display = 'block';
     el.className = 'msg ' + (ok ? 'msg-ok' : 'msg-err');
     el.textContent = text;
-    if (ok) setTimeout(() => { el.style.display = 'none'; }, 4000);
+    if (ok) setTimeout(() => el.style.display = 'none', 4000);
 }
 
 function updateProgress(pct) {
     document.getElementById('progressPct').textContent = pct;
-    document.getElementById('progressBar').style.width = pct + '%';
+    const el = document.getElementById('progressPctM');
+    if (el) el.textContent = pct;
+    const barM = document.getElementById('progressBarM');
+    if (barM) barM.style.width = pct + '%';
+    // Update circle
+    const circ = document.getElementById('progressCircle');
+    if (circ) {
+        const circumference = 2 * Math.PI * 22;
+        circ.setAttribute('stroke-dashoffset', circumference - (pct / 100) * circumference);
+    }
 }
 
 async function saveSection(url, body, msgId) {
@@ -415,7 +455,6 @@ async function saveSection(url, body, msgId) {
         const data = await res.json();
         if (res.ok) {
             showMsg(msgId, true, data.data?.message || 'Enregistre.');
-            // Refresh completion
             const r2 = await fetch('/compte/profil/completer', {headers:{'Accept':'text/html'}});
             const html = await r2.text();
             const match = html.match(/id="progressPct">(\d+)/);
@@ -450,10 +489,7 @@ function saveSecurityQuestion() {
     const q = document.getElementById('secQuestion').value;
     const a = document.getElementById('secAnswer').value;
     if (!q || !a) { showMsg('msgSecurity', false, 'Veuillez remplir la question et la reponse.'); return; }
-    saveSection('/compte/profil/question-secrete', {
-        security_question: q,
-        security_answer: a,
-    }, 'msgSecurity');
+    saveSection('/compte/profil/question-secrete', { security_question: q, security_answer: a }, 'msgSecurity');
 }
 
 async function saveMedicalPin() {
@@ -462,7 +498,6 @@ async function saveMedicalPin() {
     const currentEl = document.getElementById('currentPin');
     const body = { pin, pin_confirmation: confirm };
     if (currentEl) body.current_pin = currentEl.value;
-
     try {
         const res = await fetch('/compte/profil/pin-medical', { method:'PUT', headers, body:JSON.stringify(body) });
         const data = await res.json();
@@ -484,39 +519,31 @@ async function uploadPhoto() {
     const fd = new FormData();
     fd.append('photo', input.files[0]);
     try {
-        const res = await fetch('/compte/profil/photo', {
-            method:'POST',
-            headers:{'Accept':'application/json','X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest'},
-            body: fd
-        });
+        const res = await fetch('/compte/profil/photo', { method:'POST', headers:{'Accept':'application/json','X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest'}, body: fd });
         const data = await res.json();
         if (res.ok) {
             showMsg('msgPhoto', true, 'Photo mise a jour.');
             document.getElementById('photoPreview').src = URL.createObjectURL(input.files[0]);
         } else {
-            const errors = data.errors ? Object.values(data.errors).flat().join(' ') : 'Erreur.';
-            showMsg('msgPhoto', false, errors);
+            showMsg('msgPhoto', false, data.errors ? Object.values(data.errors).flat().join(' ') : 'Erreur.');
         }
     } catch(e) { showMsg('msgPhoto', false, 'Erreur de connexion.'); }
 }
 
-// --- Emergency contacts ---
 function addContact() {
     const list = document.getElementById('contactsList');
     if (list.children.length >= 5) { alert('Maximum 5 contacts.'); return; }
-    const idx = list.children.length;
-    const tpl = `<div class="contact-block" data-idx="${idx}">
+    list.insertAdjacentHTML('beforeend', `<div class="contact-block">
         <button class="remove-contact" onclick="removeContact(this)" type="button">&#10005;</button>
         <div class="field-row">
-            <div class="field"><label>Nom complet *</label><input type="text" class="ec-name" value=""></div>
-            <div class="field"><label>Telephone *</label><input type="tel" class="ec-phone" value="" placeholder="+241..."></div>
+            <div class="field"><label>Nom complet *</label><input type="text" class="ec-name"></div>
+            <div class="field"><label>Telephone *</label><input type="tel" class="ec-phone" placeholder="+241..."></div>
         </div>
         <div class="field-row">
             <div class="field"><label>Lien</label><select class="ec-relation"><option value="">—</option><option value="enfant">Enfant</option><option value="parent">Parent</option><option value="conjoint">Conjoint(e)</option><option value="frere_soeur">Frere / Soeur</option><option value="ami">Ami(e)</option><option value="autre">Autre</option></select></div>
-            <div class="field" style="display:flex;align-items:center;gap:8px;padding-top:20px;"><label style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;"><input type="checkbox" class="ec-access"> Peut acceder au dossier medical</label></div>
+            <div class="field" style="display:flex;align-items:center;gap:8px;padding-top:20px;"><label style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;"><input type="checkbox" class="ec-access"> Acces au dossier medical</label></div>
         </div>
-    </div>`;
-    list.insertAdjacentHTML('beforeend', tpl);
+    </div>`);
 }
 
 function removeContact(btn) {
@@ -533,12 +560,7 @@ function saveEmergencyContacts() {
         const name = b.querySelector('.ec-name').value.trim();
         const phone = b.querySelector('.ec-phone').value.trim();
         if (!name || !phone) { valid = false; return; }
-        contacts.push({
-            name,
-            phone,
-            relation: b.querySelector('.ec-relation').value || null,
-            can_access_medical_record: b.querySelector('.ec-access').checked,
-        });
+        contacts.push({ name, phone, relation: b.querySelector('.ec-relation').value || null, can_access_medical_record: b.querySelector('.ec-access').checked });
     });
     if (!valid || !contacts.length) { showMsg('msgContacts', false, 'Remplissez au moins le nom et le telephone de chaque contact.'); return; }
     saveSection('/compte/profil/contacts-urgence', { contacts }, 'msgContacts');
