@@ -56,7 +56,7 @@
     .dash-search-bar svg { flex-shrink:0; }
 
     /* Services 2 colonnes */
-    .dash-services { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+    .dash-services { display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:16px; }
     .dash-service-card {
         background:white; border:2px solid #E8F5E9; border-radius:14px; padding:18px 12px;
         text-align:center; text-decoration:none; color:#1B2A1B; transition:all .2s;
@@ -103,6 +103,9 @@
         display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
     }
 
+    @media(max-width:900px) {
+        .dash-services { grid-template-columns:repeat(2, 1fr); }
+    }
     @media(max-width:500px) {
         .dash-counters { grid-template-columns:repeat(2, 1fr); }
     }
@@ -159,7 +162,7 @@
     </div>
 </div>
 
-{{-- Services : Consultation en ligne + Prise de rendez-vous --}}
+{{-- Services : Consultation en ligne, Prise de rendez-vous, Examens, Epargne Sante --}}
 <div class="dash-services">
     <a href="/annuaire/medecins" class="dash-service-card">
         <div class="dash-svc-icon">
@@ -172,6 +175,18 @@
             <img src="/images/icons/icon-rendez-vous.png" alt="Rendez-vous">
         </div>
         <div class="dash-svc-label">Prise de Rendez-vous</div>
+    </a>
+    <a href="/examens" class="dash-service-card">
+        <div class="dash-svc-icon">
+            <img src="/images/icons/icon-labo.png" alt="Examens">
+        </div>
+        <div class="dash-svc-label">Examens</div>
+    </a>
+    <a href="#" class="dash-service-card" style="border-color:#BBDEFB;">
+        <div class="dash-svc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.5" style="width:40px;height:40px;"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.4-11-.3-11 4 0 4.5 8 10 14 12.5 6-2.5 14-8 14-12.5 0-4.3-7.5-5.4-11-4-.2-.6-1.5-2-3-2z" transform="scale(.85) translate(1,1)"/><path d="M12 8v8M8 12h8"/></svg>
+        </div>
+        <div class="dash-svc-label" style="color:#1565C0;">Epargne Sante</div>
     </a>
 </div>
 
