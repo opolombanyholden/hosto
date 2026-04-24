@@ -2,7 +2,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
     <span>Tableau de bord</span>
 </a>
-<a href="/compte/mon-dossier" class="{{ ($active ?? '') === 'dossier' ? 'active' : '' }}">
+<a href="/compte/dossier-medical" class="{{ ($active ?? '') === 'dossier' ? 'active' : '' }}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15h6"/></svg>
     <span>Mon dossier</span>
 </a>

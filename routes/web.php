@@ -76,21 +76,13 @@ Route::prefix('compte')->group(function (): void {
 
             return view('compte.rendez-vous', compact('appointments'));
         })->name('compte.rdv');
-        Route::get('/mon-dossier', function () {
+        Route::get('/dossier-medical', function () {
             $user = auth()->user();
             $appointments = Appointment::where('patient_id', $user->id)->with(['timeSlot', 'practitioner', 'structure'])->orderByDesc('created_at')->limit(10)->get();
             $consultations = Consultation::where('patient_id', $user->id)->with(['practitioner', 'structure'])->orderByDesc('created_at')->limit(10)->get();
 
             return view('compte.mon-dossier', compact('user', 'appointments', 'consultations'));
-        })->middleware('medical.pin')->name('compte.mon-dossier');
-        Route::get('/dossier-medical', function () {
-            $consultations = Consultation::where('patient_id', auth()->id())
-                ->with(['practitioner', 'structure', 'prescriptions.items', 'examRequests', 'careActs', 'treatments'])
-                ->orderByDesc('created_at')
-                ->get();
-
-            return view('compte.dossier-medical', compact('consultations'));
-        })->name('compte.dossier');
+        })->middleware('medical.pin')->name('compte.dossier');
         Route::get('/dossier-medical/{uuid}', function (string $uuid) {
             $consultation = Consultation::where('patient_id', auth()->id())
                 ->whereUuid($uuid)
