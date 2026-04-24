@@ -82,7 +82,7 @@ Route::prefix('compte')->group(function (): void {
             $consultations = Consultation::where('patient_id', $user->id)->with(['practitioner', 'structure'])->orderByDesc('created_at')->limit(10)->get();
 
             return view('compte.mon-dossier', compact('user', 'appointments', 'consultations'));
-        })->middleware('medical.pin')->name('compte.dossier');
+        })->name('compte.dossier');
         Route::get('/dossier-medical/{uuid}', function (string $uuid) {
             $consultation = Consultation::where('patient_id', auth()->id())
                 ->whereUuid($uuid)
