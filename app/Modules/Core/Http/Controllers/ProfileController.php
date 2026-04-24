@@ -33,6 +33,32 @@ final class ProfileController
     }
 
     /**
+     * Show PIN entry page before accessing profile.
+     */
+    public function showProfilePin(): View
+    {
+        return view('compte.profile-pin');
+    }
+
+    /**
+     * Verify PIN to access profile.
+     */
+    public function verifyProfilePin(Request $request): RedirectResponse
+    {
+        $request->validate(['pin' => 'required|digits_between:4,6']);
+
+        $user = $request->user();
+
+        if (! Hash::check($request->input('pin'), $user->medical_pin)) {
+            return back()->withErrors(['pin' => 'PIN incorrect.']);
+        }
+
+        session(['profile_pin_verified_at' => now()->timestamp]);
+
+        return redirect()->route('compte.complete-profile');
+    }
+
+    /**
      * Complete profile page (patient only).
      */
     public function completeProfile(Request $request): View

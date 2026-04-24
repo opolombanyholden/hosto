@@ -96,16 +96,22 @@ Route::prefix('compte')->group(function (): void {
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
 
-        // Complete profile flow
-        Route::get('/profil/completer', [ProfileController::class, 'completeProfile'])->name('compte.complete-profile');
-        Route::put('/profil/identite', [ProfileController::class, 'updateIdentity'])->name('compte.profil.identity');
-        Route::post('/profil/identite/document', [ProfileController::class, 'uploadIdDocument'])->name('compte.profil.id-document');
-        Route::put('/profil/residence', [ProfileController::class, 'updateResidence'])->name('compte.profil.residence');
-        Route::put('/profil/question-secrete', [ProfileController::class, 'updateSecurityQuestion'])->name('compte.profil.security-question');
-        Route::put('/profil/pin-medical', [ProfileController::class, 'updateMedicalPin'])->name('compte.profil.medical-pin');
-        Route::post('/profil/pin-medical/verify', [ProfileController::class, 'verifyMedicalPin'])->name('compte.profil.verify-pin');
-        Route::put('/profil/contacts-urgence', [ProfileController::class, 'updateEmergencyContacts'])->name('compte.profil.emergency');
-        Route::post('/profil/photo', [ProfileController::class, 'updatePhoto'])->name('compte.profil.photo');
+        // PIN verification before profile access
+        Route::get('/profil/pin', [ProfileController::class, 'showProfilePin'])->name('compte.profile-pin');
+        Route::post('/profil/pin-verification', [ProfileController::class, 'verifyProfilePin']);
+
+        // Complete profile flow (protected by PIN if set)
+        Route::middleware('profile.pin')->group(function (): void {
+            Route::get('/profil/completer', [ProfileController::class, 'completeProfile'])->name('compte.complete-profile');
+            Route::put('/profil/identite', [ProfileController::class, 'updateIdentity'])->name('compte.profil.identity');
+            Route::post('/profil/identite/document', [ProfileController::class, 'uploadIdDocument'])->name('compte.profil.id-document');
+            Route::put('/profil/residence', [ProfileController::class, 'updateResidence'])->name('compte.profil.residence');
+            Route::put('/profil/question-secrete', [ProfileController::class, 'updateSecurityQuestion'])->name('compte.profil.security-question');
+            Route::put('/profil/pin-medical', [ProfileController::class, 'updateMedicalPin'])->name('compte.profil.medical-pin');
+            Route::post('/profil/pin-medical/verify', [ProfileController::class, 'verifyMedicalPin'])->name('compte.profil.verify-pin');
+            Route::put('/profil/contacts-urgence', [ProfileController::class, 'updateEmergencyContacts'])->name('compte.profil.emergency');
+            Route::post('/profil/photo', [ProfileController::class, 'updatePhoto'])->name('compte.profil.photo');
+        });
     });
 });
 
