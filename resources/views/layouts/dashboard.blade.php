@@ -19,7 +19,7 @@
             transition: width .25s ease;
             overflow: hidden;
         }
-        .sidebar.expanded { width: 260px; }
+        .sidebar.expanded, .sidebar:hover { width: 260px; }
 
         .sidebar-header {
             padding: 14px; border-bottom: 1px solid rgba(255,255,255,.1);
@@ -36,7 +36,7 @@
             font-size: 1.15rem; font-weight: 800; white-space: nowrap;
             opacity: 0; transition: opacity .2s;
         }
-        .sidebar.expanded .sidebar-logo-text { opacity: 1; }
+        .sidebar.expanded .sidebar-logo-text, .sidebar:hover .sidebar-logo-text { opacity: 1; }
 
         .sidebar-nav { flex: 1; padding: 10px 8px; overflow-y: auto; overflow-x: hidden; }
         .sidebar-nav a {
@@ -53,8 +53,8 @@
             color: rgba(255,255,255,.35); padding: 14px 10px 4px; white-space: nowrap; overflow: hidden;
         }
         /* Hide text labels when collapsed */
-        .sidebar:not(.expanded) .sidebar-nav a span,
-        .sidebar:not(.expanded) .sidebar-section { display: none; }
+        .sidebar:not(.expanded):not(:hover) .sidebar-nav a span,
+        .sidebar:not(.expanded):not(:hover) .sidebar-section { display: none; }
         .sidebar-nav a span { flex: 1; }
 
         /* Footer — user + deconnexion + parametres */
@@ -71,11 +71,12 @@
         }
         .sidebar-footer a:hover, .sidebar-footer button:hover { background: rgba(255,255,255,.1); color: white; }
         .sidebar-footer svg { width: 20px; height: 20px; flex-shrink: 0; }
-        .sidebar:not(.expanded) .sidebar-footer span { display: none; }
+        .sidebar:not(.expanded):not(:hover) .sidebar-footer span { display: none; }
 
         /* Main */
         .main { flex: 1; margin-left: 64px; transition: margin-left .25s ease; }
         .sidebar.expanded ~ .main { margin-left: 260px; }
+        .sidebar:not(.expanded):hover ~ .main { margin-left: 64px; }
 
         .topbar {
             background: white; padding: 12px 32px; display: flex;
