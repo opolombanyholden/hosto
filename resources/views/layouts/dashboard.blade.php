@@ -79,11 +79,10 @@
         .sidebar:not(.expanded):hover ~ .main { margin-left: 64px; }
 
         .topbar {
-            background: white; padding: 12px 32px; display: flex;
-            align-items: center; justify-content: space-between;
-            border-bottom: 1px solid #EEE; position: sticky; top: 0; z-index: 50;
+            background: white; padding: 8px 32px; display: none;
+            align-items: center; border-bottom: 1px solid #EEE;
+            position: sticky; top: 0; z-index: 50;
         }
-        .topbar-title { font-size: 1rem; font-weight: 600; color: #1B2A1B; }
 
         .content { padding: 32px; }
 
@@ -96,6 +95,7 @@
             .main { margin-left: 0 !important; }
             .content { padding: 20px 16px; }
             .mobile-toggle { display: flex !important; }
+            .topbar { display: flex; }
         }
         .mobile-toggle {
             display: none; padding: 8px; cursor: pointer; background: none; border: none;
@@ -138,12 +138,9 @@
 
     <div class="main">
         <header class="topbar">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <button class="mobile-toggle" onclick="toggleSidebar()">
-                    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                </button>
-                <span class="topbar-title">@yield('page-title', 'Tableau de bord')</span>
-            </div>
+            <button class="mobile-toggle" onclick="toggleSidebar()">
+                <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
         </header>
         <main class="content">
             @yield('content')
