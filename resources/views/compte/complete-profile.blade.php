@@ -456,7 +456,7 @@ async function uploadIdDocument() {
             body: fd
         });
         const data = await res.json();
-        if (res.ok) { showMsg('msgIdDoc', true, data.data?.message || 'Document enregistre.'); }
+        if (res.ok) { showMsg('msgIdDoc', true, data.data?.message || 'Document enregistre.'); markSectionDone('msgIdentity'); }
         else { showMsg('msgIdDoc', false, data.errors ? Object.values(data.errors).flat().join(' ') : 'Erreur.'); }
     } catch(e) { showMsg('msgIdDoc', false, 'Erreur de connexion.'); }
 }
@@ -491,12 +491,22 @@ function updateProgress(pct) {
     }
 }
 
+function markSectionDone(msgId) {
+    const msgEl = document.getElementById(msgId);
+    if (!msgEl) return;
+    const card = msgEl.closest('.section-card');
+    if (!card) return;
+    const icon = card.querySelector('.section-icon');
+    if (icon) { icon.classList.remove('todo'); icon.classList.add('done'); }
+}
+
 async function saveSection(url, body, msgId) {
     try {
         const res = await fetch(url, { method:'PUT', headers, body:JSON.stringify(body) });
         const data = await res.json();
         if (res.ok) {
             showMsg(msgId, true, data.data?.message || 'Enregistre.');
+            markSectionDone(msgId);
             const r2 = await fetch('/compte/profil/completer', {headers:{'Accept':'text/html'}});
             const html = await r2.text();
             const match = html.match(/id="progressPct">(\d+)/);
@@ -545,6 +555,7 @@ async function saveMedicalPin() {
         const data = await res.json();
         if (res.ok) {
             showMsg('msgPin', true, data.data?.message || 'PIN enregistre.');
+            markSectionDone('msgPin');
             document.getElementById('newPin').value = '';
             document.getElementById('confirmPin').value = '';
             if (currentEl) currentEl.value = '';
@@ -565,6 +576,7 @@ async function uploadPhoto() {
         const data = await res.json();
         if (res.ok) {
             showMsg('msgPhoto', true, 'Photo mise a jour.');
+            markSectionDone('msgPhoto');
             document.getElementById('photoPreview').src = URL.createObjectURL(input.files[0]);
         } else {
             showMsg('msgPhoto', false, data.errors ? Object.values(data.errors).flat().join(' ') : 'Erreur.');
