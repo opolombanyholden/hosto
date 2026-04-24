@@ -79,7 +79,7 @@ final class ProfileController
         $user = $request->user();
 
         $data = $request->validate([
-            'nip' => 'nullable|string|max:30|unique:users,nip,'.$user->id,
+            'nip' => ['nullable', 'string', 'max:30', 'regex:/^[A-Za-z0-9]{2}-\d{4}-\d{8}$/', 'unique:users,nip,'.$user->id],
             'id_document_type' => 'nullable|in:cni,passeport,carte_sejour,permis_conduire',
             'id_document_number' => 'nullable|string|max:50',
             'date_of_birth' => 'nullable|date|before:today',

@@ -168,8 +168,8 @@
         <div class="section-body" id="sec2">
             <div id="msgIdentity" class="msg"></div>
             <div class="field">
-                <label>NIP (Numero d'Identite Personnel)</label>
-                <input type="text" id="nip" value="{{ $user->nip }}" placeholder="Votre NIP" maxlength="30">
+                <label>NIP (Numero d'Identite Personnel) <span style="font-weight:400;color:#757575;">— format XX-BBBB-AAAAMMJJ</span></label>
+                <input type="text" id="nip" value="{{ $user->nip }}" placeholder="AB-1234-20260423" maxlength="16" oninput="formatNip(this)" style="text-transform:uppercase;letter-spacing:1px;">
             </div>
             <div class="field-row">
                 <div class="field">
@@ -422,6 +422,14 @@
 
 @section('scripts')
 <script>
+function formatNip(input) {
+    let v = input.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    let formatted = '';
+    if (v.length > 0) formatted += v.substring(0, 2);
+    if (v.length > 2) formatted += '-' + v.substring(2, 6);
+    if (v.length > 6) formatted += '-' + v.substring(6, 14);
+    input.value = formatted;
+}
 const CSRF = '{{ csrf_token() }}';
 const RELATIONS = @json($contactRelations->map(fn($r) => ['code' => $r->code, 'label' => $r->label_fr]));
 const headers = {'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest'};
