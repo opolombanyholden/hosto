@@ -198,10 +198,9 @@
     </div>
 </div>
 
-{{-- Bandeau info --}}
-<div class="dash-info-banner" style="background:#FFF8E1;border-color:#FFE082;">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFB300" stroke="none"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6z"/><path d="M11 10h2v5h-2zM11 16h2v2h-2z"/></svg>
-    <span style="color:#795548;font-size:.75rem;">Bienvenue sur HOSTO ! Explorez les structures de sante pres de chez vous.</span>
+{{-- Espace publicitaire --}}
+<div style="background:#F5F5F5;border:1px solid #EEE;border-radius:10px;padding:24px;margin-bottom:16px;text-align:center;">
+    <span style="font-size:.82rem;font-weight:600;color:#BDBDBD;text-transform:uppercase;letter-spacing:2px;">PUB</span>
 </div>
 
 {{-- Acces rapides 2x2 : Pharmacie, Hopitale, Soins a domicile, Evacuation/Ambulance --}}
