@@ -14,7 +14,7 @@
 </a>
 <a href="/compte/profil/completer">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    Completer mon profil
+    {{ auth()->user()->isProfileComplete() ? 'Mon profil' : 'Completer mon profil' }}
 </a>
 <a href="/annuaire">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>

@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Completer mon profil — HOSTO')
+@section('title', ($user->isProfileComplete() ? 'Mon profil' : 'Completer mon profil') . ' — HOSTO')
 @section('breadcrumb')
 <li><span class="sep">/</span> <a href="/compte">Mon espace</a></li>
-<li><span class="sep">/</span> <span class="current">Completer mon profil</span></li>
+<li><span class="sep">/</span> <span class="current">{{ $user->isProfileComplete() ? 'Mon profil' : 'Completer mon profil' }}</span></li>
 @endsection
 
 @section('styles')
@@ -113,7 +113,7 @@
         </div>
         <div class="profile-header-info">
             <h1>{{ $user->name }}</h1>
-            <p>Completez votre profil pour profiter de tous les services HOSTO.</p>
+            <p>{{ $user->isProfileComplete() ? 'Gerez vos informations personnelles.' : 'Completez votre profil pour profiter de tous les services HOSTO.' }}</p>
             <div class="progress-bar-mobile">
                 <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBarM" style="width:{{ $pct }}%"></div></div>
                 <div style="font-size:.72rem;color:#757575;margin-top:4px;"><span id="progressPctM">{{ $pct }}</span>% complete</div>
