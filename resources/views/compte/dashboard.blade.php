@@ -163,13 +163,13 @@
 <div class="dash-services">
     <a href="/annuaire/medecins" class="dash-service-card">
         <div class="dash-svc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="1.5"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94"/><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+            <img src="/images/icons/icon-medecin.png" alt="Consultation">
         </div>
         <div class="dash-svc-label">Consultation en ligne</div>
     </a>
     <a href="/annuaire" class="dash-service-card">
         <div class="dash-svc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+            <img src="/images/icons/icon-rendez-vous.png" alt="Rendez-vous">
         </div>
         <div class="dash-svc-label">Prise de Rendez-vous</div>
     </a>
@@ -205,25 +205,25 @@
 <div class="dash-quick-grid">
     <a href="/annuaire?type=pharmacie" class="dash-quick-item">
         <div class="dash-quick-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2v20" stroke="#388E3C"/><path d="M2 12h20" stroke="#388E3C"/><rect x="4" y="4" width="16" height="16" rx="2" stroke="#388E3C"/></svg>
+            <img src="/images/icons/icon-pharamcie.png" alt="Pharmacie" style="width:50px;height:50px;">
         </div>
         <div class="dash-quick-name">Pharmacie</div>
     </a>
     <a href="/annuaire?type=hopital-general" class="dash-quick-item">
         <div class="dash-quick-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/><path d="M10 7h4M12 5v4"/></svg>
+            <img src="/images/icons/icon-hopitaux.png" alt="Hopital" style="width:50px;height:50px;">
         </div>
         <div class="dash-quick-name">Hopitale</div>
     </a>
     <a href="#" class="dash-quick-item">
         <div class="dash-quick-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/><path d="M17 21v-2a4 4 0 0 0-4-4H8"/><circle cx="9" cy="10" r="2"/></svg>
+            <img src="/images/icons/icon-soin-a-domicile.png" alt="Soins a domicile" style="width:50px;height:50px;">
         </div>
         <div class="dash-quick-name">Soins a domicile</div>
     </a>
     <a href="#" class="dash-quick-item">
         <div class="dash-quick-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="1.5"><path d="M5 17h14M5 17l-2 4h18l-2-4M7 17V7a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v10"/><path d="M12 3v4"/><path d="M10 10h4M12 8v4"/></svg>
+            <img src="/images/icons/icon-ambulance.png" alt="Ambulance" style="width:50px;height:50px;">
         </div>
         <div class="dash-quick-name">Evacuation / Ambulance</div>
     </a>
