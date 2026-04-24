@@ -99,6 +99,7 @@ Route::prefix('compte')->group(function (): void {
         // Complete profile flow
         Route::get('/profil/completer', [ProfileController::class, 'completeProfile'])->name('compte.complete-profile');
         Route::put('/profil/identite', [ProfileController::class, 'updateIdentity'])->name('compte.profil.identity');
+        Route::post('/profil/identite/document', [ProfileController::class, 'uploadIdDocument'])->name('compte.profil.id-document');
         Route::put('/profil/residence', [ProfileController::class, 'updateResidence'])->name('compte.profil.residence');
         Route::put('/profil/question-secrete', [ProfileController::class, 'updateSecurityQuestion'])->name('compte.profil.security-question');
         Route::put('/profil/pin-medical', [ProfileController::class, 'updateMedicalPin'])->name('compte.profil.medical-pin');

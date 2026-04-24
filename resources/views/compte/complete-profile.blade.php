@@ -186,6 +186,20 @@
                     <input type="text" id="idDocNumber" value="{{ $user->id_document_number }}" maxlength="50">
                 </div>
             </div>
+            <div class="field" style="margin-top:4px;">
+                <label>Piece d'identite (facultatif) <span style="font-weight:400;color:#757575;">— JPG, PNG ou PDF, max 5 Mo</span></label>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    @if($user->id_document_file_path)
+                        <span style="font-size:.78rem;color:#2E7D32;display:flex;align-items:center;gap:4px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                            Document joint
+                        </span>
+                    @endif
+                    <input type="file" id="idDocFile" accept="image/jpeg,image/png,application/pdf" style="display:none;" onchange="uploadIdDocument()">
+                    <button type="button" onclick="document.getElementById('idDocFile').click()" style="padding:6px 14px;border:1px solid #E0E0E0;border-radius:6px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;color:#424242;">{{ $user->id_document_file_path ? 'Remplacer' : 'Joindre un fichier' }}</button>
+                </div>
+                <div id="msgIdDoc" class="msg" style="margin-top:6px;"></div>
+            </div>
             <div class="field-row-3">
                 <div class="field">
                     <label>Date de naissance</label>
@@ -429,6 +443,22 @@ function formatNip(input) {
     if (v.length > 2) formatted += '-' + v.substring(2, 6);
     if (v.length > 6) formatted += '-' + v.substring(6, 14);
     input.value = formatted;
+}
+async function uploadIdDocument() {
+    const input = document.getElementById('idDocFile');
+    if (!input.files.length) return;
+    const fd = new FormData();
+    fd.append('id_document_file', input.files[0]);
+    try {
+        const res = await fetch('/compte/profil/identite/document', {
+            method:'POST',
+            headers:{'Accept':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','X-Requested-With':'XMLHttpRequest'},
+            body: fd
+        });
+        const data = await res.json();
+        if (res.ok) { showMsg('msgIdDoc', true, data.data?.message || 'Document enregistre.'); }
+        else { showMsg('msgIdDoc', false, data.errors ? Object.values(data.errors).flat().join(' ') : 'Erreur.'); }
+    } catch(e) { showMsg('msgIdDoc', false, 'Erreur de connexion.'); }
 }
 const CSRF = '{{ csrf_token() }}';
 const RELATIONS = @json($contactRelations->map(fn($r) => ['code' => $r->code, 'label' => $r->label_fr]));

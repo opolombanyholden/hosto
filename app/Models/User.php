@@ -57,6 +57,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $nip
  * @property string|null $id_document_type
  * @property string|null $id_document_number
+ * @property string|null $id_document_file_path
  * @property CarbonImmutable|null $date_of_birth
  * @property string|null $gender
  * @property string|null $blood_group
@@ -78,7 +79,7 @@ use Laravel\Sanctum\HasApiTokens;
     'name', 'email', 'phone', 'password',
     'email_verified_at', 'phone_verified_at',
     'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at',
-    'nip', 'id_document_type', 'id_document_number',
+    'nip', 'id_document_type', 'id_document_number', 'id_document_file_path',
     'date_of_birth', 'gender', 'blood_group',
     'country_of_residence', 'city_of_residence', 'address_of_residence',
     'profile_photo_path', 'security_question', 'security_answer',

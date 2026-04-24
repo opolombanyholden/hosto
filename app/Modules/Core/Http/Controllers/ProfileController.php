@@ -99,6 +99,28 @@ final class ProfileController
     }
 
     /**
+     * Upload ID document file (optional).
+     */
+    public function uploadIdDocument(Request $request, AuditLogger $audit): JsonResponse
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'id_document_file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ]);
+
+        $path = $request->file('id_document_file')->store('id-documents/'.$user->uuid, 'public');
+
+        $user->update(['id_document_file_path' => $path]);
+
+        $audit->record(AuditLogger::ACTION_UPDATE, 'user', $user->uuid, [
+            'section' => 'id_document_file',
+        ]);
+
+        return response()->json(['data' => ['message' => 'Piece d\'identite enregistree.', 'path' => $path]]);
+    }
+
+    /**
      * Save residence section (country, city, address).
      */
     public function updateResidence(Request $request, AuditLogger $audit): JsonResponse
