@@ -11,58 +11,95 @@
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Poppins',sans-serif; background:#F5F5F5; color:#2D2D2D; min-height:100vh; display:flex; }
 
+        /* Sidebar — collapsed by default */
         .sidebar {
-            width: 260px; background: var(--env-dark); color: white;
+            width: 64px; background: var(--env-dark); color: white;
             display: flex; flex-direction: column; position: fixed;
             top: 0; bottom: 0; left: 0; z-index: 100;
-            transition: transform .3s;
+            transition: width .25s ease;
+            overflow: hidden;
         }
-        .sidebar-header { padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,.1); }
-        .sidebar-logo { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
-        .sidebar-logo .icon { width:32px;height:32px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center; }
-        .sidebar-logo .icon svg { width:18px;height:18px;stroke:white; }
-        .sidebar-nav { flex:1; padding:16px 12px; overflow-y:auto; }
+        .sidebar.expanded { width: 260px; }
+
+        .sidebar-header {
+            padding: 14px; border-bottom: 1px solid rgba(255,255,255,.1);
+            display: flex; align-items: center; gap: 10px; min-height: 56px;
+        }
+        .sidebar-toggle {
+            width: 36px; height: 36px; background: rgba(255,255,255,.1); border: none;
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; flex-shrink: 0; transition: background .2s;
+        }
+        .sidebar-toggle:hover { background: rgba(255,255,255,.2); }
+        .sidebar-toggle svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 2; }
+        .sidebar-logo-text {
+            font-size: 1.15rem; font-weight: 800; white-space: nowrap;
+            opacity: 0; transition: opacity .2s;
+        }
+        .sidebar.expanded .sidebar-logo-text { opacity: 1; }
+
+        .sidebar-nav { flex: 1; padding: 10px 8px; overflow-y: auto; overflow-x: hidden; }
         .sidebar-nav a {
-            display:flex; align-items:center; gap:10px; padding:10px 14px;
-            color:rgba(255,255,255,.7); font-size:.85rem; font-weight:500;
-            border-radius:8px; transition:all .2s; margin-bottom:2px;
+            display: flex; align-items: center; gap: 10px; padding: 10px;
+            color: rgba(255,255,255,.7); font-size: .82rem; font-weight: 500;
+            border-radius: 8px; transition: all .2s; margin-bottom: 2px;
+            white-space: nowrap; overflow: hidden;
         }
-        .sidebar-nav a:hover { background:rgba(255,255,255,.1); color:white; }
-        .sidebar-nav a.active { background:rgba(255,255,255,.15); color:white; font-weight:600; }
-        .sidebar-nav a svg { width:18px; height:18px; flex-shrink:0; }
-        .sidebar-section { font-size:.68rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,.4); padding:16px 14px 6px; }
-        .sidebar-footer { padding:16px 24px; border-top:1px solid rgba(255,255,255,.1); }
-        .sidebar-user { font-size:.82rem; }
-        .sidebar-user .name { font-weight:600; }
-        .sidebar-user .role { font-size:.72rem; opacity:.6; }
+        .sidebar-nav a:hover { background: rgba(255,255,255,.1); color: white; }
+        .sidebar-nav a.active { background: rgba(255,255,255,.15); color: white; font-weight: 600; }
+        .sidebar-nav a svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .sidebar-section {
+            font-size: .62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            color: rgba(255,255,255,.35); padding: 14px 10px 4px; white-space: nowrap; overflow: hidden;
+        }
+        /* Hide text labels when collapsed */
+        .sidebar:not(.expanded) .sidebar-nav a span,
+        .sidebar:not(.expanded) .sidebar-section { display: none; }
+        .sidebar-nav a span { flex: 1; }
 
-        .main { flex:1; margin-left:260px; }
+        /* Footer — user + deconnexion + parametres */
+        .sidebar-footer {
+            border-top: 1px solid rgba(255,255,255,.1); padding: 10px 8px;
+        }
+        .sidebar-footer a, .sidebar-footer button {
+            display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+            color: rgba(255,255,255,.7); font-size: .78rem; font-weight: 500;
+            border-radius: 8px; transition: all .2s; margin-bottom: 2px;
+            white-space: nowrap; overflow: hidden; width: 100%;
+            background: none; border: none; cursor: pointer; font-family: Poppins, sans-serif;
+            text-decoration: none; text-align: left;
+        }
+        .sidebar-footer a:hover, .sidebar-footer button:hover { background: rgba(255,255,255,.1); color: white; }
+        .sidebar-footer svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .sidebar:not(.expanded) .sidebar-footer span { display: none; }
+
+        /* Main */
+        .main { flex: 1; margin-left: 64px; transition: margin-left .25s ease; }
+        .sidebar.expanded ~ .main { margin-left: 260px; }
+
         .topbar {
-            background:white; padding:12px 32px; display:flex;
-            align-items:center; justify-content:space-between;
-            border-bottom:1px solid #EEE; position:sticky; top:0; z-index:50;
+            background: white; padding: 12px 32px; display: flex;
+            align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #EEE; position: sticky; top: 0; z-index: 50;
         }
-        .topbar-title { font-size:1rem; font-weight:600; color:#1B2A1B; }
-        .topbar-actions { display:flex; align-items:center; gap:12px; }
-        .topbar-actions .logout-btn {
-            padding:6px 16px; border:1px solid #EEE; border-radius:8px;
-            font-family:'Poppins',sans-serif; font-size:.78rem; color:#757575;
-            background:white; cursor:pointer; transition:all .2s;
-        }
-        .topbar-actions .logout-btn:hover { border-color:var(--env-main); color:var(--env-main); }
+        .topbar-title { font-size: 1rem; font-weight: 600; color: #1B2A1B; }
 
-        .content { padding:32px; }
+        .content { padding: 32px; }
 
-        .toggle-sidebar { display:none; padding:8px; cursor:pointer; background:none; border:none; }
-        .toggle-sidebar svg { width:24px; height:24px; stroke:#424242; }
-
+        /* Mobile */
         @media (max-width: 768px) {
-            .sidebar { transform:translateX(-100%); }
-            .sidebar.open { transform:translateX(0); }
-            .main { margin-left:0; }
-            .toggle-sidebar { display:block; }
-            .content { padding:20px 16px; }
+            .sidebar { transform: translateX(-100%); width: 260px; }
+            .sidebar.expanded { transform: translateX(0); }
+            .sidebar:not(.expanded) .sidebar-nav a span,
+            .sidebar:not(.expanded) .sidebar-section { display: block; }
+            .main { margin-left: 0 !important; }
+            .content { padding: 20px 16px; }
+            .mobile-toggle { display: flex !important; }
         }
+        .mobile-toggle {
+            display: none; padding: 8px; cursor: pointer; background: none; border: none;
+        }
+        .mobile-toggle svg { width: 24px; height: 24px; stroke: #424242; fill: none; stroke-width: 2; }
     </style>
     <style>
         :root {
@@ -75,40 +112,47 @@
 <body>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-                @yield('env-name', 'HOSTO')
-            </div>
+            <button class="sidebar-toggle" onclick="toggleSidebar()" title="Menu">
+                <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <span class="sidebar-logo-text">@yield('env-name', 'HOSTO')</span>
         </div>
         <nav class="sidebar-nav">
             @yield('sidebar-nav')
         </nav>
         <div class="sidebar-footer">
-            <div class="sidebar-user">
-                <div class="name">{{ auth()->user()?->name }}</div>
-                <div class="role">@yield('user-role')</div>
-            </div>
+            <a href="/compte/profil/completer" title="Parametres">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span>Parametres</span>
+            </a>
+            <form method="POST" action="/deconnexion" style="margin:0;">
+                @csrf
+                <button type="submit" title="Deconnexion">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span>Deconnexion</span>
+                </button>
+            </form>
         </div>
     </aside>
 
     <div class="main">
         <header class="topbar">
             <div style="display:flex;align-items:center;gap:12px;">
-                <button class="toggle-sidebar" onclick="document.getElementById('sidebar').classList.toggle('open')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                <button class="mobile-toggle" onclick="toggleSidebar()">
+                    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
                 <span class="topbar-title">@yield('page-title', 'Tableau de bord')</span>
-            </div>
-            <div class="topbar-actions">
-                <form method="POST" action="/deconnexion" style="margin:0;">
-                    @csrf
-                    <button type="submit" class="logout-btn">Deconnexion</button>
-                </form>
             </div>
         </header>
         <main class="content">
             @yield('content')
         </main>
     </div>
+
+    <script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('expanded');
+    }
+    </script>
 </body>
 </html>
