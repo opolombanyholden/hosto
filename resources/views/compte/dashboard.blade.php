@@ -84,7 +84,7 @@
     }
 
     /* Acces rapides grille 2x2 */
-    .dash-quick-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+    .dash-quick-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px; }
     .dash-quick-item {
         background:white; border:1px solid #EEE; border-radius:14px; padding:20px 14px;
         text-align:center; text-decoration:none; color:#1B2A1B; transition:all .2s;
@@ -104,7 +104,7 @@
     }
 
     @media(max-width:900px) {
-        .dash-services { grid-template-columns:repeat(2, 1fr); }
+        .dash-quick-grid { grid-template-columns:repeat(2, 1fr); }
     }
     @media(max-width:500px) {
         .dash-counters { grid-template-columns:repeat(2, 1fr); }
@@ -162,8 +162,8 @@
     </div>
 </div>
 
-{{-- Services : Consultation en ligne, Prise de rendez-vous, Examens, Epargne Sante --}}
-<div class="dash-services">
+{{-- Services : Consultation en ligne + Prise de rendez-vous --}}
+<div class="dash-services" style="grid-template-columns:1fr 1fr;">
     <a href="/annuaire/medecins" class="dash-service-card">
         <div class="dash-svc-icon">
             <img src="/images/icons/icon-medecin.png" alt="Consultation">
@@ -175,18 +175,6 @@
             <img src="/images/icons/icon-rendez-vous.png" alt="Rendez-vous">
         </div>
         <div class="dash-svc-label">Prise de Rendez-vous</div>
-    </a>
-    <a href="/examens" class="dash-service-card">
-        <div class="dash-svc-icon">
-            <img src="/images/icons/icon-labo.png" alt="Examens">
-        </div>
-        <div class="dash-svc-label">Examens</div>
-    </a>
-    <a href="#" class="dash-service-card" style="border-color:#BBDEFB;">
-        <div class="dash-svc-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.5" style="width:40px;height:40px;"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.4-11-.3-11 4 0 4.5 8 10 14 12.5 6-2.5 14-8 14-12.5 0-4.3-7.5-5.4-11-4-.2-.6-1.5-2-3-2z" transform="scale(.85) translate(1,1)"/><path d="M12 8v8M8 12h8"/></svg>
-        </div>
-        <div class="dash-svc-label" style="color:#1565C0;">Epargne Sante</div>
     </a>
 </div>
 
@@ -241,6 +229,18 @@
             <img src="/images/icons/icon-ambulance.png" alt="Ambulance" style="width:50px;height:50px;">
         </div>
         <div class="dash-quick-name">Evacuation / Ambulance</div>
+    </a>
+    <a href="/examens" class="dash-quick-item">
+        <div class="dash-quick-icon">
+            <img src="/images/icons/icon-labo.png" alt="Examens" style="width:50px;height:50px;">
+        </div>
+        <div class="dash-quick-name">Examens</div>
+    </a>
+    <a href="#" class="dash-quick-item" style="border-color:#BBDEFB;background:#F5F9FF;">
+        <div class="dash-quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.5" style="width:40px;height:40px;"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.4-11-.3-11 4 0 4.5 8 10 14 12.5 6-2.5 14-8 14-12.5 0-4.3-7.5-5.4-11-4-.2-.6-1.5-2-3-2z" transform="scale(.85) translate(1,1)"/><path d="M12 8v8M8 12h8"/></svg>
+        </div>
+        <div class="dash-quick-name" style="color:#1565C0;">Epargne Sante</div>
     </a>
 </div>
 
