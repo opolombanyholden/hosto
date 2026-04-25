@@ -148,6 +148,12 @@
                 <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
         </header>
+        @hasSection('breadcrumb')
+        <nav style="padding:10px 32px;font-size:.75rem;color:#757575;background:#FAFAFA;border-bottom:1px solid #EEE;">
+            <a href="/compte" style="color:#388E3C;font-weight:500;text-decoration:none;">Accueil</a>
+            @yield('breadcrumb')
+        </nav>
+        @endif
         <main class="content">
             @yield('content')
         </main>

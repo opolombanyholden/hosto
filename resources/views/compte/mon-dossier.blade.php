@@ -11,6 +11,11 @@
 @include('compte.partials.sidebar', ['active' => 'dossier'])
 @endsection
 
+@section('breadcrumb')
+<span style="color:#BDBDBD;margin:0 6px;">/</span>
+<span style="color:#424242;">Mon dossier</span>
+@endsection
+
 @section('styles')
 <style>
     .dossier-header { display:flex; align-items:center; gap:16px; margin-bottom:24px; flex-wrap:wrap; }

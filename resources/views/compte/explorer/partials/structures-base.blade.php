@@ -1,6 +1,11 @@
 {{-- Partial reutilisable pour toutes les vues de type "structures" --}}
 {{-- Variables attendues : $pageTitle, $pageDesc, $pageIcon, $defaultType, $forceGarde, $markerColor --}}
 
+@section('breadcrumb')
+<span style="color:#BDBDBD;margin:0 6px;">/</span>
+<span style="color:#424242;">{{ $pageTitle }}</span>
+@endsection
+
 @section('styles')
 <style>
     .page-header { display:flex; align-items:center; gap:14px; margin-bottom:20px; }

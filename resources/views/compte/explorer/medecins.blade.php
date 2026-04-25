@@ -3,6 +3,11 @@
 @section('title', 'Medecins') @section('page-title', 'Medecins') @section('user-role', 'Patient')
 @section('sidebar-nav') @include('compte.partials.sidebar', ['active' => 'medecins']) @endsection
 
+@section('breadcrumb')
+<span style="color:#BDBDBD;margin:0 6px;">/</span>
+<span style="color:#424242;">Medecins</span>
+@endsection
+
 @section('styles')
 <style>
     .explorer-header { margin-bottom:20px; }
