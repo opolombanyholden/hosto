@@ -87,6 +87,12 @@ final class HostosController
             $query->guardService();
         }
 
+        // --- Insurance filter ---
+        if ($request->filled('assurance')) {
+            $assurance = $request->input('assurance');
+            $query->whereRaw('accepted_insurances @> ?', [json_encode([$assurance])]);
+        }
+
         // --- Public/private filter ---
         if ($request->filled('public')) {
             $query->where('hostos.is_public', $request->boolean('public'));

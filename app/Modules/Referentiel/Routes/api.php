@@ -9,6 +9,8 @@ use App\Modules\Referentiel\Http\Controllers\RegionsController;
 use App\Modules\Referentiel\Http\Controllers\ServicesController;
 use App\Modules\Referentiel\Http\Controllers\SpecialtiesController;
 use App\Modules\Referentiel\Http\Controllers\StructureTypesController;
+use App\Modules\Referentiel\Models\ReferenceData;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,6 +46,18 @@ Route::get('specialties/{uuid}', [SpecialtiesController::class, 'show'])->name('
 
 // Services / prestations / soins
 Route::get('services', [ServicesController::class, 'index'])->name('services.index');
+
+// Reference data (generic enums)
+Route::get('reference-data', function (Request $request) {
+    $query = ReferenceData::active()->orderBy('display_order')->orderBy('label_fr');
+    if ($request->filled('category')) {
+        $query->where('category', $request->input('category'));
+    }
+
+    return response()->json(['data' => $query->get()->map(fn ($r) => [
+        'code' => $r->code, 'label_fr' => $r->label_fr, 'label_en' => $r->label_en, 'category' => $r->category,
+    ])]);
+})->name('reference-data.index');
 
 // Medications catalog
 Route::get('medications', [MedicationsController::class, 'index'])->name('medications.index');

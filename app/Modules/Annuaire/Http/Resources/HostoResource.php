@@ -65,6 +65,7 @@ final class HostoResource extends JsonResource
             'is_guard_service' => $this->is_guard_service,
             'is_verified' => $this->is_verified,
             'is_partner' => $this->resource->is_partner ?? false,
+            'accepted_insurances' => $this->resource->accepted_insurances ?? [],
             'likes_count' => $this->resource->likes_count ?? 0,
             'is_open_now' => $this->when($hours !== null, fn () => self::isOpenNow($hours)),
 

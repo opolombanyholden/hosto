@@ -53,6 +53,8 @@
     .tag { padding:2px 8px; border-radius:100px; font-size:.62rem; font-weight:600; }
     .tag-garde { background:#FFF3E0; color:#E65100; }
     .tag-phone { font-size:.68rem; color:#757575; }
+    .hosto-card-insurances { display:flex; gap:3px; flex-wrap:wrap; margin-top:6px; }
+    .tag-ins { padding:2px 7px; background:#E3F2FD; color:#1565C0; border-radius:100px; font-size:.58rem; font-weight:600; }
 
     .map-results { border-radius:14px; overflow:hidden; height:450px; display:none; margin-bottom:16px; position:relative; z-index:1; isolation:isolate; }
     .pagination { display:flex; justify-content:center; gap:6px; padding:16px 0; }
@@ -163,6 +165,14 @@
             <label>Specialite</label>
             <select id="spSpecialty"><option value="">Toutes</option></select>
         </div>
+        <div class="sp-field">
+            <label>Assurance acceptee</label>
+            <select id="spAssurance"><option value="">Toutes</option></select>
+        </div>
+        <div class="sp-field" style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="spGarde" style="accent-color:#388E3C;">
+            <label style="margin:0;cursor:pointer;" for="spGarde">Service de garde uniquement</label>
+        </div>
     </div>
     <div class="search-panel-actions">
         <button class="sp-btn sp-btn-secondary" onclick="resetSearch()">Reinitialiser</button>
@@ -214,7 +224,6 @@ function closeSearchPanel() {
     document.getElementById('searchOverlay').classList.remove('open');
 }
 function applySearch() {
-    // Sync panel → hidden fields
     document.getElementById('searchQ').value = document.getElementById('spQ').value;
     document.getElementById('searchCity').value = document.getElementById('spCity').value;
     if (!FIXED_TYPE) document.getElementById('searchType').value = document.getElementById('spType').value;
@@ -222,6 +231,8 @@ function applySearch() {
     closeSearchPanel();
     doSearch();
 }
+function getSelectedAssurance() { return document.getElementById('spAssurance').value; }
+function isGardeChecked() { return document.getElementById('spGarde').checked; }
 
 async function loadDropdowns() {
     try {
@@ -243,6 +254,22 @@ async function loadDropdowns() {
         document.getElementById('spType').innerHTML = ts.innerHTML;
         document.getElementById('spSpecialty').innerHTML = ss.innerHTML;
         if (FIXED_TYPE) document.getElementById('spType').value = FIXED_TYPE;
+
+        // Load insurances from reference_data
+        try {
+            const insRes = await fetch(`${API}/referentiel/reference-data?category=insurance_provider`);
+            if (insRes.ok) {
+                const insData = await insRes.json();
+                const spIns = document.getElementById('spAssurance');
+                (insData.data||[]).forEach(i => { const o=document.createElement('option'); o.value=i.code||i.label_fr; o.textContent=i.label_fr; spIns.appendChild(o); });
+            }
+        } catch(e2) {
+            // Fallback static
+            ['CNAMGS','ASCOMA','OGAR','AXA','NSIA','SUNU','Saham'].forEach(n => {
+                const o=document.createElement('option'); o.value=n; o.textContent=n;
+                document.getElementById('spAssurance').appendChild(o);
+            });
+        }
     } catch(e) {}
 }
 
@@ -298,7 +325,9 @@ async function doSearch(e, page) {
     if (city) params.set('city',city);
     if (type) params.set('type',type);
     if (specialty) params.set('specialty',specialty);
-    if (FORCE_GARDE) params.set('garde','1');
+    const assurance = getSelectedAssurance();
+    if (assurance) params.set('assurance', assurance);
+    if (FORCE_GARDE || isGardeChecked()) params.set('garde','1');
     if (proximiteActive && userLat && userLng) { params.set('lat',userLat); params.set('lng',userLng); params.set('rayon','20'); params.set('sort','distance'); }
     params.set('per_page', currentView==='map' ? '50' : '12');
     params.set('page', currentPage);
@@ -332,7 +361,8 @@ function buildCard(h) {
     const dist = h.distance_km!=null ? `<span class="hosto-card-dist">${h.distance_km} km</span>` : '';
     const guard = h.is_guard_service ? '<span class="tag tag-garde">Garde</span>' : '';
     const city = h.city?.name || '';
-    card.innerHTML = `<div class="hosto-card-body"><div class="hosto-card-top"><img src="${img}" alt="" class="hosto-card-img"><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;gap:6px;"><div class="hosto-card-name">${h.name}</div>${dist}</div><div class="hosto-card-type">${types}</div><div class="hosto-card-loc">${city}</div></div></div>${specs?`<div class="hosto-card-specs">${specs}</div>`:''}<div class="hosto-card-tags">${guard} ${h.phone?`<span class="tag-phone">${h.phone}</span>`:''}</div></div>`;
+    const insurances = (h.accepted_insurances||[]).map(i=>`<span class="tag-ins">${i}</span>`).join('');
+    card.innerHTML = `<div class="hosto-card-body"><div class="hosto-card-top"><img src="${img}" alt="" class="hosto-card-img"><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;gap:6px;"><div class="hosto-card-name">${h.name}</div>${dist}</div><div class="hosto-card-type">${types}</div><div class="hosto-card-loc">${city}</div></div></div>${specs?`<div class="hosto-card-specs">${specs}</div>`:''}<div class="hosto-card-tags">${guard} ${h.phone?`<span class="tag-phone">${h.phone}</span>`:''}</div>${insurances?`<div class="hosto-card-insurances">${insurances}</div>`:''}</div>`;
     return card;
 }
 
@@ -376,6 +406,8 @@ function resetSearch() {
     document.getElementById('spCity').value='';
     if (!FIXED_TYPE) document.getElementById('spType').value='';
     document.getElementById('spSpecialty').value='';
+    document.getElementById('spAssurance').value='';
+    document.getElementById('spGarde').checked=false;
     userLat=null; userLng=null; proximiteActive=false;
     document.getElementById('btnProximite').classList.remove('active');
     closeSearchPanel();
