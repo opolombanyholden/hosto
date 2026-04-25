@@ -83,55 +83,58 @@
     <button onclick="toggleLike()" id="btnLike" style="padding:8px 18px;border:1px solid #EEE;border-radius:100px;font-size:.82rem;cursor:pointer;background:white;font-family:Poppins,sans-serif;">{{ $userLiked ? '❤ Aime' : '♡ Aimer' }}</button>
 </div>
 
+{{-- Description --}}
+@if($hosto->description_fr)
+<div class="section-block"><h3>A propos</h3><p style="font-size:.85rem;color:#424242;line-height:1.7;">{{ $hosto->description_fr }}</p></div>
+@endif
+
 <div class="detail-grid">
     <div>
-        @if($hosto->description_fr)
-        <div class="section-block"><h3>A propos</h3><p style="font-size:.85rem;color:#424242;line-height:1.7;">{{ $hosto->description_fr }}</p></div>
-        @endif
-
-        @if($specialties->isNotEmpty())
-        <div class="section-block"><h3>Specialites</h3><div class="specs-list">@foreach($specialties as $spec)<span class="spec-badge">{{ $spec->name_fr }}</span>@endforeach</div></div>
-        @endif
-
-        @if($services->isNotEmpty())
+        {{-- 1. Specialites --}}
         <div class="section-block">
-            <h3>Services et tarifs</h3>
-            @foreach($services as $category => $svcs)
-                <div style="font-size:.7rem;font-weight:600;color:#388E3C;margin-top:10px;text-transform:uppercase;">{{ $catLabels[$category] ?? $category }}</div>
-                @foreach($svcs as $svc)
-                <div class="service-row">
-                    <span>{{ $svc->name_fr }}</span>
-                    <span style="color:#757575;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span>
-                </div>
-                @endforeach
-            @endforeach
+            <h3>Specialites</h3>
+            @if($specialties->isNotEmpty())
+            <div class="specs-list">@foreach($specialties as $spec)<span class="spec-badge">{{ $spec->name_fr }}</span>@endforeach</div>
+            @else
+            <p style="font-size:.82rem;color:#757575;">Aucune specialite renseignee.</p>
+            @endif
         </div>
-        @endif
 
+        {{-- 2. Prestations (AJAX) --}}
+        @include('compte.explorer.partials.service-section', ['sectionId' => 'prestations', 'title' => 'Prestations', 'category' => 'prestation', 'color' => '#388E3C'])
+
+        {{-- 3. Examens (AJAX) --}}
+        @include('compte.explorer.partials.service-section', ['sectionId' => 'examens', 'title' => 'Examens', 'category' => 'examen', 'color' => '#1565C0'])
+
+        {{-- 4. Soins (AJAX) --}}
+        @include('compte.explorer.partials.service-section', ['sectionId' => 'soins', 'title' => 'Soins', 'category' => 'soin', 'color' => '#E65100'])
+    </div>
+
+    <div>
+        {{-- 5. Medecins (AJAX) --}}
         <div class="section-block">
             <h3>Medecins</h3>
             <div style="margin-bottom:10px;">
                 <input type="text" id="pracSearch" placeholder="Rechercher un medecin..." oninput="debouncePrac()" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
             </div>
             <div id="pracList"></div>
-            <div id="pracEmpty" style="display:none;text-align:center;padding:16px;color:#757575;font-size:.82rem;">Aucun medecin.</div>
+            <div id="pracEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun medecin.</div>
             <div id="pracPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
         </div>
 
-        @if($recommendations->isNotEmpty())
+        {{-- 6. Medicaments (stock pharmacie, si pharmacie) --}}
+        @if($types->pluck('slug')->contains('pharmacie'))
         <div class="section-block">
-            <h3>Recommandations</h3>
-            @foreach($recommendations as $reco)
-            <div style="padding:10px;background:#FAFAFA;border-radius:8px;margin-bottom:6px;">
-                <p style="font-size:.82rem;color:#424242;">{{ $reco->content }}</p>
-                <div style="font-size:.68rem;color:#757575;margin-top:4px;">{{ $reco->user->name }} — {{ $reco->approved_at?->format('d/m/Y') }}</div>
+            <h3>Medicaments disponibles</h3>
+            <div style="margin-bottom:10px;">
+                <input type="text" id="medSearch" placeholder="Rechercher un medicament..." oninput="debounceMed()" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
             </div>
-            @endforeach
+            <div id="medList"></div>
+            <div id="medEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun medicament.</div>
+            <div id="medPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
         </div>
         @endif
-    </div>
 
-    <div>
         <div class="section-block">
             <h3>Contact</h3>
             @if($hosto->phone)<div class="contact-row"><a href="tel:{{ $hosto->phone }}">{{ $hosto->phone }}</a></div>@endif
@@ -172,7 +175,84 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 @endif
 
-// Medecins AJAX
+const SLUG = '{{ $hosto->slug }}';
+
+// --- Service sections AJAX ---
+let sectionTimers = {};
+function debounceSection(sectionId, category) {
+    clearTimeout(sectionTimers[sectionId]);
+    sectionTimers[sectionId] = setTimeout(()=>loadSection(sectionId, category), 300);
+}
+['prestations:prestation','examens:examen','soins:soin'].forEach(s => {
+    const [id, cat] = s.split(':');
+    loadSection(id, cat);
+});
+
+async function loadSection(sectionId, category, page) {
+    const q = document.getElementById(sectionId+'Search')?.value?.trim() || '';
+    const params = new URLSearchParams({category, per_page:'6', page: page||1});
+    if (q) params.set('q', q);
+    try {
+        const res = await fetch(`/compte/api/structure/${SLUG}/services?${params}`, {headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
+        const data = await res.json();
+        const list = document.getElementById(sectionId+'List');
+        const empty = document.getElementById(sectionId+'Empty');
+        list.innerHTML = '';
+        if (!data.data.length) { empty.style.display='block'; } else {
+            empty.style.display='none';
+            data.data.forEach(s => {
+                const price = s.tarif_min && s.tarif_max ? `${new Intl.NumberFormat('fr-FR').format(s.tarif_min)} - ${new Intl.NumberFormat('fr-FR').format(s.tarif_max)} ${s.currency||'XAF'}` : '';
+                list.insertAdjacentHTML('beforeend', `<div class="service-row"><span>${s.name}</span><span style="color:#757575;font-size:.78rem;">${price}</span></div>`);
+            });
+        }
+        const pg = document.getElementById(sectionId+'Pagination'); pg.innerHTML='';
+        if (data.meta?.last_page>1) {
+            for (let i=1;i<=data.meta.last_page;i++) {
+                const btn=document.createElement('button');btn.textContent=i;
+                btn.style.cssText='padding:4px 10px;border:1px solid #EEE;border-radius:6px;background:white;font-size:.72rem;cursor:pointer;font-family:Poppins,sans-serif;';
+                if(i===data.meta.current_page) btn.style.cssText+='background:#388E3C;color:white;border-color:#388E3C;';
+                btn.onclick=()=>loadSection(sectionId,category,i); pg.appendChild(btn);
+            }
+        }
+    } catch(e) {}
+}
+
+// --- Medicaments AJAX (pharmacie) ---
+@if($types->pluck('slug')->contains('pharmacie'))
+let medTimer;
+function debounceMed() { clearTimeout(medTimer); medTimer = setTimeout(()=>loadMed(), 300); }
+loadMed();
+async function loadMed(page) {
+    const q = document.getElementById('medSearch')?.value?.trim() || '';
+    const params = new URLSearchParams({pharmacy:'{{ $hosto->uuid }}', per_page:'6', page: page||1});
+    if (q) params.set('medication', q);
+    try {
+        const res = await fetch(`${API}/pharma/stock?${params}`);
+        const data = await res.json();
+        const list = document.getElementById('medList');
+        const empty = document.getElementById('medEmpty');
+        list.innerHTML = '';
+        if (!data.data.length) { empty.style.display='block'; } else {
+            empty.style.display='none';
+            data.data.forEach(m => {
+                const price = m.unit_price ? new Intl.NumberFormat('fr-FR').format(m.unit_price)+' '+m.currency : '';
+                list.insertAdjacentHTML('beforeend', `<div class="service-row"><span>${m.medication.dci} ${m.medication.strength||''}</span><span style="color:#388E3C;font-weight:600;font-size:.78rem;">${price}</span></div>`);
+            });
+        }
+        const pg = document.getElementById('medPagination'); pg.innerHTML='';
+        if (data.meta?.last_page>1) {
+            for (let i=1;i<=data.meta.last_page;i++) {
+                const btn=document.createElement('button');btn.textContent=i;
+                btn.style.cssText='padding:4px 10px;border:1px solid #EEE;border-radius:6px;background:white;font-size:.72rem;cursor:pointer;font-family:Poppins,sans-serif;';
+                if(i===data.meta.current_page) btn.style.cssText+='background:#388E3C;color:white;border-color:#388E3C;';
+                btn.onclick=()=>loadMed(i); pg.appendChild(btn);
+            }
+        }
+    } catch(e) {}
+}
+@endif
+
+// --- Medecins AJAX ---
 let pracTimer;
 function debouncePrac() { clearTimeout(pracTimer); pracTimer = setTimeout(()=>loadPrac(), 300); }
 loadPrac();

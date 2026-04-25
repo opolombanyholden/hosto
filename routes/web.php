@@ -135,6 +135,26 @@ Route::prefix('compte')->group(function (): void {
             ]), 'meta' => ['total' => $data->total(), 'current_page' => $data->currentPage(), 'last_page' => $data->lastPage()]]);
         });
 
+        Route::get('/api/structure/{slug}/services', function (string $slug, Request $request) {
+            $hosto = Hosto::where('slug', $slug)->firstOrFail();
+            $query = $hosto->services()->where('hosto_service.is_available', true);
+            if ($request->filled('category')) {
+                $query->where('category', $request->input('category'));
+            }
+            if ($request->filled('q')) {
+                $query->where('name_fr', 'ILIKE', '%'.$request->input('q').'%');
+            }
+            $data = $query->orderBy('category')->orderBy('display_order')->paginate($request->integer('per_page', 10));
+
+            return response()->json(['data' => $data->map(function ($s) {
+                $pivot = $s->getRelation('pivot');
+
+                return ['code' => $s->code, 'name' => $s->name_fr, 'category' => $s->category,
+                    'tarif_min' => $pivot->getAttribute('tarif_min'), 'tarif_max' => $pivot->getAttribute('tarif_max'),
+                    'currency' => $pivot->getAttribute('currency_code')];
+            }), 'meta' => ['total' => $data->total(), 'current_page' => $data->currentPage(), 'last_page' => $data->lastPage()]]);
+        });
+
         // Booking RDV dans l'espace patient
         Route::get('/rdv/{slug}', [AnnuaireWebController::class, 'bookRdvInDashboard'])->name('compte.book-rdv');
 
