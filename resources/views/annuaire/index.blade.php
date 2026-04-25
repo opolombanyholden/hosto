@@ -143,6 +143,20 @@
                 Rechercher
             </button>
         </form>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;padding:0 4px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:#424242;cursor:pointer;">
+                <input type="checkbox" id="filterGarde" onchange="doSearch()" style="accent-color:#E65100;"> Garde
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:#424242;cursor:pointer;">
+                <input type="checkbox" id="filterUrgence" onchange="doSearch()" style="accent-color:#C62828;"> Urgence
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:#424242;cursor:pointer;">
+                <input type="checkbox" id="filterEvacuation" onchange="doSearch()" style="accent-color:#6A1B9A;"> Evacuation
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:#424242;cursor:pointer;">
+                <input type="checkbox" id="filterDomicile" onchange="doSearch()" style="accent-color:#2E7D32;"> Soins a domicile
+            </label>
+        </div>
     </div>
 
     <div class="toolbar">
@@ -287,7 +301,10 @@ async function doSearch(e, page) {
     if (city) params.set('city', city);
     if (type) params.set('type', type);
     if (specialty) params.set('specialty', specialty);
-    if (urlParams.get('garde') === '1') params.set('garde', '1');
+    if (urlParams.get('garde') === '1' || document.getElementById('filterGarde')?.checked) params.set('garde', '1');
+    if (document.getElementById('filterUrgence')?.checked) params.set('urgence', '1');
+    if (document.getElementById('filterEvacuation')?.checked) params.set('evacuation', '1');
+    if (document.getElementById('filterDomicile')?.checked) params.set('domicile', '1');
     if (proximiteActive && userLat && userLng) {
         params.set('lat', userLat); params.set('lng', userLng);
         params.set('rayon', '20'); params.set('sort', 'distance');
@@ -337,10 +354,15 @@ function buildCard(h) {
     const types = (h.types||[]).map(t => t.name).join(', ');
     const specs = (h.specialties||[]).slice(0,3).map(s => s.name).join(', ');
     const dist = h.distance_km != null ? `<span class="hosto-card-dist">${h.distance_km} km</span>` : '';
-    const guard = h.is_guard_service ? '<span class="tag tag-garde">Garde</span>' : '';
+    let tags = '';
+    if (h.is_guard_service) tags += '<span class="tag tag-garde">Garde</span>';
+    if (h.is_emergency_service) tags += '<span class="tag" style="background:#FFEBEE;color:#C62828;">Urgence</span>';
+    if (h.is_evacuation_service) tags += '<span class="tag" style="background:#F3E5F5;color:#6A1B9A;">Evacuation</span>';
+    if (h.is_home_care_service) tags += '<span class="tag" style="background:#E8F5E9;color:#2E7D32;">Domicile</span>';
     const open = h.is_open_now === true ? '<span class="tag-open">Ouvert</span>' : h.is_open_now === false ? '<span class="tag-closed">Ferme</span>' : '';
     const city = h.city?.name || '';
     const quarter = h.quarter ? ` - ${h.quarter}` : '';
+    const insurances = (h.accepted_insurances||[]).map(i=>`<span class="tag" style="background:#E3F2FD;color:#1565C0;">${i}</span>`).join('');
     card.innerHTML = `<div class="hosto-card-body">
         <div class="hosto-card-top">
             <img src="${img}" alt="${h.name}" class="hosto-card-img">
@@ -353,7 +375,8 @@ function buildCard(h) {
             </div>
         </div>
         ${specs ? `<div class="hosto-card-specs">${specs}</div>` : ''}
-        <div class="hosto-card-tags">${guard} ${open} ${h.phone ? `<span class="tag-phone">${h.phone}</span>` : ''}</div>
+        <div class="hosto-card-tags">${tags} ${open} ${h.phone ? `<span class="tag-phone">${h.phone}</span>` : ''}</div>
+        ${insurances ? `<div style="display:flex;gap:3px;flex-wrap:wrap;margin-top:6px;">${insurances}</div>` : ''}
     </div>`;
     return card;
 }
@@ -451,6 +474,10 @@ function resetSearch() {
     document.getElementById('searchCity').value = '';
     document.getElementById('searchType').value = '';
     document.getElementById('searchSpecialty').value = '';
+    if (document.getElementById('filterGarde')) document.getElementById('filterGarde').checked = false;
+    if (document.getElementById('filterUrgence')) document.getElementById('filterUrgence').checked = false;
+    if (document.getElementById('filterEvacuation')) document.getElementById('filterEvacuation').checked = false;
+    if (document.getElementById('filterDomicile')) document.getElementById('filterDomicile').checked = false;
     userLat = null; userLng = null;
     proximiteActive = false;
     document.getElementById('btnProximite').classList.remove('active');

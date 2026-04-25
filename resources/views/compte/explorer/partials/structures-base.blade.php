@@ -172,9 +172,22 @@
             <label>Assurance acceptee</label>
             <select id="spAssurance"><option value="">Toutes</option></select>
         </div>
-        <div class="sp-field" style="display:flex;align-items:center;gap:8px;">
-            <input type="checkbox" id="spGarde" style="accent-color:#388E3C;">
-            <label style="margin:0;cursor:pointer;" for="spGarde">Service de garde uniquement</label>
+        <div style="border-top:1px solid #EEE;padding-top:14px;margin-top:4px;">
+            <label style="display:block;font-size:.78rem;font-weight:600;color:#424242;margin-bottom:8px;">Services proposes</label>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;cursor:pointer;">
+                    <input type="checkbox" id="spGarde" style="accent-color:#E65100;"> Service de garde
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;cursor:pointer;">
+                    <input type="checkbox" id="spUrgence" style="accent-color:#C62828;"> Service d'urgence
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;cursor:pointer;">
+                    <input type="checkbox" id="spEvacuation" style="accent-color:#6A1B9A;"> Service d'evacuation
+                </label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;cursor:pointer;">
+                    <input type="checkbox" id="spDomicile" style="accent-color:#2E7D32;"> Soins a domicile
+                </label>
+            </div>
         </div>
     </div>
     <div class="search-panel-actions">
@@ -238,6 +251,9 @@ function applySearch() {
 }
 function getSelectedAssurance() { return document.getElementById('spAssurance').value; }
 function isGardeChecked() { return document.getElementById('spGarde').checked; }
+function isUrgenceChecked() { return document.getElementById('spUrgence').checked; }
+function isEvacuationChecked() { return document.getElementById('spEvacuation').checked; }
+function isDomicileChecked() { return document.getElementById('spDomicile').checked; }
 
 async function loadDropdowns() {
     try {
@@ -333,8 +349,9 @@ async function doSearch(e, page) {
     const assurance = getSelectedAssurance();
     if (assurance) params.set('assurance', assurance);
     if (FORCE_GARDE || isGardeChecked()) params.set('garde','1');
-    if (FORCE_URGENCE) params.set('urgence','1');
-    if (FORCE_DOMICILE) params.set('domicile','1');
+    if (FORCE_URGENCE || isUrgenceChecked()) params.set('urgence','1');
+    if (isEvacuationChecked()) params.set('evacuation','1');
+    if (FORCE_DOMICILE || isDomicileChecked()) params.set('domicile','1');
     if (proximiteActive && userLat && userLng) { params.set('lat',userLat); params.set('lng',userLng); params.set('rayon','20'); params.set('sort','distance'); }
     params.set('per_page', currentView==='map' ? '50' : '12');
     params.set('page', currentPage);
@@ -419,6 +436,9 @@ function resetSearch() {
     document.getElementById('spSpecialty').value='';
     document.getElementById('spAssurance').value='';
     document.getElementById('spGarde').checked=false;
+    document.getElementById('spUrgence').checked=false;
+    document.getElementById('spEvacuation').checked=false;
+    document.getElementById('spDomicile').checked=false;
     userLat=null; userLng=null; proximiteActive=false;
     document.getElementById('btnProximite').classList.remove('active');
     closeSearchPanel();
