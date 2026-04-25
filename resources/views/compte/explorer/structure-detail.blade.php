@@ -53,8 +53,24 @@
     .ins-badges { display:flex;gap:3px;flex-wrap:wrap;margin-top:6px; }
     .ins-badge { padding:2px 8px;background:#E3F2FD;color:#1565C0;border-radius:100px;font-size:.62rem;font-weight:600; }
     .gallery-scroll { display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch; }
-    .gallery-scroll img { width:120px;height:90px;border-radius:10px;object-fit:cover;flex-shrink:0;cursor:pointer; }
-    .gallery-scroll img:hover { opacity:.8; }
+    .gallery-item { width:140px;height:105px;border-radius:10px;overflow:hidden;flex-shrink:0;cursor:pointer;position:relative; }
+    .gallery-item img { width:100%;height:100%;object-fit:cover;transition:transform .3s ease; }
+    .gallery-item:hover img { transform:scale(1.15); }
+    .gallery-item::after { content:'';position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .3s;border-radius:10px; }
+    .gallery-item:hover::after { background:rgba(0,0,0,.1); }
+
+    /* Lightbox zoom */
+    .lightbox { position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:none;align-items:center;justify-content:center;cursor:pointer; }
+    .lightbox.open { display:flex; }
+    .lightbox img { max-width:90vw;max-height:90vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5);animation:lbZoom .25s ease; }
+    .lightbox-close { position:absolute;top:20px;right:24px;width:40px;height:40px;background:rgba(255,255,255,.15);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center; }
+    .lightbox-close svg { width:20px;height:20px;stroke:white; }
+    .lightbox-nav { position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;background:rgba(255,255,255,.15);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center; }
+    .lightbox-nav:hover { background:rgba(255,255,255,.3); }
+    .lightbox-nav svg { width:20px;height:20px;stroke:white; }
+    .lightbox-prev { left:16px; }
+    .lightbox-next { right:16px; }
+    @keyframes lbZoom { from{transform:scale(.8);opacity:0} to{transform:scale(1);opacity:1} }
     @media(max-width:768px) { .detail-grid{grid-template-columns:1fr;} .detail-cover{height:160px;} .detail-profile-bar{flex-direction:column;align-items:center;text-align:center;} .detail-profile-img{width:90px;height:90px;margin-top:-45px;} .detail-profile-actions{justify-content:center;} .status-badges{justify-content:center;} .ins-badges{justify-content:center;} }
 </style>
 @endsection
@@ -189,13 +205,15 @@
         </div>
         @endif
 
-        {{-- Galerie / Media --}}
+        {{-- Mediatheque --}}
         @if($gallery->isNotEmpty())
         <div class="section-block">
-            <h3>Galerie</h3>
+            <h3>Mediatheque ({{ $gallery->count() }})</h3>
             <div class="gallery-scroll">
-                @foreach($gallery as $media)
-                <img src="{{ $media->url }}" alt="{{ $media->alt_text ?: $hosto->name }}">
+                @foreach($gallery as $idx => $media)
+                <div class="gallery-item" onclick="openLightbox({{ $idx }})">
+                    <img src="{{ $media->url }}" alt="{{ $media->alt_text ?: $hosto->name }}">
+                </div>
                 @endforeach
             </div>
         </div>
@@ -263,5 +281,41 @@ async function toggleLike() {
         document.getElementById('btnLike').textContent = d.liked ? '❤ Aime' : '♡ Aimer';
     } catch(e) {}
 }
+
+// --- Lightbox ---
+@if($gallery->isNotEmpty())
+const galleryUrls = @json($gallery->pluck('url')->values());
+let lbIndex = 0;
+
+function openLightbox(idx) {
+    lbIndex = idx;
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lbImg').src = galleryUrls[lbIndex];
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+}
+function lbPrev(e) { e.stopPropagation(); lbIndex = (lbIndex - 1 + galleryUrls.length) % galleryUrls.length; document.getElementById('lbImg').src = galleryUrls[lbIndex]; }
+function lbNext(e) { e.stopPropagation(); lbIndex = (lbIndex + 1) % galleryUrls.length; document.getElementById('lbImg').src = galleryUrls[lbIndex]; }
+document.addEventListener('keydown', e => {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') { lbIndex = (lbIndex - 1 + galleryUrls.length) % galleryUrls.length; document.getElementById('lbImg').src = galleryUrls[lbIndex]; }
+    if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % galleryUrls.length; document.getElementById('lbImg').src = galleryUrls[lbIndex]; }
+});
+@endif
 </script>
+
+{{-- Lightbox overlay --}}
+@if($gallery->isNotEmpty())
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <button class="lightbox-nav lightbox-prev" onclick="lbPrev(event)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <img id="lbImg" src="" alt="" onclick="event.stopPropagation()">
+    <button class="lightbox-nav lightbox-next" onclick="lbNext(event)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+</div>
+@endif
 @endsection
