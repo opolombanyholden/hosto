@@ -91,6 +91,20 @@ Route::prefix('compte')->group(function (): void {
 
             return view('compte.consultation-detail', compact('consultation'));
         })->middleware('medical.pin')->name('compte.consultation');
+        // Explorer (dans l'espace patient)
+        Route::get('/structures', function () {
+            return view('compte.explorer.structures');
+        })->name('compte.structures');
+        Route::get('/medecins', function () {
+            return view('compte.explorer.medecins');
+        })->name('compte.medecins');
+        Route::get('/medicaments', function () {
+            return view('compte.explorer.medicaments');
+        })->name('compte.medicaments');
+        Route::get('/examens', function () {
+            return view('compte.explorer.examens');
+        })->name('compte.examens');
+
         Route::get('/profil', [ProfileController::class, 'show'])->name('compte.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);

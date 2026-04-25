@@ -144,13 +144,13 @@
 
 {{-- Services : Consultation en ligne + Prise de rendez-vous --}}
 <div class="dash-services" style="grid-template-columns:1fr 1fr;">
-    <a href="/annuaire/medecins" class="dash-service-card">
+    <a href="/compte/medecins" class="dash-service-card">
         <div class="dash-svc-icon">
             <img src="/images/icons/icon-medecin.png" alt="Consultation">
         </div>
         <div class="dash-svc-label">Consultation en ligne</div>
     </a>
-    <a href="/annuaire" class="dash-service-card">
+    <a href="/compte/structures" class="dash-service-card">
         <div class="dash-svc-icon">
             <img src="/images/icons/icon-rendez-vous.png" alt="Rendez-vous">
         </div>
@@ -185,13 +185,13 @@
 
 {{-- Acces rapides 2x2 : Pharmacie, Hopitale, Soins a domicile, Evacuation/Ambulance --}}
 <div class="dash-quick-grid">
-    <a href="/annuaire?type=pharmacie" class="dash-quick-item">
+    <a href="/compte/medicaments" class="dash-quick-item">
         <div class="dash-quick-icon">
             <img src="/images/icons/icon-pharamcie.png" alt="Pharmacie" style="width:50px;height:50px;">
         </div>
         <div class="dash-quick-name">Pharmacie</div>
     </a>
-    <a href="/annuaire?type=hopital-general" class="dash-quick-item">
+    <a href="/compte/structures" class="dash-quick-item">
         <div class="dash-quick-icon">
             <img src="/images/icons/icon-hopitaux.png" alt="Hopital" style="width:50px;height:50px;">
         </div>
@@ -209,7 +209,7 @@
         </div>
         <div class="dash-quick-name">Evacuation / Ambulance</div>
     </a>
-    <a href="/examens" class="dash-quick-item">
+    <a href="/compte/examens" class="dash-quick-item">
         <div class="dash-quick-icon">
             <img src="/images/icons/icon-labo.png" alt="Examens" style="width:50px;height:50px;">
         </div>
@@ -226,7 +226,7 @@
 <script>
 function goSearch() {
     const q = document.getElementById('dashSearch').value.trim();
-    if (q) window.location.href = '/annuaire/medecins?q=' + encodeURIComponent(q);
+    if (q) window.location.href = '/compte/medecins?q=' + encodeURIComponent(q);
 }
 </script>
 @endsection
