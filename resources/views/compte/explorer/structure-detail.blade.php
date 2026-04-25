@@ -100,24 +100,84 @@
             @endif
         </div>
 
-        {{-- 2. Prestations (AJAX) --}}
-        @include('compte.explorer.partials.service-section', ['sectionId' => 'prestations', 'title' => 'Prestations', 'category' => 'prestation', 'color' => '#388E3C'])
+        {{-- 2. Prestations --}}
+        <div class="section-block">
+            <h3 style="color:#388E3C;">Prestations</h3>
+            <div style="margin-bottom:10px;">
+                <input type="text" id="prestationsSearch" placeholder="Rechercher une prestation..." oninput="debounceSection('prestations','prestation')" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
+            </div>
+            <div id="prestationsList">
+                @forelse($services->get('prestation', collect()) as $svc)
+                <div class="service-row"><span>{{ $svc->name_fr }}</span><span style="color:#757575;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span></div>
+                @empty
+                <div style="text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucune prestation.</div>
+                @endforelse
+            </div>
+            <div id="prestationsEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun resultat.</div>
+            <div id="prestationsPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
+        </div>
 
-        {{-- 3. Examens (AJAX) --}}
-        @include('compte.explorer.partials.service-section', ['sectionId' => 'examens', 'title' => 'Examens', 'category' => 'examen', 'color' => '#1565C0'])
+        {{-- 3. Examens --}}
+        <div class="section-block">
+            <h3 style="color:#1565C0;">Examens</h3>
+            <div style="margin-bottom:10px;">
+                <input type="text" id="examensSearch" placeholder="Rechercher un examen..." oninput="debounceSection('examens','examen')" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
+            </div>
+            <div id="examensList">
+                @forelse($services->get('examen', collect()) as $svc)
+                <div class="service-row"><span>{{ $svc->name_fr }}</span><span style="color:#757575;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span></div>
+                @empty
+                <div style="text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun examen.</div>
+                @endforelse
+            </div>
+            <div id="examensEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun resultat.</div>
+            <div id="examensPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
+        </div>
 
-        {{-- 4. Soins (AJAX) --}}
-        @include('compte.explorer.partials.service-section', ['sectionId' => 'soins', 'title' => 'Soins', 'category' => 'soin', 'color' => '#E65100'])
+        {{-- 4. Soins --}}
+        <div class="section-block">
+            <h3 style="color:#E65100;">Soins</h3>
+            <div style="margin-bottom:10px;">
+                <input type="text" id="soinsSearch" placeholder="Rechercher un soin..." oninput="debounceSection('soins','soin')" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
+            </div>
+            <div id="soinsList">
+                @forelse($services->get('soin', collect()) as $svc)
+                <div class="service-row"><span>{{ $svc->name_fr }}</span><span style="color:#757575;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span></div>
+                @empty
+                <div style="text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun soin.</div>
+                @endforelse
+            </div>
+            <div id="soinsEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun resultat.</div>
+            <div id="soinsPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
+        </div>
     </div>
 
     <div>
-        {{-- 5. Medecins (AJAX) --}}
+        {{-- 5. Medecins --}}
         <div class="section-block">
-            <h3>Medecins</h3>
+            <h3>Medecins ({{ $practitioners->count() }})</h3>
             <div style="margin-bottom:10px;">
                 <input type="text" id="pracSearch" placeholder="Rechercher un medecin..." oninput="debouncePrac()" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
             </div>
-            <div id="pracList"></div>
+            <div id="pracList">
+                @forelse($practitioners as $prac)
+                <a href="/compte/medecin/{{ $prac->slug }}" class="prac-link">
+                    <div style="width:36px;height:36px;border-radius:8px;background:#E8F5E9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-size:.82rem;font-weight:600;">{{ $prac->full_name }}</div>
+                        <div style="font-size:.68rem;color:#757575;">{{ $prac->specialties->pluck('name_fr')->join(', ') }}</div>
+                    </div>
+                    <div>
+                        @if($prac->does_teleconsultation)<span style="padding:2px 6px;background:#E3F2FD;color:#1565C0;border-radius:100px;font-size:.58rem;font-weight:600;">TC</span>@endif
+                        @if($prac->does_home_care)<span style="padding:2px 6px;background:#E8F5E9;color:#2E7D32;border-radius:100px;font-size:.58rem;font-weight:600;">Domicile</span>@endif
+                    </div>
+                </a>
+                @empty
+                <div style="text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun medecin.</div>
+                @endforelse
+            </div>
             <div id="pracEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun medecin.</div>
             <div id="pracPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
         </div>
@@ -177,16 +237,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const SLUG = '{{ $hosto->slug }}';
 
-// --- Service sections AJAX ---
+// --- Service sections AJAX (on search or pagination only) ---
 let sectionTimers = {};
 function debounceSection(sectionId, category) {
     clearTimeout(sectionTimers[sectionId]);
     sectionTimers[sectionId] = setTimeout(()=>loadSection(sectionId, category), 300);
 }
-['prestations:prestation','examens:examen','soins:soin'].forEach(s => {
-    const [id, cat] = s.split(':');
-    loadSection(id, cat);
-});
 
 async function loadSection(sectionId, category, page) {
     const q = document.getElementById(sectionId+'Search')?.value?.trim() || '';
@@ -221,7 +277,6 @@ async function loadSection(sectionId, category, page) {
 @if($types->pluck('slug')->contains('pharmacie'))
 let medTimer;
 function debounceMed() { clearTimeout(medTimer); medTimer = setTimeout(()=>loadMed(), 300); }
-loadMed();
 async function loadMed(page) {
     const q = document.getElementById('medSearch')?.value?.trim() || '';
     const params = new URLSearchParams({pharmacy:'{{ $hosto->uuid }}', per_page:'6', page: page||1});
@@ -252,10 +307,9 @@ async function loadMed(page) {
 }
 @endif
 
-// --- Medecins AJAX ---
+// --- Medecins AJAX (on search or pagination only) ---
 let pracTimer;
 function debouncePrac() { clearTimeout(pracTimer); pracTimer = setTimeout(()=>loadPrac(), 300); }
-loadPrac();
 async function loadPrac(page) {
     const q = document.getElementById('pracSearch').value.trim();
     const params = new URLSearchParams({per_page:'5', page: page||1});
