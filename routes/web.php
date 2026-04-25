@@ -123,10 +123,10 @@ Route::prefix('compte')->group(function (): void {
                 ->with('specialties');
             if ($request->filled('q')) {
                 $q = $request->input('q');
-                $query->where(fn ($w) => $w->where('last_name', 'ILIKE', "%{$q}%")->orWhere('first_name', 'ILIKE', "%{$q}%")
-                    ->orWhereHas('specialties', fn ($s) => $s->where('name_fr', 'ILIKE', "%{$q}%")));
+                $query->where(fn ($w) => $w->where('practitioners.last_name', 'ILIKE', "%{$q}%")->orWhere('practitioners.first_name', 'ILIKE', "%{$q}%")
+                    ->orWhereHas('specialties', fn ($s) => $s->where('specialties.name_fr', 'ILIKE', "%{$q}%")));
             }
-            $data = $query->orderBy('last_name')->paginate($request->integer('per_page', 5));
+            $data = $query->orderBy('practitioners.last_name')->paginate($request->integer('per_page', 5));
 
             return response()->json(['data' => $data->map(fn ($p) => [
                 'slug' => $p->slug, 'full_name' => $p->full_name,
@@ -139,12 +139,12 @@ Route::prefix('compte')->group(function (): void {
             $hosto = Hosto::where('slug', $slug)->firstOrFail();
             $query = $hosto->services()->where('hosto_service.is_available', true);
             if ($request->filled('category')) {
-                $query->where('category', $request->input('category'));
+                $query->where('services.category', $request->input('category'));
             }
             if ($request->filled('q')) {
-                $query->where('name_fr', 'ILIKE', '%'.$request->input('q').'%');
+                $query->where('services.name_fr', 'ILIKE', '%'.$request->input('q').'%');
             }
-            $data = $query->orderBy('category')->orderBy('display_order')->paginate($request->integer('per_page', 10));
+            $data = $query->orderBy('services.category')->orderBy('services.display_order')->paginate($request->integer('per_page', 10));
 
             return response()->json(['data' => $data->map(function ($s) {
                 $pivot = $s->getRelation('pivot');
