@@ -23,10 +23,10 @@
     $catLabels = ['prestation' => 'Prestations', 'soin' => 'Soins', 'examen' => 'Examens'];
 @endphp
 <style>
-    .detail-cover { position:relative; height:200px; overflow:hidden; background:linear-gradient(135deg,#2E7D32,#43A047); border-radius:14px; margin-bottom:16px; }
+    .detail-cover { position:relative; height:220px; overflow:hidden; background:linear-gradient(135deg,#2E7D32,#43A047); border-radius:14px 14px 0 0; }
     .detail-cover img { width:100%;height:100%;object-fit:cover; }
-    .detail-profile { display:flex;gap:16px;align-items:flex-end;margin-top:-40px;margin-bottom:16px;position:relative;z-index:2; }
-    .detail-profile img { width:80px;height:80px;border-radius:16px;border:3px solid white;object-fit:cover;background:#E8F5E9;box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .detail-profile-bar { background:white; border:1px solid #EEE; border-top:none; border-radius:0 0 14px 14px; padding:16px 20px; margin-bottom:16px; display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap; }
+    .detail-profile-img { width:100px; height:100px; border-radius:18px; border:4px solid white; object-fit:cover; background:#E8F5E9; box-shadow:0 4px 12px rgba(0,0,0,.15); margin-top:-60px; position:relative; z-index:3; }
     .detail-profile-info .types { font-size:.72rem;color:#388E3C;font-weight:600; }
     .detail-profile-info h1 { font-size:1.2rem;font-weight:700;color:#1B2A1B; }
     .detail-profile-info .location { font-size:.82rem;color:#757575; }
@@ -49,18 +49,21 @@
     .section-empty { text-align:center;padding:12px;color:#757575;font-size:.82rem; }
     .ins-badges { display:flex;gap:3px;flex-wrap:wrap;margin-top:6px; }
     .ins-badge { padding:2px 8px;background:#E3F2FD;color:#1565C0;border-radius:100px;font-size:.62rem;font-weight:600; }
-    @media(max-width:768px) { .detail-grid{grid-template-columns:1fr;} .detail-cover{height:140px;} .detail-profile img{width:64px;height:64px;} }
+    .gallery-scroll { display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch; }
+    .gallery-scroll img { width:120px;height:90px;border-radius:10px;object-fit:cover;flex-shrink:0;cursor:pointer; }
+    .gallery-scroll img:hover { opacity:.8; }
+    @media(max-width:768px) { .detail-grid{grid-template-columns:1fr;} .detail-cover{height:160px;} .detail-profile-img{width:80px;height:80px;margin-top:-45px;} }
 </style>
 @endsection
 
 @section('content')
+{{-- Cover + Profile bar (style Facebook) --}}
 <div class="detail-cover">
     @if($coverImg)<img src="{{ $coverImg }}" alt="">@endif
 </div>
-
-<div class="detail-profile">
-    <img src="{{ $profileImg }}" alt="{{ $hosto->name }}">
-    <div class="detail-profile-info">
+<div class="detail-profile-bar">
+    <img src="{{ $profileImg }}" alt="{{ $hosto->name }}" class="detail-profile-img">
+    <div class="detail-profile-info" style="flex:1;">
         <div class="types">{{ $types->pluck('name_fr')->join(', ') }}</div>
         <h1>{{ $hosto->name }}</h1>
         <div class="location">{{ $hosto->city?->name_fr }} @if($hosto->address) — {{ $hosto->address }} @endif</div>
@@ -175,6 +178,18 @@
             <h3>Medicaments</h3>
             <p style="font-size:.82rem;color:#757575;margin-bottom:8px;">Cette structure est une pharmacie.</p>
             <a href="/compte/medicaments" style="font-size:.82rem;color:#388E3C;font-weight:500;">Rechercher un medicament &rarr;</a>
+        </div>
+        @endif
+
+        {{-- Galerie / Media --}}
+        @if($gallery->isNotEmpty())
+        <div class="section-block">
+            <h3>Galerie</h3>
+            <div class="gallery-scroll">
+                @foreach($gallery as $media)
+                <img src="{{ $media->url }}" alt="{{ $media->alt_text ?: $hosto->name }}">
+                @endforeach
+            </div>
         </div>
         @endif
 
