@@ -92,18 +92,14 @@ Route::prefix('compte')->group(function (): void {
             return view('compte.consultation-detail', compact('consultation'));
         })->middleware('medical.pin')->name('compte.consultation');
         // Explorer (dans l'espace patient)
-        Route::get('/structures', function () {
-            return view('compte.explorer.structures');
-        })->name('compte.structures');
-        Route::get('/medecins', function () {
-            return view('compte.explorer.medecins');
-        })->name('compte.medecins');
-        Route::get('/medicaments', function () {
-            return view('compte.explorer.medicaments');
-        })->name('compte.medicaments');
-        Route::get('/examens', function () {
-            return view('compte.explorer.examens');
-        })->name('compte.examens');
+        Route::get('/structures', fn () => view('compte.explorer.structures'))->name('compte.structures');
+        Route::get('/medecins', fn () => view('compte.explorer.medecins'))->name('compte.medecins');
+        Route::get('/medicaments', fn () => view('compte.explorer.medicaments'))->name('compte.medicaments');
+        Route::get('/examens', fn () => view('compte.explorer.examens'))->name('compte.examens');
+        Route::get('/pharmacies', fn () => view('compte.explorer.pharmacies'))->name('compte.pharmacies');
+        Route::get('/hopitaux', fn () => view('compte.explorer.hopitaux'))->name('compte.hopitaux');
+        Route::get('/soins-domicile', fn () => view('compte.explorer.soins-domicile'))->name('compte.soins-domicile');
+        Route::get('/urgences', fn () => view('compte.explorer.urgences'))->name('compte.urgences');
 
         Route::get('/profil', [ProfileController::class, 'show'])->name('compte.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
