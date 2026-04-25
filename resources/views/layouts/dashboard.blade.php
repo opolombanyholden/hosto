@@ -111,6 +111,10 @@
         }
     </style>
     @yield('styles')
+    <script>
+    const API = '/api/v1';
+    const currentCountryIso = localStorage.getItem('hosto_country') || 'GA';
+    </script>
 </head>
 <body>
     <aside class="sidebar" id="sidebar">
@@ -150,8 +154,6 @@
     </div>
 
     <script>
-    const API = '/api/v1';
-    const currentCountryIso = localStorage.getItem('hosto_country') || 'GA';
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('expanded');
     }
