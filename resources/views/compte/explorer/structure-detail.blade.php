@@ -32,7 +32,17 @@
     .detail-profile-info .types { font-size:.72rem;color:#388E3C;font-weight:600; }
     .detail-profile-info h1 { font-size:1.3rem;font-weight:700;color:#1B2A1B;line-height:1.2; }
     .detail-profile-info .location { font-size:.82rem;color:#757575; }
-    .detail-profile-actions { display:flex;gap:8px;align-items:center;padding-bottom:8px; }
+    .detail-profile-actions { display:flex;gap:8px;align-items:center;padding-bottom:8px;flex-wrap:wrap; }
+    .action-btn { padding:8px 16px;border:1px solid #EEE;border-radius:8px;font-size:.78rem;cursor:pointer;background:white;font-family:Poppins,sans-serif;display:flex;align-items:center;gap:5px;transition:all .2s;text-decoration:none;color:#424242;white-space:nowrap; }
+    .action-btn:hover { border-color:#388E3C;color:#388E3C; }
+    .action-btn.action-primary { background:#388E3C;color:white;border-color:#388E3C;font-weight:600; }
+    .action-btn.action-primary:hover { background:#2E7D32; }
+    .action-btn.liked { border-color:#FFCDD2;color:#E53935;background:#FFF5F5; }
+    .action-count { background:#F5F5F5;padding:1px 7px;border-radius:100px;font-size:.68rem;font-weight:600; }
+    .reco-form { display:none;background:white;border:1px solid #EEE;border-radius:14px;padding:16px;margin-bottom:16px; }
+    .reco-form.open { display:block; }
+    .reco-form textarea { width:100%;padding:10px 14px;border:2px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.85rem;outline:none;resize:vertical;box-sizing:border-box; }
+    .reco-form textarea:focus { border-color:#388E3C; }
     .status-badges { display:flex;gap:5px;flex-wrap:wrap;margin-top:6px; }
     .status-badge { padding:3px 10px;border-radius:100px;font-size:.68rem;font-weight:600; }
     .detail-grid { display:grid;grid-template-columns:1.2fr .8fr;gap:24px; }
@@ -102,16 +112,40 @@
         @endif
     </div>
     <div class="detail-profile-actions">
-        <a href="/compte/rdv/{{ $hosto->slug }}" style="padding:8px 20px;background:#388E3C;color:white;border-radius:8px;font-size:.82rem;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px;">
+        <a href="/compte/rdv/{{ $hosto->slug }}" class="action-btn action-primary">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
             Rendez-vous
         </a>
-        <button onclick="toggleLike()" id="btnLike" style="padding:8px 16px;border:1px solid #EEE;border-radius:8px;font-size:.82rem;cursor:pointer;background:white;font-family:Poppins,sans-serif;display:flex;align-items:center;gap:4px;">
-            <span id="likeIcon">{{ $userLiked ? '❤' : '♡' }}</span> {{ $userLiked ? 'Aime' : 'Aimer' }}
+        <button onclick="toggleLike()" id="btnLike" class="action-btn {{ $userLiked ? 'liked' : '' }}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="{{ $userLiked ? '#E53935' : 'none' }}" stroke="{{ $userLiked ? '#E53935' : 'currentColor' }}" stroke-width="2" id="likeIconSvg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span id="likeText">{{ $userLiked ? 'Aime' : 'Aimer' }}</span>
+            <span id="likeCount" class="action-count">{{ $hosto->likes_count }}</span>
+        </button>
+        <button onclick="shareStructure()" class="action-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Partager
+        </button>
+        <button onclick="openRecoForm()" class="action-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Recommander
         </button>
     </div>
 </div>
 </div>{{-- /detail-wrap --}}
+
+{{-- Formulaire recommandation --}}
+<div class="reco-form" id="recoForm">
+    <h3 style="font-size:.88rem;font-weight:600;color:#388E3C;margin-bottom:8px;">Recommander cette structure</h3>
+    <textarea id="recoContent" maxlength="500" rows="3" placeholder="Partagez votre experience positive..."></textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+        <span style="font-size:.68rem;color:#757575;">Max 500 caracteres</span>
+        <div style="display:flex;gap:6px;">
+            <button onclick="closeRecoForm()" style="padding:6px 14px;border:1px solid #EEE;border-radius:8px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;">Annuler</button>
+            <button onclick="submitReco()" style="padding:6px 14px;border:none;border-radius:8px;background:#388E3C;color:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:600;">Envoyer</button>
+        </div>
+    </div>
+    <div id="recoMsg" style="display:none;margin-top:8px;font-size:.82rem;padding:8px;border-radius:8px;"></div>
+</div>
 
 {{-- Description --}}
 @if($hosto->description_fr)
@@ -273,13 +307,52 @@ function filterList(input, containerId) {
     });
 }
 
+const CSRF = '{{ csrf_token() }}';
+const HOSTO_UUID = '{{ $hosto->uuid }}';
+const ajaxHeaders = {'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest'};
+
 async function toggleLike() {
     try {
-        const res = await fetch('/web/like/{{ $hosto->uuid }}', {method:'POST',headers:{'Accept':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','X-Requested-With':'XMLHttpRequest'}});
+        const res = await fetch('/web/like/'+HOSTO_UUID, {method:'POST',headers:ajaxHeaders});
         if (res.status===401) { window.location.href='/compte/connexion'; return; }
         const d = (await res.json()).data;
-        document.getElementById('btnLike').textContent = d.liked ? '❤ Aime' : '♡ Aimer';
+        const btn = document.getElementById('btnLike');
+        const svg = document.getElementById('likeIconSvg');
+        document.getElementById('likeText').textContent = d.liked ? 'Aime' : 'Aimer';
+        document.getElementById('likeCount').textContent = d.likes_count;
+        svg.setAttribute('fill', d.liked ? '#E53935' : 'none');
+        svg.setAttribute('stroke', d.liked ? '#E53935' : 'currentColor');
+        btn.classList.toggle('liked', d.liked);
     } catch(e) {}
+}
+
+function shareStructure() {
+    const url = window.location.href;
+    const title = '{{ addslashes($hosto->name) }}';
+    if (navigator.share) { navigator.share({title,url}).catch(()=>{}); }
+    else { navigator.clipboard.writeText(url).then(()=>alert('Lien copie dans le presse-papiers !')); }
+}
+
+function openRecoForm() { document.getElementById('recoForm').classList.add('open'); }
+function closeRecoForm() { document.getElementById('recoForm').classList.remove('open'); }
+
+async function submitReco() {
+    const content = document.getElementById('recoContent').value.trim();
+    if (!content) return;
+    const msg = document.getElementById('recoMsg');
+    try {
+        const res = await fetch('/web/recommend/'+HOSTO_UUID, {method:'POST',headers:ajaxHeaders,body:JSON.stringify({content})});
+        if (res.status===401) { window.location.href='/compte/connexion'; return; }
+        const data = await res.json();
+        if (res.ok) {
+            msg.style.display='block'; msg.style.background='#E8F5E9'; msg.style.color='#2E7D32';
+            msg.textContent = data.data?.message || 'Recommandation envoyee. Merci !';
+            document.getElementById('recoContent').value = '';
+        } else {
+            msg.style.display='block'; msg.style.background='#FFEBEE'; msg.style.color='#C62828';
+            msg.textContent = data.error?.message || 'Erreur.';
+        }
+    } catch(e) { msg.style.display='block'; msg.style.background='#FFEBEE'; msg.style.color='#C62828'; msg.textContent='Erreur de connexion.'; }
 }
 
 // --- Lightbox ---
