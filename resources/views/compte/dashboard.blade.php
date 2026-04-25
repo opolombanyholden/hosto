@@ -185,25 +185,25 @@
 
 {{-- Acces rapides 2x2 : Pharmacie, Hopitale, Soins a domicile, Evacuation/Ambulance --}}
 <div class="dash-quick-grid">
-    <a href="/compte/medicaments" class="dash-quick-item">
+    <a href="/compte/structures?type=pharmacie" class="dash-quick-item">
         <div class="dash-quick-icon">
             <img src="/images/icons/icon-pharamcie.png" alt="Pharmacie" style="width:50px;height:50px;">
         </div>
         <div class="dash-quick-name">Pharmacie</div>
     </a>
-    <a href="/compte/structures" class="dash-quick-item">
+    <a href="/compte/structures?type=hopital" class="dash-quick-item">
         <div class="dash-quick-icon">
             <img src="/images/icons/icon-hopitaux.png" alt="Hopital" style="width:50px;height:50px;">
         </div>
         <div class="dash-quick-name">Hopitale</div>
     </a>
-    <a href="#" class="dash-quick-item">
+    <a href="/compte/structures?type=cabinet-medical" class="dash-quick-item">
         <div class="dash-quick-icon">
             <img src="/images/icons/icon-soin-a-domicile.png" alt="Soins a domicile" style="width:50px;height:50px;">
         </div>
         <div class="dash-quick-name">Soins a domicile</div>
     </a>
-    <a href="#" class="dash-quick-item">
+    <a href="/compte/structures?garde=1" class="dash-quick-item">
         <div class="dash-quick-icon">
             <img src="/images/icons/icon-ambulance.png" alt="Ambulance" style="width:50px;height:50px;">
         </div>

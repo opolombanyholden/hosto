@@ -110,12 +110,30 @@
 <script>
 let userLat=null, userLng=null, currentPage=1, currentView='list', proximiteActive=false, resultsMap=null, mapMarkers=[], lastResults=[];
 
+const urlP = new URLSearchParams(window.location.search);
+const prefilterType = urlP.get('type') || '';
+const prefilterGarde = urlP.get('garde') === '1';
+
+// Contextual titles
+const typeLabels = {pharmacie:'Pharmacies',hopital:'Hopitaux',clinique:'Cliniques',laboratoire:'Laboratoires','cabinet-medical':'Cabinets medicaux','centre-de-sante':'Centres de sante',maternite:'Maternites'};
+
 async function init() {
     await Promise.all([loadDropdowns(), loadCities()]);
-    const urlP = new URLSearchParams(window.location.search);
     if (urlP.get('q')) document.getElementById('searchQ').value = urlP.get('q');
-    if (urlP.get('type')) document.getElementById('searchType').value = urlP.get('type');
+    if (prefilterType) document.getElementById('searchType').value = prefilterType;
     if (urlP.get('specialty')) document.getElementById('searchSpecialty').value = urlP.get('specialty');
+
+    // Update header title based on filter
+    const h2 = document.querySelector('.explorer-header h2');
+    const p = document.querySelector('.explorer-header p');
+    if (prefilterType && typeLabels[prefilterType]) {
+        h2.textContent = typeLabels[prefilterType];
+        p.textContent = 'Trouvez un etablissement pres de chez vous.';
+    } else if (prefilterGarde) {
+        h2.textContent = 'Services de garde et urgences';
+        p.textContent = 'Structures avec service de garde ou urgences.';
+    }
+
     doSearch();
 }
 
@@ -187,6 +205,7 @@ async function doSearch(e, page) {
     if (city) params.set('city',city);
     if (type) params.set('type',type);
     if (specialty) params.set('specialty',specialty);
+    if (prefilterGarde) params.set('garde','1');
     if (proximiteActive && userLat && userLng) { params.set('lat',userLat); params.set('lng',userLng); params.set('rayon','20'); params.set('sort','distance'); }
     params.set('per_page', currentView==='map' ? '50' : '12');
     params.set('page', currentPage);
