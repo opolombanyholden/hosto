@@ -106,6 +106,20 @@ final class AnnuaireWebController
     }
 
     /**
+     * Booking RDV in patient dashboard layout.
+     */
+    public function bookRdvInDashboard(string $slug): View
+    {
+        $hosto = Hosto::where('slug', $slug)
+            ->with('specialties')
+            ->firstOrFail();
+
+        $specialties = $hosto->specialties;
+
+        return view('compte.explorer.book-rdv', compact('hosto', 'specialties'));
+    }
+
+    /**
      * Structure detail in patient dashboard layout.
      */
     public function showInDashboard(string $slug): View

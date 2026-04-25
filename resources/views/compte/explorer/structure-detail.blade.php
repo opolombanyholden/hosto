@@ -79,7 +79,7 @@
 
 {{-- Action buttons --}}
 <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
-    <a href="/annuaire/{{ $hosto->slug }}/rendez-vous" style="padding:8px 18px;background:#388E3C;color:white;border-radius:100px;font-size:.82rem;font-weight:600;text-decoration:none;">Prendre rendez-vous</a>
+    <a href="/compte/rdv/{{ $hosto->slug }}" style="padding:8px 18px;background:#388E3C;color:white;border-radius:100px;font-size:.82rem;font-weight:600;text-decoration:none;">Prendre rendez-vous</a>
     <button onclick="toggleLike()" id="btnLike" style="padding:8px 18px;border:1px solid #EEE;border-radius:100px;font-size:.82rem;cursor:pointer;background:white;font-family:Poppins,sans-serif;">{{ $userLiked ? '❤ Aime' : '♡ Aimer' }}</button>
 </div>
 
@@ -108,22 +108,15 @@
         </div>
         @endif
 
-        @if($practitioners->isNotEmpty())
         <div class="section-block">
-            <h3>Medecins ({{ $practitioners->count() }})</h3>
-            @foreach($practitioners as $prac)
-            <a href="/compte/medecin/{{ $prac->slug }}" class="prac-link">
-                <div style="width:36px;height:36px;border-radius:8px;background:#E8F5E9;display:flex;align-items:center;justify-content:center;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
-                <div>
-                    <div style="font-size:.82rem;font-weight:600;">{{ $prac->full_name }}</div>
-                    <div style="font-size:.68rem;color:#757575;">{{ $prac->specialties->pluck('name_fr')->join(', ') }}</div>
-                </div>
-            </a>
-            @endforeach
+            <h3>Medecins</h3>
+            <div style="margin-bottom:10px;">
+                <input type="text" id="pracSearch" placeholder="Rechercher un medecin..." oninput="debouncePrac()" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
+            </div>
+            <div id="pracList"></div>
+            <div id="pracEmpty" style="display:none;text-align:center;padding:16px;color:#757575;font-size:.82rem;">Aucun medecin.</div>
+            <div id="pracPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
         </div>
-        @endif
 
         @if($recommendations->isNotEmpty())
         <div class="section-block">
@@ -178,6 +171,42 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(()=>map.invalidateSize(),200);
 });
 @endif
+
+// Medecins AJAX
+let pracTimer;
+function debouncePrac() { clearTimeout(pracTimer); pracTimer = setTimeout(()=>loadPrac(), 300); }
+loadPrac();
+async function loadPrac(page) {
+    const q = document.getElementById('pracSearch').value.trim();
+    const params = new URLSearchParams({per_page:'5', page: page||1});
+    if (q) params.set('q', q);
+    try {
+        const res = await fetch(`/compte/api/structure/{{ $hosto->slug }}/medecins?${params}`, {headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
+        const data = await res.json();
+        const list = document.getElementById('pracList');
+        const empty = document.getElementById('pracEmpty');
+        list.innerHTML = '';
+        if (!data.data.length) { empty.style.display='block'; } else {
+            empty.style.display='none';
+            data.data.forEach(p => {
+                let badges = '';
+                if (p.does_teleconsultation) badges += '<span style="padding:2px 6px;background:#E3F2FD;color:#1565C0;border-radius:100px;font-size:.58rem;font-weight:600;">TC</span> ';
+                if (p.does_home_care) badges += '<span style="padding:2px 6px;background:#E8F5E9;color:#2E7D32;border-radius:100px;font-size:.58rem;font-weight:600;">Domicile</span>';
+                list.insertAdjacentHTML('beforeend', `<a href="/compte/medecin/${p.slug}" class="prac-link"><div style="width:36px;height:36px;border-radius:8px;background:#E8F5E9;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div style="flex:1;"><div style="font-size:.82rem;font-weight:600;">${p.full_name}</div><div style="font-size:.68rem;color:#757575;">${(p.specialties||[]).join(', ')}</div></div><div>${badges}</div></a>`);
+            });
+        }
+        // Pagination
+        const pg = document.getElementById('pracPagination'); pg.innerHTML = '';
+        if (data.meta?.last_page > 1) {
+            for (let i=1;i<=data.meta.last_page;i++) {
+                const btn=document.createElement('button'); btn.textContent=i;
+                btn.style.cssText='padding:4px 10px;border:1px solid #EEE;border-radius:6px;background:white;font-family:Poppins,sans-serif;font-size:.72rem;cursor:pointer;';
+                if(i===data.meta.current_page) btn.style.cssText+='background:#388E3C;color:white;border-color:#388E3C;';
+                btn.onclick=()=>loadPrac(i); pg.appendChild(btn);
+            }
+        }
+    } catch(e) {}
+}
 
 async function toggleLike() {
     try {

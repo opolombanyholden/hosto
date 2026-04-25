@@ -11,6 +11,8 @@ use App\Http\Controllers\PractitionerProfileController;
 use App\Http\Controllers\ProWebController;
 use App\Http\Controllers\PublicationInteractionController;
 use App\Http\Controllers\TeleconWebController;
+use App\Modules\Annuaire\Models\Hosto;
+use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\PasswordResetController;
 use App\Modules\Core\Http\Controllers\ProfileController;
@@ -113,6 +115,29 @@ Route::prefix('compte')->group(function (): void {
                 'created_at' => $c->created_at->format('d/m/Y'),
             ]), 'meta' => ['total' => $data->total(), 'current_page' => $data->currentPage(), 'last_page' => $data->lastPage()]]);
         });
+        // API JSON fiche structure (medecins, services)
+        Route::get('/api/structure/{slug}/medecins', function (string $slug, Request $request) {
+            $hosto = Hosto::where('slug', $slug)->firstOrFail();
+            $query = Practitioner::active()
+                ->whereHas('structures', fn ($q) => $q->where('hostos.id', $hosto->id))
+                ->with('specialties');
+            if ($request->filled('q')) {
+                $q = $request->input('q');
+                $query->where(fn ($w) => $w->where('last_name', 'ILIKE', "%{$q}%")->orWhere('first_name', 'ILIKE', "%{$q}%")
+                    ->orWhereHas('specialties', fn ($s) => $s->where('name_fr', 'ILIKE', "%{$q}%")));
+            }
+            $data = $query->orderBy('last_name')->paginate($request->integer('per_page', 5));
+
+            return response()->json(['data' => $data->map(fn ($p) => [
+                'slug' => $p->slug, 'full_name' => $p->full_name,
+                'specialties' => $p->specialties->pluck('name_fr')->toArray(),
+                'does_teleconsultation' => $p->does_teleconsultation, 'does_home_care' => $p->does_home_care,
+            ]), 'meta' => ['total' => $data->total(), 'current_page' => $data->currentPage(), 'last_page' => $data->lastPage()]]);
+        });
+
+        // Booking RDV dans l'espace patient
+        Route::get('/rdv/{slug}', [AnnuaireWebController::class, 'bookRdvInDashboard'])->name('compte.book-rdv');
+
         Route::get('/dossier-medical/{uuid}', function (string $uuid) {
             $consultation = Consultation::where('patient_id', auth()->id())
                 ->whereUuid($uuid)
