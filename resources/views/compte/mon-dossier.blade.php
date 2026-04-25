@@ -45,6 +45,10 @@
     .dossier-item-sub { font-size:.72rem; color:#757575; }
     .dossier-empty { text-align:center; padding:20px; color:#BDBDBD; font-size:.82rem; }
     .dossier-more { display:inline-block; margin-top:8px; font-size:.78rem; color:#388E3C; font-weight:500; text-decoration:none; }
+    .dossier-pagination { display:flex; justify-content:center; gap:4px; padding:10px 0; }
+    .dossier-pagination button { padding:4px 12px; border:1px solid #EEE; border-radius:6px; background:white; font-family:Poppins,sans-serif; font-size:.75rem; cursor:pointer; }
+    .dossier-pagination button:hover { border-color:#388E3C; color:#388E3C; }
+    .dossier-pagination button.active { background:#388E3C; color:white; border-color:#388E3C; }
 
     @media(max-width:768px) { .dossier-grid { grid-template-columns:1fr; } }
     @media(max-width:900px) { .dossier-grid { grid-template-columns:repeat(2, 1fr); } }
@@ -53,8 +57,8 @@
 
 @section('content')
 @php
-    $rdvCount = $appointments->count();
-    $consultCount = $consultations->count();
+    $rdvCount = \App\Modules\RendezVous\Models\Appointment::where('patient_id', $user->id)->count();
+    $consultCount = \App\Modules\Pro\Models\Consultation::where('patient_id', $user->id)->count();
 @endphp
 
 {{-- Header patient --}}
@@ -164,44 +168,95 @@
     </a>
 </div>
 
-{{-- Derniers rendez-vous --}}
+{{-- Section Rendez-vous --}}
 <div class="dossier-section">
     <div class="dossier-section-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        Derniers rendez-vous
+        Rendez-vous
     </div>
-    @forelse($appointments as $rdv)
-    <div class="dossier-item">
-        <div class="dossier-item-date">{{ $rdv->created_at->format('d/m/Y') }}</div>
-        <div class="dossier-item-info">
-            <div class="dossier-item-title">{{ $rdv->structure?->name ?? 'Structure' }}</div>
-            <div class="dossier-item-sub">{{ $rdv->practitioner?->full_name ?? '' }} — {{ $rdv->timeSlot?->date?->format('d/m/Y') }} {{ $rdv->timeSlot ? substr($rdv->timeSlot->start_time, 0, 5) : '' }}</div>
-        </div>
-        <span class="dossier-badge" style="background:{{ $rdv->status === 'confirmed' ? '#E8F5E9;color:#2E7D32' : ($rdv->status === 'pending' ? '#FFF3E0;color:#E65100' : '#F5F5F5;color:#757575') }};">{{ ucfirst($rdv->status) }}</span>
+    <div style="margin-bottom:10px;">
+        <input type="text" id="rdvSearch" placeholder="Rechercher un rendez-vous..." oninput="debounce(loadRdv,300)()" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
     </div>
-    @empty
-    <div class="dossier-empty">Aucun rendez-vous enregistre.</div>
-    @endforelse
-    @if($rdvCount > 0)<a href="/compte/rendez-vous" class="dossier-more">Voir tous les rendez-vous &rarr;</a>@endif
+    <div id="rdvList"></div>
+    <div id="rdvEmpty" class="dossier-empty" style="display:none;">Aucun rendez-vous.</div>
+    <div id="rdvPagination" class="dossier-pagination"></div>
 </div>
 
-{{-- Dernieres consultations --}}
+{{-- Section Consultations --}}
 <div class="dossier-section">
     <div class="dossier-section-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-        Dernieres consultations
+        Consultations
     </div>
-    @forelse($consultations as $consult)
-    <div class="dossier-item">
-        <div class="dossier-item-date">{{ $consult->created_at->format('d/m/Y') }}</div>
-        <div class="dossier-item-info">
-            <div class="dossier-item-title">{{ $consult->practitioner?->full_name ?? 'Medecin' }}</div>
-            <div class="dossier-item-sub">{{ $consult->structure?->name ?? '' }} — {{ $consult->reason ?? 'Consultation' }}</div>
-        </div>
+    <div style="margin-bottom:10px;">
+        <input type="text" id="consultSearch" placeholder="Rechercher une consultation..." oninput="debounce(loadConsult,300)()" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
     </div>
-    @empty
-    <div class="dossier-empty">Aucune consultation enregistree.</div>
-    @endforelse
-    @if($consultCount > 0)<a href="/compte/dossier-medical" class="dossier-more">Voir toutes les consultations &rarr;</a>@endif
+    <div id="consultList"></div>
+    <div id="consultEmpty" class="dossier-empty" style="display:none;">Aucune consultation.</div>
+    <div id="consultPagination" class="dossier-pagination"></div>
 </div>
+
+<script>
+let rdvPage = 1, consultPage = 1;
+let debounceTimers = {};
+function debounce(fn, ms) { return function() { clearTimeout(debounceTimers[fn.name]); debounceTimers[fn.name] = setTimeout(fn, ms); }; }
+
+loadRdv(); loadConsult();
+
+async function loadRdv(page) {
+    rdvPage = page || 1;
+    const q = document.getElementById('rdvSearch').value.trim();
+    const params = new URLSearchParams({per_page:'5', page:rdvPage});
+    if (q) params.set('q', q);
+    try {
+        const res = await fetch(`/compte/api/rendez-vous?${params}`, {headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
+        const data = await res.json();
+        const list = document.getElementById('rdvList');
+        const empty = document.getElementById('rdvEmpty');
+        list.innerHTML = '';
+        if (!data.data.length) { empty.style.display='block'; } else {
+            empty.style.display='none';
+            data.data.forEach(r => {
+                const statusBg = r.status==='confirmed'?'#E8F5E9;color:#2E7D32':r.status==='pending'?'#FFF3E0;color:#E65100':'#F5F5F5;color:#757575';
+                list.insertAdjacentHTML('beforeend', `<div class="dossier-item"><div class="dossier-item-date">${r.created_at}</div><div class="dossier-item-info"><div class="dossier-item-title">${r.structure||'Structure'}</div><div class="dossier-item-sub">${r.practitioner||''} — ${r.date||''} ${r.time||''}</div></div><span class="dossier-badge" style="background:${statusBg};">${r.status}</span></div>`);
+            });
+        }
+        buildPagination('rdvPagination', data.meta, loadRdv);
+    } catch(e) {}
+}
+
+async function loadConsult(page) {
+    consultPage = page || 1;
+    const q = document.getElementById('consultSearch').value.trim();
+    const params = new URLSearchParams({per_page:'5', page:consultPage});
+    if (q) params.set('q', q);
+    try {
+        const res = await fetch(`/compte/api/consultations?${params}`, {headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
+        const data = await res.json();
+        const list = document.getElementById('consultList');
+        const empty = document.getElementById('consultEmpty');
+        list.innerHTML = '';
+        if (!data.data.length) { empty.style.display='block'; } else {
+            empty.style.display='none';
+            data.data.forEach(c => {
+                list.insertAdjacentHTML('beforeend', `<div class="dossier-item"><div class="dossier-item-date">${c.created_at}</div><div class="dossier-item-info"><div class="dossier-item-title">${c.practitioner||'Medecin'}</div><div class="dossier-item-sub">${c.structure||''} — ${c.motif||c.diagnostic||'Consultation'}</div></div></div>`);
+            });
+        }
+        buildPagination('consultPagination', data.meta, loadConsult);
+    } catch(e) {}
+}
+
+function buildPagination(containerId, meta, loadFn) {
+    const p = document.getElementById(containerId);
+    p.innerHTML = '';
+    if (!meta || meta.last_page <= 1) return;
+    for (let i=1; i<=meta.last_page; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        if (i===meta.current_page) btn.className='active';
+        btn.onclick = () => loadFn(i);
+        p.appendChild(btn);
+    }
+}
+</script>
 @endsection

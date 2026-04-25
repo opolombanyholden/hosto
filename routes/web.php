@@ -77,12 +77,42 @@ Route::prefix('compte')->group(function (): void {
             return view('compte.rendez-vous', compact('appointments'));
         })->name('compte.rdv');
         Route::get('/dossier-medical', function () {
-            $user = auth()->user();
-            $appointments = Appointment::where('patient_id', $user->id)->with(['timeSlot', 'practitioner', 'structure'])->orderByDesc('created_at')->limit(10)->get();
-            $consultations = Consultation::where('patient_id', $user->id)->with(['practitioner', 'structure'])->orderByDesc('created_at')->limit(10)->get();
-
-            return view('compte.mon-dossier', compact('user', 'appointments', 'consultations'));
+            return view('compte.mon-dossier', ['user' => auth()->user()]);
         })->name('compte.dossier');
+
+        // API JSON pour les sections du dossier (AJAX + pagination)
+        Route::get('/api/rendez-vous', function (Request $request) {
+            $query = Appointment::where('patient_id', auth()->id())->with(['timeSlot', 'practitioner', 'structure'])->orderByDesc('created_at');
+            if ($request->filled('q')) {
+                $q = $request->input('q');
+                $query->where(fn ($w) => $w->whereHas('structure', fn ($s) => $s->where('name', 'ILIKE', "%{$q}%"))
+                    ->orWhereHas('practitioner', fn ($p) => $p->where('last_name', 'ILIKE', "%{$q}%")->orWhere('first_name', 'ILIKE', "%{$q}%"))
+                    ->orWhere('reason', 'ILIKE', "%{$q}%"));
+            }
+            $data = $query->paginate($request->integer('per_page', 5));
+
+            return response()->json(['data' => $data->map(fn ($r) => [
+                'uuid' => $r->uuid, 'status' => $r->status, 'reason' => $r->reason,
+                'date' => $r->timeSlot->date->format('d/m/Y'), 'time' => substr($r->timeSlot->start_time, 0, 5),
+                'structure' => $r->structure->name, 'practitioner' => $r->practitioner->full_name,
+                'created_at' => $r->created_at->format('d/m/Y'),
+            ]), 'meta' => ['total' => $data->total(), 'current_page' => $data->currentPage(), 'last_page' => $data->lastPage()]]);
+        });
+        Route::get('/api/consultations', function (Request $request) {
+            $query = Consultation::where('patient_id', auth()->id())->with(['practitioner', 'structure'])->orderByDesc('created_at');
+            if ($request->filled('q')) {
+                $q = $request->input('q');
+                $query->where(fn ($w) => $w->whereHas('practitioner', fn ($p) => $p->where('last_name', 'ILIKE', "%{$q}%")->orWhere('first_name', 'ILIKE', "%{$q}%"))
+                    ->orWhere('motif', 'ILIKE', "%{$q}%")->orWhere('diagnostic', 'ILIKE', "%{$q}%"));
+            }
+            $data = $query->paginate($request->integer('per_page', 5));
+
+            return response()->json(['data' => $data->map(fn ($c) => [
+                'uuid' => $c->uuid, 'status' => $c->status, 'motif' => $c->motif, 'diagnostic' => $c->diagnostic,
+                'structure' => $c->structure->name, 'practitioner' => $c->practitioner->full_name,
+                'created_at' => $c->created_at->format('d/m/Y'),
+            ]), 'meta' => ['total' => $data->total(), 'current_page' => $data->currentPage(), 'last_page' => $data->lastPage()]]);
+        });
         Route::get('/dossier-medical/{uuid}', function (string $uuid) {
             $consultation = Consultation::where('patient_id', auth()->id())
                 ->whereUuid($uuid)
