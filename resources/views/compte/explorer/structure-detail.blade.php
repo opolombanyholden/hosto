@@ -23,11 +23,12 @@
     $catLabels = ['prestation' => 'Prestations', 'soin' => 'Soins', 'examen' => 'Examens'];
 @endphp
 <style>
-    .detail-cover { position:relative; height:280px; overflow:hidden; background:linear-gradient(135deg,#2E7D32,#43A047); border-radius:14px 14px 0 0; margin:0 -32px; }
+    .detail-wrap { margin-bottom:20px; }
+    .detail-cover { height:240px; overflow:hidden; background:linear-gradient(135deg,#2E7D32,#43A047); border-radius:14px 14px 0 0; }
     .detail-cover img { width:100%;height:100%;object-fit:cover; }
-    .detail-profile-bar { background:white; border-bottom:1px solid #EEE; padding:16px 20px 16px 170px; margin:0 -32px 20px; min-height:80px; position:relative; }
-    .detail-profile-img { width:130px; height:130px; border-radius:50%; border:5px solid white; object-fit:cover; background:#E8F5E9; box-shadow:0 4px 16px rgba(0,0,0,.18); position:absolute; left:20px; bottom:16px; z-index:3; }
-    .detail-profile-info { padding-bottom:4px; flex:1; min-width:200px; }
+    .detail-profile-bar { background:white; border:1px solid #EEE; border-top:none; border-radius:0 0 14px 14px; padding:16px 20px; display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+    .detail-profile-img { width:110px; height:110px; border-radius:50%; border:4px solid white; object-fit:cover; background:#E8F5E9; box-shadow:0 2px 12px rgba(0,0,0,.15); margin-top:-55px; flex-shrink:0; }
+    .detail-profile-info { flex:1; min-width:200px; padding-top:4px; }
     .detail-profile-info .types { font-size:.72rem;color:#388E3C;font-weight:600; }
     .detail-profile-info h1 { font-size:1.3rem;font-weight:700;color:#1B2A1B;line-height:1.2; }
     .detail-profile-info .location { font-size:.82rem;color:#757575; }
@@ -54,12 +55,13 @@
     .gallery-scroll { display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch; }
     .gallery-scroll img { width:120px;height:90px;border-radius:10px;object-fit:cover;flex-shrink:0;cursor:pointer; }
     .gallery-scroll img:hover { opacity:.8; }
-    @media(max-width:768px) { .detail-grid{grid-template-columns:1fr;} .detail-cover{height:180px;margin:0 -16px;} .detail-profile-bar{margin:0 -16px 16px;padding:80px 16px 12px 16px;text-align:center;} .detail-profile-img{width:100px;height:100px;left:50%;transform:translateX(-50%);bottom:auto;top:-50px;} .detail-profile-actions{justify-content:center;} .status-badges{justify-content:center;} .ins-badges{justify-content:center;} }
+    @media(max-width:768px) { .detail-grid{grid-template-columns:1fr;} .detail-cover{height:160px;} .detail-profile-bar{flex-direction:column;align-items:center;text-align:center;} .detail-profile-img{width:90px;height:90px;margin-top:-45px;} .detail-profile-actions{justify-content:center;} .status-badges{justify-content:center;} .ins-badges{justify-content:center;} }
 </style>
 @endsection
 
 @section('content')
 {{-- Cover + Profile bar (style Facebook) --}}
+<div class="detail-wrap">
 <div class="detail-cover">
     @if($coverImg)<img src="{{ $coverImg }}" alt="">@endif
 </div>
@@ -93,6 +95,7 @@
         </button>
     </div>
 </div>
+</div>{{-- /detail-wrap --}}
 
 {{-- Description --}}
 @if($hosto->description_fr)
