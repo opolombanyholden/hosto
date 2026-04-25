@@ -7,6 +7,8 @@
     <title>@yield('title') — @yield('env-name', 'HOSTO')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <style>
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Poppins',sans-serif; background:#F5F5F5; color:#2D2D2D; min-height:100vh; display:flex; }
@@ -148,6 +150,8 @@
     </div>
 
     <script>
+    const API = '/api/v1';
+    const currentCountryIso = localStorage.getItem('hosto_country') || 'GA';
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('expanded');
     }
