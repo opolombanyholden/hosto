@@ -61,7 +61,57 @@
     .pagination button.active { background:#388E3C; color:white; border-color:#388E3C; }
     .loading,.empty-state { text-align:center; padding:40px; color:#757575; font-size:.85rem; }
 
-    @media(max-width:768px) { .search-bar{grid-template-columns:1fr !important;} .results-grid{grid-template-columns:1fr;} .map-results{height:300px;} .toolbar{flex-direction:column;} }
+    /* Search FAB */
+    .search-fab {
+        position:fixed; bottom:24px; right:24px; width:52px; height:52px;
+        background:#388E3C; border:none; border-radius:50%; cursor:pointer;
+        box-shadow:0 4px 16px rgba(56,142,60,.3); display:flex; align-items:center;
+        justify-content:center; z-index:60; transition:transform .2s;
+    }
+    .search-fab:hover { transform:scale(1.1); }
+    .search-fab svg { width:24px; height:24px; stroke:white; fill:none; stroke-width:2; }
+
+    /* Search panel overlay */
+    .search-panel {
+        position:fixed; top:0; right:-400px; width:380px; height:100%; background:white;
+        box-shadow:-4px 0 24px rgba(0,0,0,.12); z-index:200; transition:right .3s ease;
+        display:flex; flex-direction:column;
+    }
+    .search-panel.open { right:0; }
+    .search-panel-header {
+        padding:16px 20px; border-bottom:1px solid #EEE; display:flex;
+        align-items:center; justify-content:space-between;
+    }
+    .search-panel-header h3 { font-size:.92rem; font-weight:600; color:#1B2A1B; }
+    .search-panel-close {
+        width:32px; height:32px; border:none; background:#F5F5F5; border-radius:8px;
+        cursor:pointer; display:flex; align-items:center; justify-content:center;
+    }
+    .search-panel-body { padding:20px; flex:1; overflow-y:auto; }
+    .search-panel-body .sp-field { margin-bottom:14px; }
+    .search-panel-body .sp-field label { display:block; font-size:.78rem; font-weight:500; color:#424242; margin-bottom:4px; }
+    .search-panel-body .sp-field input, .search-panel-body .sp-field select {
+        width:100%; padding:10px 14px; border:2px solid #EEE; border-radius:8px;
+        font-family:Poppins,sans-serif; font-size:.85rem; outline:none; box-sizing:border-box;
+    }
+    .search-panel-body .sp-field input:focus, .search-panel-body .sp-field select:focus { border-color:#388E3C; }
+    .search-panel-actions { padding:16px 20px; border-top:1px solid #EEE; display:flex; gap:8px; }
+    .search-panel-actions .sp-btn {
+        flex:1; padding:10px; border:none; border-radius:8px; font-family:Poppins,sans-serif;
+        font-size:.82rem; font-weight:600; cursor:pointer;
+    }
+    .sp-btn-primary { background:#388E3C; color:white; }
+    .sp-btn-secondary { background:#F5F5F5; color:#757575; }
+    .search-overlay {
+        position:fixed; inset:0; background:rgba(0,0,0,.3); z-index:199;
+        display:none; cursor:pointer;
+    }
+    .search-overlay.open { display:block; }
+
+    /* Hide default search bar */
+    .search-bar { display:none !important; }
+
+    @media(max-width:768px) { .results-grid{grid-template-columns:1fr;} .map-results{height:300px;} .toolbar{flex-direction:column;} .search-panel{width:100%;right:-100%;} }
 </style>
 @endsection
 
@@ -76,24 +126,48 @@
     </div>
 </div>
 
+{{-- Search bar hidden (IDs kept for JS) --}}
 <div class="search-bar">
-    <div class="search-field">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" id="searchQ" placeholder="Rechercher...">
+    <input type="hidden" id="searchQ"><select id="searchCity" style="display:none;"></select>
+    <select id="searchType" style="display:none;"></select><select id="searchSpecialty" style="display:none;"></select>
+</div>
+
+{{-- Search FAB --}}
+<button class="search-fab" onclick="openSearchPanel()" title="Rechercher">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+</button>
+
+{{-- Search panel (slide from right) --}}
+<div class="search-overlay" id="searchOverlay" onclick="closeSearchPanel()"></div>
+<div class="search-panel" id="searchPanel">
+    <div class="search-panel-header">
+        <h3>Rechercher</h3>
+        <button class="search-panel-close" onclick="closeSearchPanel()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#424242" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
     </div>
-    <div class="search-field">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <select id="searchCity"><option value="">Toutes les villes</option></select>
+    <div class="search-panel-body">
+        <div class="sp-field">
+            <label>Nom</label>
+            <input type="text" id="spQ" placeholder="Rechercher...">
+        </div>
+        <div class="sp-field">
+            <label>Ville</label>
+            <select id="spCity"><option value="">Toutes les villes</option></select>
+        </div>
+        <div class="sp-field">
+            <label>Type de structure</label>
+            <select id="spType"><option value="">Tous les types</option></select>
+        </div>
+        <div class="sp-field">
+            <label>Specialite</label>
+            <select id="spSpecialty"><option value="">Toutes</option></select>
+        </div>
     </div>
-    <div class="search-field">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-        <select id="searchType"><option value="">Type de structure</option></select>
+    <div class="search-panel-actions">
+        <button class="sp-btn sp-btn-secondary" onclick="resetSearch()">Reinitialiser</button>
+        <button class="sp-btn sp-btn-primary" onclick="applySearch()">Rechercher</button>
     </div>
-    <div class="search-field">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-        <select id="searchSpecialty"><option value="">Specialite</option></select>
-    </div>
-    <button type="button" class="search-btn" onclick="doSearch()">Rechercher</button>
 </div>
 
 <div class="toolbar">
@@ -130,12 +204,32 @@ async function init() {
     doSearch();
 }
 
+// Search panel
+function openSearchPanel() {
+    document.getElementById('searchPanel').classList.add('open');
+    document.getElementById('searchOverlay').classList.add('open');
+}
+function closeSearchPanel() {
+    document.getElementById('searchPanel').classList.remove('open');
+    document.getElementById('searchOverlay').classList.remove('open');
+}
+function applySearch() {
+    // Sync panel → hidden fields
+    document.getElementById('searchQ').value = document.getElementById('spQ').value;
+    document.getElementById('searchCity').value = document.getElementById('spCity').value;
+    if (!FIXED_TYPE) document.getElementById('searchType').value = document.getElementById('spType').value;
+    document.getElementById('searchSpecialty').value = document.getElementById('spSpecialty').value;
+    closeSearchPanel();
+    doSearch();
+}
+
 async function loadDropdowns() {
     try {
         const [typesRes, specsRes] = await Promise.all([
             fetch(`${API}/referentiel/structure-types`).then(r=>r.json()),
             fetch(`${API}/referentiel/specialties`).then(r=>r.json()),
         ]);
+        // Hidden selects
         const ts = document.getElementById('searchType');
         ts.innerHTML = '<option value="">Type de structure</option>';
         typesRes.data.forEach(t => { const o=document.createElement('option'); o.value=t.slug; o.textContent=t.name; ts.appendChild(o); });
@@ -145,6 +239,10 @@ async function loadDropdowns() {
             const o=document.createElement('option'); o.value=s.code; o.textContent=s.name; ss.appendChild(o);
             (s.children||[]).forEach(c => { const co=document.createElement('option'); co.value=c.code; co.textContent='\u00A0\u00A0\u00A0'+c.name; ss.appendChild(co); });
         });
+        // Panel selects (clone)
+        document.getElementById('spType').innerHTML = ts.innerHTML;
+        document.getElementById('spSpecialty').innerHTML = ss.innerHTML;
+        if (FIXED_TYPE) document.getElementById('spType').value = FIXED_TYPE;
     } catch(e) {}
 }
 
@@ -162,6 +260,8 @@ async function loadCities() {
             cities.forEach(c => { const o=document.createElement('option'); o.value=c.uuid; o.textContent=c.name; og.appendChild(o); });
             cs.appendChild(og);
         }
+        // Clone to panel
+        document.getElementById('spCity').innerHTML = cs.innerHTML;
     } catch(e) {}
 }
 
@@ -272,8 +372,13 @@ function resetSearch() {
     document.getElementById('searchCity').value='';
     if (!FIXED_TYPE) document.getElementById('searchType').value='';
     document.getElementById('searchSpecialty').value='';
+    document.getElementById('spQ').value='';
+    document.getElementById('spCity').value='';
+    if (!FIXED_TYPE) document.getElementById('spType').value='';
+    document.getElementById('spSpecialty').value='';
     userLat=null; userLng=null; proximiteActive=false;
     document.getElementById('btnProximite').classList.remove('active');
+    closeSearchPanel();
     doSearch();
 }
 
