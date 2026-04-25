@@ -61,7 +61,7 @@ async function searchDocs() {
         data.data.forEach(p => {
             const card = document.createElement('a');
             card.className = 'explorer-card';
-            card.href = '/annuaire/medecins/' + p.slug;
+            card.href = '/compte/medecin/' + p.slug;
             card.target = '_blank';
             card.innerHTML = `<div class="explorer-card-avatar"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div><div class="explorer-card-name">${p.full_name}</div><div class="explorer-card-spec">${(p.specialties||[]).join(' · ')}</div>${p.does_teleconsultation ? '<span class="explorer-card-badge">Teleconsultation</span>' : ''}</div>`;
             grid.appendChild(card);

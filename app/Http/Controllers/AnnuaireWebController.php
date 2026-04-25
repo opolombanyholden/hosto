@@ -104,4 +104,58 @@ final class AnnuaireWebController
     {
         return view('annuaire.exams');
     }
+
+    /**
+     * Structure detail in patient dashboard layout.
+     */
+    public function showInDashboard(string $slug): View
+    {
+        $hosto = Hosto::where('slug', $slug)
+            ->with(['city.region.country', 'structureTypes', 'specialties', 'services', 'media'])
+            ->firstOrFail();
+
+        $practitioners = Practitioner::active()
+            ->whereHas('structures', fn ($q) => $q->where('hostos.id', $hosto->id))
+            ->with('specialties')
+            ->orderBy('last_name')
+            ->get();
+
+        $recommendations = HostoRecommendation::where('hosto_id', $hosto->id)
+            ->approved()
+            ->with('user:id,name,uuid')
+            ->orderByDesc('approved_at')
+            ->limit(10)
+            ->get();
+
+        $userLiked = auth()->check() && $hosto->likes()->where('user_id', auth()->id())->exists();
+
+        return view('compte.explorer.structure-detail', compact('hosto', 'practitioners', 'recommendations', 'userLiked'));
+    }
+
+    /**
+     * Practitioner detail in patient dashboard layout.
+     */
+    public function practitionerShowInDashboard(string $slug): View
+    {
+        $practitioner = Practitioner::where('slug', $slug)
+            ->with(['specialties', 'structures.city.region', 'structures.structureTypes'])
+            ->firstOrFail();
+
+        $slots = TimeSlot::where('practitioner_id', $practitioner->id)
+            ->available()
+            ->with('structure')
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->limit(40)
+            ->get()
+            ->groupBy(fn ($s) => $s->date->toDateString());
+
+        $publications = PractitionerPublication::where('practitioner_id', $practitioner->id)
+            ->published()
+            ->orderByDesc('published_at')
+            ->limit(10)
+            ->get();
+
+        return view('compte.explorer.medecin-detail', compact('practitioner', 'slots', 'publications'));
+    }
 }

@@ -19,7 +19,7 @@
     <div style="text-align:center;padding:60px 20px;">
         <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#EEE" stroke-width="1.5" style="margin:0 auto 16px;display:block;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         <p style="color:#757575;margin-bottom:16px;">Aucune consultation enregistree dans votre dossier.</p>
-        <a href="/annuaire/medecins" style="padding:10px 24px;background:#388E3C;color:white;border-radius:100px;font-size:.85rem;font-weight:600;text-decoration:none;display:inline-block;">Trouver un medecin</a>
+        <a href="/compte/medecins" style="padding:10px 24px;background:#388E3C;color:white;border-radius:100px;font-size:.85rem;font-weight:600;text-decoration:none;display:inline-block;">Trouver un medecin</a>
     </div>
 @else
     <div style="font-size:.85rem;color:#757575;margin-bottom:20px;">{{ $consultations->count() }} consultation(s) dans votre dossier</div>

@@ -101,6 +101,10 @@ Route::prefix('compte')->group(function (): void {
         Route::get('/soins-domicile', fn () => view('compte.explorer.soins-domicile'))->name('compte.soins-domicile');
         Route::get('/urgences', fn () => view('compte.explorer.urgences'))->name('compte.urgences');
 
+        // Detail views (dans l'espace patient)
+        Route::get('/structure/{slug}', [AnnuaireWebController::class, 'showInDashboard'])->name('compte.structure.show');
+        Route::get('/medecin/{slug}', [AnnuaireWebController::class, 'practitionerShowInDashboard'])->name('compte.medecin.show');
+
         Route::get('/profil', [ProfileController::class, 'show'])->name('compte.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);

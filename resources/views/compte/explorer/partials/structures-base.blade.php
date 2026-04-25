@@ -378,7 +378,7 @@ async function doSearch(e, page) {
 
 function buildCard(h) {
     const card = document.createElement('a');
-    card.href = `/annuaire/${h.slug}`; card.target = '_blank'; card.className = 'hosto-card';
+    card.href = `/compte/structure/${h.slug}`; card.className = 'hosto-card';
     const img = h.profile_image || '/images/icons/icon-hopitaux.png';
     const types = (h.types||[]).map(t=>t.name).join(', ');
     const specs = (h.specialties||[]).slice(0,3).map(s=>s.name).join(', ');
@@ -417,7 +417,7 @@ function renderMap() {
         const types = (h.types||[]).map(t=>t.name).join(', ');
         const dist = h.distance_km!=null ? `<br><strong>${h.distance_km} km</strong>` : '';
         const marker = L.marker([h.coordinates.latitude,h.coordinates.longitude],{icon}).addTo(resultsMap)
-            .bindPopup(`<div style="font-family:Poppins,sans-serif;font-size:.82rem;min-width:160px;"><strong><a href="/annuaire/${h.slug}" target="_blank" style="color:${MARKER_COLOR};text-decoration:none;">${h.name}</a></strong><br><span style="color:#757575;font-size:.72rem;">${types}</span>${dist}${h.phone?'<br><a href="tel:'+h.phone+'" style="color:'+MARKER_COLOR+';font-size:.75rem;">'+h.phone+'</a>':''}</div>`);
+            .bindPopup(`<div style="font-family:Poppins,sans-serif;font-size:.82rem;min-width:160px;"><strong><a href="/compte/structure/${h.slug}" style="color:${MARKER_COLOR};text-decoration:none;">${h.name}</a></strong><br><span style="color:#757575;font-size:.72rem;">${types}</span>${dist}${h.phone?'<br><a href="tel:'+h.phone+'" style="color:'+MARKER_COLOR+';font-size:.75rem;">'+h.phone+'</a>':''}</div>`);
         mapMarkers.push(marker); bounds.extend([h.coordinates.latitude,h.coordinates.longitude]);
     });
     if (proximiteActive && userLat && userLng) { const um=L.circleMarker([userLat,userLng],{radius:8,color:'#1565C0',fillColor:'#42A5F5',fillOpacity:.8,weight:2}).addTo(resultsMap); mapMarkers.push(um); bounds.extend([userLat,userLng]); }
