@@ -248,14 +248,16 @@ async function loadSection(sectionId, category, page) {
     const q = document.getElementById(sectionId+'Search')?.value?.trim() || '';
     const params = new URLSearchParams({category, per_page:'6', page: page||1});
     if (q) params.set('q', q);
+    const list = document.getElementById(sectionId+'List');
+    const empty = document.getElementById(sectionId+'Empty');
+    list.innerHTML = '<div style="text-align:center;padding:12px;color:#757575;font-size:.78rem;">Chargement...</div>';
+    empty.style.display = 'none';
     try {
-        const res = await fetch(`/compte/api/structure/${SLUG}/services?${params}`, {headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
+        const res = await fetch(`/compte/api/structure/${SLUG}/services?${params}`, {credentials:'same-origin', headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
+        if (!res.ok) { list.innerHTML = '<div style="text-align:center;padding:12px;color:#C62828;font-size:.78rem;">Erreur de chargement ('+res.status+')</div>'; return; }
         const data = await res.json();
-        const list = document.getElementById(sectionId+'List');
-        const empty = document.getElementById(sectionId+'Empty');
         list.innerHTML = '';
         if (!data.data.length) { empty.style.display='block'; } else {
-            empty.style.display='none';
             data.data.forEach(s => {
                 const price = s.tarif_min && s.tarif_max ? `${new Intl.NumberFormat('fr-FR').format(s.tarif_min)} - ${new Intl.NumberFormat('fr-FR').format(s.tarif_max)} ${s.currency||'XAF'}` : '';
                 list.insertAdjacentHTML('beforeend', `<div class="service-row"><span>${s.name}</span><span style="color:#757575;font-size:.78rem;">${price}</span></div>`);
@@ -314,11 +316,14 @@ async function loadPrac(page) {
     const q = document.getElementById('pracSearch').value.trim();
     const params = new URLSearchParams({per_page:'5', page: page||1});
     if (q) params.set('q', q);
+    const list = document.getElementById('pracList');
+    const empty = document.getElementById('pracEmpty');
+    list.innerHTML = '<div style="text-align:center;padding:12px;color:#757575;font-size:.78rem;">Chargement...</div>';
+    empty.style.display = 'none';
     try {
-        const res = await fetch(`/compte/api/structure/{{ $hosto->slug }}/medecins?${params}`, {headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
+        const res = await fetch(`/compte/api/structure/{{ $hosto->slug }}/medecins?${params}`, {credentials:'same-origin', headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
+        if (!res.ok) { list.innerHTML = '<div style="text-align:center;padding:12px;color:#C62828;font-size:.78rem;">Erreur ('+res.status+')</div>'; return; }
         const data = await res.json();
-        const list = document.getElementById('pracList');
-        const empty = document.getElementById('pracEmpty');
         list.innerHTML = '';
         if (!data.data.length) { empty.style.display='block'; } else {
             empty.style.display='none';

@@ -28,6 +28,10 @@ final class EnsureEnvironment
         $user = $request->user();
 
         if ($user === null) {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => ['code' => 'UNAUTHENTICATED', 'message' => 'Connexion requise.']], 401);
+            }
+
             $loginRoutes = [
                 'admin' => '/admin/connexion',
                 'pro' => '/pro/connexion',
