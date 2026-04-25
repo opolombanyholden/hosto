@@ -54,7 +54,7 @@
     .tag-garde { background:#FFF3E0; color:#E65100; }
     .tag-phone { font-size:.68rem; color:#757575; }
 
-    .map-results { border-radius:14px; overflow:hidden; height:450px; display:none; margin-bottom:16px; }
+    .map-results { border-radius:14px; overflow:hidden; height:450px; display:none; margin-bottom:16px; position:relative; z-index:1; isolation:isolate; }
     .pagination { display:flex; justify-content:center; gap:6px; padding:16px 0; }
     .pagination button { padding:6px 14px; border:1px solid #EEE; border-radius:6px; background:white; font-family:Poppins,sans-serif; font-size:.78rem; cursor:pointer; }
     .pagination button:hover { border-color:#388E3C; color:#388E3C; }
