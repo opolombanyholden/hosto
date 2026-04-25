@@ -25,8 +25,8 @@
 <style>
     .detail-cover { position:relative; height:280px; overflow:hidden; background:linear-gradient(135deg,#2E7D32,#43A047); border-radius:14px 14px 0 0; margin:0 -32px; }
     .detail-cover img { width:100%;height:100%;object-fit:cover; }
-    .detail-profile-bar { background:white; border-bottom:1px solid #EEE; padding:0 20px 16px; margin:0 -32px 20px; display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; }
-    .detail-profile-img { width:130px; height:130px; border-radius:50%; border:5px solid white; object-fit:cover; background:#E8F5E9; box-shadow:0 4px 16px rgba(0,0,0,.18); margin-top:-65px; flex-shrink:0; }
+    .detail-profile-bar { background:white; border-bottom:1px solid #EEE; padding:16px 20px 16px 170px; margin:0 -32px 20px; min-height:80px; position:relative; }
+    .detail-profile-img { width:130px; height:130px; border-radius:50%; border:5px solid white; object-fit:cover; background:#E8F5E9; box-shadow:0 4px 16px rgba(0,0,0,.18); position:absolute; left:20px; bottom:16px; z-index:3; }
     .detail-profile-info { padding-bottom:4px; flex:1; min-width:200px; }
     .detail-profile-info .types { font-size:.72rem;color:#388E3C;font-weight:600; }
     .detail-profile-info h1 { font-size:1.3rem;font-weight:700;color:#1B2A1B;line-height:1.2; }
@@ -54,7 +54,7 @@
     .gallery-scroll { display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch; }
     .gallery-scroll img { width:120px;height:90px;border-radius:10px;object-fit:cover;flex-shrink:0;cursor:pointer; }
     .gallery-scroll img:hover { opacity:.8; }
-    @media(max-width:768px) { .detail-grid{grid-template-columns:1fr;} .detail-cover{height:180px;margin:0 -16px;} .detail-profile-bar{margin:0 -16px 16px;padding:0 16px 12px;flex-direction:column;align-items:center;text-align:center;} .detail-profile-img{width:100px;height:100px;margin-top:-50px;} .detail-profile-actions{justify-content:center;} .status-badges{justify-content:center;} .ins-badges{justify-content:center;} }
+    @media(max-width:768px) { .detail-grid{grid-template-columns:1fr;} .detail-cover{height:180px;margin:0 -16px;} .detail-profile-bar{margin:0 -16px 16px;padding:80px 16px 12px 16px;text-align:center;} .detail-profile-img{width:100px;height:100px;left:50%;transform:translateX(-50%);bottom:auto;top:-50px;} .detail-profile-actions{justify-content:center;} .status-badges{justify-content:center;} .ins-badges{justify-content:center;} }
 </style>
 @endsection
 
