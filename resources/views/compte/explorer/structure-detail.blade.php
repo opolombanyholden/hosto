@@ -23,14 +23,16 @@
     $catLabels = ['prestation' => 'Prestations', 'soin' => 'Soins', 'examen' => 'Examens'];
 @endphp
 <style>
-    .detail-cover { position:relative; height:220px; overflow:hidden; background:linear-gradient(135deg,#2E7D32,#43A047); border-radius:14px 14px 0 0; }
+    .detail-cover { position:relative; height:280px; overflow:hidden; background:linear-gradient(135deg,#2E7D32,#43A047); border-radius:14px 14px 0 0; margin:0 -32px; }
     .detail-cover img { width:100%;height:100%;object-fit:cover; }
-    .detail-profile-bar { background:white; border:1px solid #EEE; border-top:none; border-radius:0 0 14px 14px; padding:16px 20px; margin-bottom:16px; display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap; }
-    .detail-profile-img { width:100px; height:100px; border-radius:18px; border:4px solid white; object-fit:cover; background:#E8F5E9; box-shadow:0 4px 12px rgba(0,0,0,.15); margin-top:-60px; position:relative; z-index:3; }
+    .detail-profile-bar { background:white; border-bottom:1px solid #EEE; padding:0 20px 16px; margin:0 -32px 20px; display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; }
+    .detail-profile-img { width:130px; height:130px; border-radius:50%; border:5px solid white; object-fit:cover; background:#E8F5E9; box-shadow:0 4px 16px rgba(0,0,0,.18); margin-top:-65px; flex-shrink:0; }
+    .detail-profile-info { padding-bottom:4px; flex:1; min-width:200px; }
     .detail-profile-info .types { font-size:.72rem;color:#388E3C;font-weight:600; }
-    .detail-profile-info h1 { font-size:1.2rem;font-weight:700;color:#1B2A1B; }
+    .detail-profile-info h1 { font-size:1.3rem;font-weight:700;color:#1B2A1B;line-height:1.2; }
     .detail-profile-info .location { font-size:.82rem;color:#757575; }
-    .status-badges { display:flex;gap:6px;flex-wrap:wrap;margin-top:6px; }
+    .detail-profile-actions { display:flex;gap:8px;align-items:center;padding-bottom:8px; }
+    .status-badges { display:flex;gap:5px;flex-wrap:wrap;margin-top:6px; }
     .status-badge { padding:3px 10px;border-radius:100px;font-size:.68rem;font-weight:600; }
     .detail-grid { display:grid;grid-template-columns:1.2fr .8fr;gap:24px; }
     .section-block { background:white;border:1px solid #EEE;border-radius:14px;padding:18px;margin-bottom:14px; }
@@ -52,7 +54,7 @@
     .gallery-scroll { display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch; }
     .gallery-scroll img { width:120px;height:90px;border-radius:10px;object-fit:cover;flex-shrink:0;cursor:pointer; }
     .gallery-scroll img:hover { opacity:.8; }
-    @media(max-width:768px) { .detail-grid{grid-template-columns:1fr;} .detail-cover{height:160px;} .detail-profile-img{width:80px;height:80px;margin-top:-45px;} }
+    @media(max-width:768px) { .detail-grid{grid-template-columns:1fr;} .detail-cover{height:180px;margin:0 -16px;} .detail-profile-bar{margin:0 -16px 16px;padding:0 16px 12px;flex-direction:column;align-items:center;text-align:center;} .detail-profile-img{width:100px;height:100px;margin-top:-50px;} .detail-profile-actions{justify-content:center;} .status-badges{justify-content:center;} .ins-badges{justify-content:center;} }
 </style>
 @endsection
 
@@ -63,12 +65,12 @@
 </div>
 <div class="detail-profile-bar">
     <img src="{{ $profileImg }}" alt="{{ $hosto->name }}" class="detail-profile-img">
-    <div class="detail-profile-info" style="flex:1;">
+    <div class="detail-profile-info">
         <div class="types">{{ $types->pluck('name_fr')->join(', ') }}</div>
         <h1>{{ $hosto->name }}</h1>
-        <div class="location">{{ $hosto->city?->name_fr }} @if($hosto->address) — {{ $hosto->address }} @endif</div>
+        <div class="location">{{ $hosto->city?->name_fr }} @if($hosto->address) — {{ $hosto->address }} @endif @if($hosto->quarter) ({{ $hosto->quarter }}) @endif</div>
         <div class="status-badges">
-            @if($hosto->is_partner)<span class="status-badge" style="background:#E3F2FD;color:#1565C0;">Partenaire</span>@endif
+            @if($hosto->is_partner)<span class="status-badge" style="background:#E3F2FD;color:#1565C0;">Partenaire HOSTO</span>@endif
             @if($hosto->is_guard_service)<span class="status-badge" style="background:#FFF3E0;color:#E65100;">Garde</span>@endif
             @if($hosto->is_emergency_service)<span class="status-badge" style="background:#FFEBEE;color:#C62828;">Urgence</span>@endif
             @if($hosto->is_evacuation_service)<span class="status-badge" style="background:#F3E5F5;color:#6A1B9A;">Evacuation</span>@endif
@@ -81,12 +83,15 @@
         </div>
         @endif
     </div>
-</div>
-
-{{-- Action buttons --}}
-<div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
-    <a href="/compte/rdv/{{ $hosto->slug }}" style="padding:8px 18px;background:#388E3C;color:white;border-radius:100px;font-size:.82rem;font-weight:600;text-decoration:none;">Prendre rendez-vous</a>
-    <button onclick="toggleLike()" id="btnLike" style="padding:8px 18px;border:1px solid #EEE;border-radius:100px;font-size:.82rem;cursor:pointer;background:white;font-family:Poppins,sans-serif;">{{ $userLiked ? '❤ Aime' : '♡ Aimer' }}</button>
+    <div class="detail-profile-actions">
+        <a href="/compte/rdv/{{ $hosto->slug }}" style="padding:8px 20px;background:#388E3C;color:white;border-radius:8px;font-size:.82rem;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Rendez-vous
+        </a>
+        <button onclick="toggleLike()" id="btnLike" style="padding:8px 16px;border:1px solid #EEE;border-radius:8px;font-size:.82rem;cursor:pointer;background:white;font-family:Poppins,sans-serif;display:flex;align-items:center;gap:4px;">
+            <span id="likeIcon">{{ $userLiked ? '❤' : '♡' }}</span> {{ $userLiked ? 'Aime' : 'Aimer' }}
+        </button>
+    </div>
 </div>
 
 {{-- Description --}}
