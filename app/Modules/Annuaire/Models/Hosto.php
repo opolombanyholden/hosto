@@ -50,6 +50,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $description_en
  * @property bool $is_public
  * @property bool $is_guard_service
+ * @property bool $is_emergency_service
+ * @property bool $is_evacuation_service
+ * @property bool $is_home_care_service
  * @property array<string, mixed>|null $opening_hours
  * @property string|null $emergency_phone
  * @property string|null $logo_url
@@ -104,6 +107,9 @@ class Hosto extends Model
         'description_en',
         'is_public',
         'is_guard_service',
+        'is_emergency_service',
+        'is_evacuation_service',
+        'is_home_care_service',
         'opening_hours',
         'emergency_phone',
         'logo_url',
@@ -322,6 +328,9 @@ class Hosto extends Model
         return [
             'is_public' => 'boolean',
             'is_guard_service' => 'boolean',
+            'is_emergency_service' => 'boolean',
+            'is_evacuation_service' => 'boolean',
+            'is_home_care_service' => 'boolean',
             'is_active' => 'boolean',
             'is_verified' => 'boolean',
             'verified_at' => 'immutable_datetime',

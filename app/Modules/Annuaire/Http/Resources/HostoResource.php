@@ -63,6 +63,9 @@ final class HostoResource extends JsonResource
             // Status
             'is_public' => $this->is_public,
             'is_guard_service' => $this->is_guard_service,
+            'is_emergency_service' => $this->is_emergency_service,
+            'is_evacuation_service' => $this->is_evacuation_service,
+            'is_home_care_service' => $this->is_home_care_service,
             'is_verified' => $this->is_verified,
             'is_partner' => $this->resource->is_partner ?? false,
             'accepted_insurances' => $this->resource->accepted_insurances ?? [],

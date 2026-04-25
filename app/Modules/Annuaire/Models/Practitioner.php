@@ -42,6 +42,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $consultation_fee_max
  * @property bool $accepts_new_patients
  * @property bool $does_teleconsultation
+ * @property bool $does_home_care
  * @property bool $is_active
  * @property bool $is_verified
  * @property array<string, bool>|null $visibility_settings
@@ -72,7 +73,7 @@ class Practitioner extends Model
         'registration_number', 'practitioner_type', 'phone', 'email',
         'bio_fr', 'bio_en', 'profile_image_url', 'languages',
         'consultation_fee_min', 'consultation_fee_max',
-        'accepts_new_patients', 'does_teleconsultation',
+        'accepts_new_patients', 'does_teleconsultation', 'does_home_care',
         'is_active', 'is_verified',
         'visibility_settings', 'offered_services', 'cover_image_url',
     ];
@@ -185,6 +186,7 @@ class Practitioner extends Model
             'visibility_settings' => 'array',
             'offered_services' => 'array',
             'does_teleconsultation' => 'boolean',
+            'does_home_care' => 'boolean',
         ];
     }
 }

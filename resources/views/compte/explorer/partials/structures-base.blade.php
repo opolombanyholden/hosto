@@ -52,6 +52,9 @@
     .hosto-card-tags { display:flex; gap:4px; flex-wrap:wrap; }
     .tag { padding:2px 8px; border-radius:100px; font-size:.62rem; font-weight:600; }
     .tag-garde { background:#FFF3E0; color:#E65100; }
+    .tag-urgence { background:#FFEBEE; color:#C62828; }
+    .tag-evacuation { background:#F3E5F5; color:#6A1B9A; }
+    .tag-domicile { background:#E8F5E9; color:#2E7D32; }
     .tag-phone { font-size:.68rem; color:#757575; }
     .hosto-card-insurances { display:flex; gap:3px; flex-wrap:wrap; margin-top:6px; }
     .tag-ins { padding:2px 7px; background:#E3F2FD; color:#1565C0; border-radius:100px; font-size:.58rem; font-weight:600; }
@@ -204,6 +207,8 @@
 <script>
 const FIXED_TYPE = '{{ $defaultType ?? '' }}';
 const FORCE_GARDE = {{ ($forceGarde ?? false) ? 'true' : 'false' }};
+const FORCE_URGENCE = {{ ($forceUrgence ?? false) ? 'true' : 'false' }};
+const FORCE_DOMICILE = {{ ($forceDomicile ?? false) ? 'true' : 'false' }};
 const MARKER_COLOR = '{{ $markerColor ?? '#388E3C' }}';
 const PAGE_TITLE = '{{ $pageTitle }}';
 let userLat=null, userLng=null, currentPage=1, currentView='list', proximiteActive=false, resultsMap=null, mapMarkers=[], lastResults=[];
@@ -328,6 +333,8 @@ async function doSearch(e, page) {
     const assurance = getSelectedAssurance();
     if (assurance) params.set('assurance', assurance);
     if (FORCE_GARDE || isGardeChecked()) params.set('garde','1');
+    if (FORCE_URGENCE) params.set('urgence','1');
+    if (FORCE_DOMICILE) params.set('domicile','1');
     if (proximiteActive && userLat && userLng) { params.set('lat',userLat); params.set('lng',userLng); params.set('rayon','20'); params.set('sort','distance'); }
     params.set('per_page', currentView==='map' ? '50' : '12');
     params.set('page', currentPage);
@@ -359,10 +366,14 @@ function buildCard(h) {
     const types = (h.types||[]).map(t=>t.name).join(', ');
     const specs = (h.specialties||[]).slice(0,3).map(s=>s.name).join(', ');
     const dist = h.distance_km!=null ? `<span class="hosto-card-dist">${h.distance_km} km</span>` : '';
-    const guard = h.is_guard_service ? '<span class="tag tag-garde">Garde</span>' : '';
+    let tags = '';
+    if (h.is_guard_service) tags += '<span class="tag tag-garde">Garde</span>';
+    if (h.is_emergency_service) tags += '<span class="tag tag-urgence">Urgence</span>';
+    if (h.is_evacuation_service) tags += '<span class="tag tag-evacuation">Evacuation</span>';
+    if (h.is_home_care_service) tags += '<span class="tag tag-domicile">Domicile</span>';
     const city = h.city?.name || '';
     const insurances = (h.accepted_insurances||[]).map(i=>`<span class="tag-ins">${i}</span>`).join('');
-    card.innerHTML = `<div class="hosto-card-body"><div class="hosto-card-top"><img src="${img}" alt="" class="hosto-card-img"><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;gap:6px;"><div class="hosto-card-name">${h.name}</div>${dist}</div><div class="hosto-card-type">${types}</div><div class="hosto-card-loc">${city}</div></div></div>${specs?`<div class="hosto-card-specs">${specs}</div>`:''}<div class="hosto-card-tags">${guard} ${h.phone?`<span class="tag-phone">${h.phone}</span>`:''}</div>${insurances?`<div class="hosto-card-insurances">${insurances}</div>`:''}</div>`;
+    card.innerHTML = `<div class="hosto-card-body"><div class="hosto-card-top"><img src="${img}" alt="" class="hosto-card-img"><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;gap:6px;"><div class="hosto-card-name">${h.name}</div>${dist}</div><div class="hosto-card-type">${types}</div><div class="hosto-card-loc">${city}</div></div></div>${specs?`<div class="hosto-card-specs">${specs}</div>`:''}<div class="hosto-card-tags">${tags} ${h.phone?`<span class="tag-phone">${h.phone}</span>`:''}</div>${insurances?`<div class="hosto-card-insurances">${insurances}</div>`:''}</div>`;
     return card;
 }
 

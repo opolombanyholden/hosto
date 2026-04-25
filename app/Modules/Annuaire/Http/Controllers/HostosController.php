@@ -93,6 +93,21 @@ final class HostosController
             $query->whereRaw('accepted_insurances @> ?', [json_encode([$assurance])]);
         }
 
+        // --- Emergency service ---
+        if ($request->boolean('urgence')) {
+            $query->where('hostos.is_emergency_service', true);
+        }
+
+        // --- Evacuation service ---
+        if ($request->boolean('evacuation')) {
+            $query->where('hostos.is_evacuation_service', true);
+        }
+
+        // --- Home care service ---
+        if ($request->boolean('domicile')) {
+            $query->where('hostos.is_home_care_service', true);
+        }
+
         // --- Public/private filter ---
         if ($request->filled('public')) {
             $query->where('hostos.is_public', $request->boolean('public'));
