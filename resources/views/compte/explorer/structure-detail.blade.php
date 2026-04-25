@@ -44,6 +44,9 @@
     .prac-link { display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;text-decoration:none;color:inherit;transition:background .2s; }
     .prac-link:hover { background:#F5F5F5; }
     .map-container { border-radius:14px;overflow:hidden;height:220px; }
+    .filter-input { width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;margin-bottom:10px; }
+    .filter-input:focus { border-color:#388E3C; }
+    .section-empty { text-align:center;padding:12px;color:#757575;font-size:.82rem; }
     .ins-badges { display:flex;gap:3px;flex-wrap:wrap;margin-top:6px; }
     .ins-badge { padding:2px 8px;background:#E3F2FD;color:#1565C0;border-radius:100px;font-size:.62rem;font-weight:600; }
     @media(max-width:768px) { .detail-grid{grid-template-columns:1fr;} .detail-cover{height:140px;} .detail-profile img{width:64px;height:64px;} }
@@ -103,52 +106,40 @@
         {{-- 2. Prestations --}}
         <div class="section-block">
             <h3 style="color:#388E3C;">Prestations</h3>
-            <div style="margin-bottom:10px;">
-                <input type="text" id="prestationsSearch" placeholder="Rechercher une prestation..." oninput="debounceSection('prestations','prestation')" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
-            </div>
-            <div id="prestationsList">
+            <input type="text" placeholder="Filtrer les prestations..." oninput="filterList(this,'prestations')" class="filter-input">
+            <div id="prestations">
                 @forelse($services->get('prestation', collect()) as $svc)
-                <div class="service-row"><span>{{ $svc->name_fr }}</span><span style="color:#757575;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span></div>
+                <div class="service-row filterable" data-text="{{ mb_strtolower($svc->name_fr) }}"><span>{{ $svc->name_fr }}</span><span style="color:#757575;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span></div>
                 @empty
-                <div style="text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucune prestation.</div>
+                <div class="section-empty">Aucune prestation.</div>
                 @endforelse
             </div>
-            <div id="prestationsEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun resultat.</div>
-            <div id="prestationsPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
         </div>
 
         {{-- 3. Examens --}}
         <div class="section-block">
             <h3 style="color:#1565C0;">Examens</h3>
-            <div style="margin-bottom:10px;">
-                <input type="text" id="examensSearch" placeholder="Rechercher un examen..." oninput="debounceSection('examens','examen')" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
-            </div>
-            <div id="examensList">
+            <input type="text" placeholder="Filtrer les examens..." oninput="filterList(this,'examens')" class="filter-input">
+            <div id="examens">
                 @forelse($services->get('examen', collect()) as $svc)
-                <div class="service-row"><span>{{ $svc->name_fr }}</span><span style="color:#757575;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span></div>
+                <div class="service-row filterable" data-text="{{ mb_strtolower($svc->name_fr) }}"><span>{{ $svc->name_fr }}</span><span style="color:#757575;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span></div>
                 @empty
-                <div style="text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun examen.</div>
+                <div class="section-empty">Aucun examen.</div>
                 @endforelse
             </div>
-            <div id="examensEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun resultat.</div>
-            <div id="examensPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
         </div>
 
         {{-- 4. Soins --}}
         <div class="section-block">
             <h3 style="color:#E65100;">Soins</h3>
-            <div style="margin-bottom:10px;">
-                <input type="text" id="soinsSearch" placeholder="Rechercher un soin..." oninput="debounceSection('soins','soin')" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
-            </div>
-            <div id="soinsList">
+            <input type="text" placeholder="Filtrer les soins..." oninput="filterList(this,'soins')" class="filter-input">
+            <div id="soins">
                 @forelse($services->get('soin', collect()) as $svc)
-                <div class="service-row"><span>{{ $svc->name_fr }}</span><span style="color:#757575;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span></div>
+                <div class="service-row filterable" data-text="{{ mb_strtolower($svc->name_fr) }}"><span>{{ $svc->name_fr }}</span><span style="color:#757575;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span></div>
                 @empty
-                <div style="text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun soin.</div>
+                <div class="section-empty">Aucun soin.</div>
                 @endforelse
             </div>
-            <div id="soinsEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun resultat.</div>
-            <div id="soinsPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
         </div>
     </div>
 
@@ -156,12 +147,10 @@
         {{-- 5. Medecins --}}
         <div class="section-block">
             <h3>Medecins ({{ $practitioners->count() }})</h3>
-            <div style="margin-bottom:10px;">
-                <input type="text" id="pracSearch" placeholder="Rechercher un medecin..." oninput="debouncePrac()" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
-            </div>
-            <div id="pracList">
+            <input type="text" placeholder="Filtrer les medecins..." oninput="filterList(this,'medecins')" class="filter-input">
+            <div id="medecins">
                 @forelse($practitioners as $prac)
-                <a href="/compte/medecin/{{ $prac->slug }}" class="prac-link">
+                <a href="/compte/medecin/{{ $prac->slug }}" class="prac-link filterable" data-text="{{ mb_strtolower($prac->full_name.' '.$prac->specialties->pluck('name_fr')->join(' ')) }}">
                     <div style="width:36px;height:36px;border-radius:8px;background:#E8F5E9;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
@@ -175,23 +164,17 @@
                     </div>
                 </a>
                 @empty
-                <div style="text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun medecin.</div>
+                <div class="section-empty">Aucun medecin.</div>
                 @endforelse
             </div>
-            <div id="pracEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun medecin.</div>
-            <div id="pracPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
         </div>
 
-        {{-- 6. Medicaments (stock pharmacie, si pharmacie) --}}
+        {{-- 6. Medicaments --}}
         @if($types->pluck('slug')->contains('pharmacie'))
         <div class="section-block">
-            <h3>Medicaments disponibles</h3>
-            <div style="margin-bottom:10px;">
-                <input type="text" id="medSearch" placeholder="Rechercher un medicament..." oninput="debounceMed()" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;">
-            </div>
-            <div id="medList"></div>
-            <div id="medEmpty" style="display:none;text-align:center;padding:12px;color:#757575;font-size:.82rem;">Aucun medicament.</div>
-            <div id="medPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
+            <h3>Medicaments</h3>
+            <p style="font-size:.82rem;color:#757575;margin-bottom:8px;">Cette structure est une pharmacie.</p>
+            <a href="/compte/medicaments" style="font-size:.82rem;color:#388E3C;font-weight:500;">Rechercher un medicament &rarr;</a>
         </div>
         @endif
 
@@ -235,116 +218,18 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 @endif
 
-const SLUG = '{{ $hosto->slug }}';
-
-// --- Service sections AJAX (on search or pagination only) ---
-let sectionTimers = {};
-function debounceSection(sectionId, category) {
-    clearTimeout(sectionTimers[sectionId]);
-    sectionTimers[sectionId] = setTimeout(()=>loadSection(sectionId, category), 300);
-}
-
-async function loadSection(sectionId, category, page) {
-    const q = document.getElementById(sectionId+'Search')?.value?.trim() || '';
-    const params = new URLSearchParams({category, per_page:'6', page: page||1});
-    if (q) params.set('q', q);
-    const list = document.getElementById(sectionId+'List');
-    const empty = document.getElementById(sectionId+'Empty');
-    list.innerHTML = '<div style="text-align:center;padding:12px;color:#757575;font-size:.78rem;">Chargement...</div>';
-    empty.style.display = 'none';
-    try {
-        const res = await fetch(`/compte/api/structure/${SLUG}/services?${params}`, {credentials:'same-origin', headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
-        if (!res.ok) { list.innerHTML = '<div style="text-align:center;padding:12px;color:#C62828;font-size:.78rem;">Erreur de chargement ('+res.status+')</div>'; return; }
-        const data = await res.json();
-        list.innerHTML = '';
-        if (!data.data.length) { empty.style.display='block'; } else {
-            data.data.forEach(s => {
-                const price = s.tarif_min && s.tarif_max ? `${new Intl.NumberFormat('fr-FR').format(s.tarif_min)} - ${new Intl.NumberFormat('fr-FR').format(s.tarif_max)} ${s.currency||'XAF'}` : '';
-                list.insertAdjacentHTML('beforeend', `<div class="service-row"><span>${s.name}</span><span style="color:#757575;font-size:.78rem;">${price}</span></div>`);
-            });
-        }
-        const pg = document.getElementById(sectionId+'Pagination'); pg.innerHTML='';
-        if (data.meta?.last_page>1) {
-            for (let i=1;i<=data.meta.last_page;i++) {
-                const btn=document.createElement('button');btn.textContent=i;
-                btn.style.cssText='padding:4px 10px;border:1px solid #EEE;border-radius:6px;background:white;font-size:.72rem;cursor:pointer;font-family:Poppins,sans-serif;';
-                if(i===data.meta.current_page) btn.style.cssText+='background:#388E3C;color:white;border-color:#388E3C;';
-                btn.onclick=()=>loadSection(sectionId,category,i); pg.appendChild(btn);
-            }
-        }
-    } catch(e) {}
-}
-
-// --- Medicaments AJAX (pharmacie) ---
-@if($types->pluck('slug')->contains('pharmacie'))
-let medTimer;
-function debounceMed() { clearTimeout(medTimer); medTimer = setTimeout(()=>loadMed(), 300); }
-async function loadMed(page) {
-    const q = document.getElementById('medSearch')?.value?.trim() || '';
-    const params = new URLSearchParams({pharmacy:'{{ $hosto->uuid }}', per_page:'6', page: page||1});
-    if (q) params.set('medication', q);
-    try {
-        const res = await fetch(`${API}/pharma/stock?${params}`);
-        const data = await res.json();
-        const list = document.getElementById('medList');
-        const empty = document.getElementById('medEmpty');
-        list.innerHTML = '';
-        if (!data.data.length) { empty.style.display='block'; } else {
-            empty.style.display='none';
-            data.data.forEach(m => {
-                const price = m.unit_price ? new Intl.NumberFormat('fr-FR').format(m.unit_price)+' '+m.currency : '';
-                list.insertAdjacentHTML('beforeend', `<div class="service-row"><span>${m.medication.dci} ${m.medication.strength||''}</span><span style="color:#388E3C;font-weight:600;font-size:.78rem;">${price}</span></div>`);
-            });
-        }
-        const pg = document.getElementById('medPagination'); pg.innerHTML='';
-        if (data.meta?.last_page>1) {
-            for (let i=1;i<=data.meta.last_page;i++) {
-                const btn=document.createElement('button');btn.textContent=i;
-                btn.style.cssText='padding:4px 10px;border:1px solid #EEE;border-radius:6px;background:white;font-size:.72rem;cursor:pointer;font-family:Poppins,sans-serif;';
-                if(i===data.meta.current_page) btn.style.cssText+='background:#388E3C;color:white;border-color:#388E3C;';
-                btn.onclick=()=>loadMed(i); pg.appendChild(btn);
-            }
-        }
-    } catch(e) {}
-}
-@endif
-
-// --- Medecins AJAX (on search or pagination only) ---
-let pracTimer;
-function debouncePrac() { clearTimeout(pracTimer); pracTimer = setTimeout(()=>loadPrac(), 300); }
-async function loadPrac(page) {
-    const q = document.getElementById('pracSearch').value.trim();
-    const params = new URLSearchParams({per_page:'5', page: page||1});
-    if (q) params.set('q', q);
-    const list = document.getElementById('pracList');
-    const empty = document.getElementById('pracEmpty');
-    list.innerHTML = '<div style="text-align:center;padding:12px;color:#757575;font-size:.78rem;">Chargement...</div>';
-    empty.style.display = 'none';
-    try {
-        const res = await fetch(`/compte/api/structure/{{ $hosto->slug }}/medecins?${params}`, {credentials:'same-origin', headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}});
-        if (!res.ok) { list.innerHTML = '<div style="text-align:center;padding:12px;color:#C62828;font-size:.78rem;">Erreur ('+res.status+')</div>'; return; }
-        const data = await res.json();
-        list.innerHTML = '';
-        if (!data.data.length) { empty.style.display='block'; } else {
-            empty.style.display='none';
-            data.data.forEach(p => {
-                let badges = '';
-                if (p.does_teleconsultation) badges += '<span style="padding:2px 6px;background:#E3F2FD;color:#1565C0;border-radius:100px;font-size:.58rem;font-weight:600;">TC</span> ';
-                if (p.does_home_care) badges += '<span style="padding:2px 6px;background:#E8F5E9;color:#2E7D32;border-radius:100px;font-size:.58rem;font-weight:600;">Domicile</span>';
-                list.insertAdjacentHTML('beforeend', `<a href="/compte/medecin/${p.slug}" class="prac-link"><div style="width:36px;height:36px;border-radius:8px;background:#E8F5E9;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div style="flex:1;"><div style="font-size:.82rem;font-weight:600;">${p.full_name}</div><div style="font-size:.68rem;color:#757575;">${(p.specialties||[]).join(', ')}</div></div><div>${badges}</div></a>`);
-            });
-        }
-        // Pagination
-        const pg = document.getElementById('pracPagination'); pg.innerHTML = '';
-        if (data.meta?.last_page > 1) {
-            for (let i=1;i<=data.meta.last_page;i++) {
-                const btn=document.createElement('button'); btn.textContent=i;
-                btn.style.cssText='padding:4px 10px;border:1px solid #EEE;border-radius:6px;background:white;font-family:Poppins,sans-serif;font-size:.72rem;cursor:pointer;';
-                if(i===data.meta.current_page) btn.style.cssText+='background:#388E3C;color:white;border-color:#388E3C;';
-                btn.onclick=()=>loadPrac(i); pg.appendChild(btn);
-            }
-        }
-    } catch(e) {}
+// --- Filtre client simple (pas d'AJAX) ---
+function filterList(input, containerId) {
+    const q = input.value.trim().toLowerCase();
+    const container = document.getElementById(containerId);
+    const items = container.querySelectorAll('.filterable');
+    let visible = 0;
+    items.forEach(item => {
+        const text = item.getAttribute('data-text') || '';
+        const show = !q || text.includes(q);
+        item.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
 }
 
 async function toggleLike() {
