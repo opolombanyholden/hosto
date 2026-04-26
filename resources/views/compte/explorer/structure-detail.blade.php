@@ -62,8 +62,8 @@
     .section-empty { text-align:center;padding:12px;color:#757575;font-size:.82rem; }
     .ins-badges { display:flex;gap:3px;flex-wrap:wrap;margin-top:6px; }
     .ins-badge { padding:2px 8px;background:#E3F2FD;color:#1565C0;border-radius:100px;font-size:.62rem;font-weight:600; }
-    .gallery-scroll { display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch; }
-    .gallery-item { width:140px;height:105px;border-radius:10px;overflow:hidden;flex-shrink:0;cursor:pointer;position:relative; }
+    .gallery-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px; }
+    .gallery-item { height:120px;border-radius:10px;overflow:hidden;cursor:pointer;position:relative; }
     .gallery-item img { width:100%;height:100%;object-fit:cover;transition:transform .3s ease; }
     .gallery-item:hover img { transform:scale(1.15); }
     .gallery-item::after { content:'';position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .3s;border-radius:10px; }
@@ -239,20 +239,6 @@
         </div>
         @endif
 
-        {{-- Mediatheque --}}
-        @if($gallery->isNotEmpty())
-        <div class="section-block">
-            <h3>Mediatheque ({{ $gallery->count() }})</h3>
-            <div class="gallery-scroll">
-                @foreach($gallery as $idx => $media)
-                <div class="gallery-item" onclick="openLightbox({{ $idx }})">
-                    <img src="{{ $media->url }}" alt="{{ $media->alt_text ?: $hosto->name }}">
-                </div>
-                @endforeach
-            </div>
-        </div>
-        @endif
-
         <div class="section-block">
             <h3>Contact</h3>
             @if($hosto->phone)<div class="contact-row"><a href="tel:{{ $hosto->phone }}">{{ $hosto->phone }}</a></div>@endif
@@ -282,6 +268,20 @@
         @endif
     </div>
 </div>
+
+{{-- Mediatheque (pleine largeur) --}}
+@if($gallery->isNotEmpty())
+<div class="section-block" style="margin-top:14px;">
+    <h3>Mediatheque ({{ $gallery->count() }})</h3>
+    <div class="gallery-grid">
+        @foreach($gallery as $idx => $media)
+        <div class="gallery-item" onclick="openLightbox({{ $idx }})">
+            <img src="{{ $media->url }}" alt="{{ $media->alt_text ?: $hosto->name }}">
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
 
 <script>
 @if($coords)
