@@ -52,8 +52,12 @@
     .spec-badge { padding:3px 10px;background:#E8F5E9;color:#388E3C;border-radius:100px;font-size:.68rem;font-weight:500; }
     .service-row { display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F5F5F5;font-size:.82rem; }
     .service-row:last-child { border-bottom:none; }
-    .contact-row { display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.82rem; }
-    .contact-row a { color:#388E3C; }
+    .contact-row { display:flex;align-items:center;gap:8px;padding:5px 0;font-size:.82rem; }
+    .contact-row svg { flex-shrink:0; }
+    .contact-row a { color:#388E3C; text-decoration:none; }
+    .contact-row a:hover { text-decoration:underline; }
+    .social-icon { width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:transform .2s; }
+    .social-icon:hover { transform:scale(1.1); }
     .prac-link { display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;text-decoration:none;color:inherit;transition:background .2s; }
     .prac-link:hover { background:#F5F5F5; }
     .map-container { border-radius:14px;overflow:hidden;height:220px; }
@@ -241,10 +245,35 @@
 
         <div class="section-block">
             <h3>Contact</h3>
-            @if($hosto->phone)<div class="contact-row"><a href="tel:{{ $hosto->phone }}">{{ $hosto->phone }}</a></div>@endif
-            @if($hosto->phone2)<div class="contact-row"><a href="tel:{{ $hosto->phone2 }}">{{ $hosto->phone2 }}</a></div>@endif
-            @if($hosto->email)<div class="contact-row"><a href="mailto:{{ $hosto->email }}">{{ $hosto->email }}</a></div>@endif
-            @if($hosto->emergency_phone)<div class="contact-row" style="color:#E53935;font-weight:600;">Urgences : {{ $hosto->emergency_phone }}</div>@endif
+            @if($hosto->phone)
+            <div class="contact-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg><a href="tel:{{ $hosto->phone }}">{{ $hosto->phone }}</a></div>
+            @endif
+            @if($hosto->phone2)
+            <div class="contact-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg><a href="tel:{{ $hosto->phone2 }}">{{ $hosto->phone2 }}</a></div>
+            @endif
+            @if($hosto->whatsapp)
+            <div class="contact-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.955 9.955 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg><a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $hosto->whatsapp) }}" target="_blank">{{ $hosto->whatsapp }}</a></div>
+            @endif
+            @if($hosto->email)
+            <div class="contact-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:{{ $hosto->email }}">{{ $hosto->email }}</a></div>
+            @endif
+            @if($hosto->website)
+            <div class="contact-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><a href="{{ $hosto->website }}" target="_blank">{{ $hosto->website }}</a></div>
+            @endif
+            @if($hosto->emergency_phone)
+            <div class="contact-row" style="margin-top:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94"/><path d="M22 16.92v3a2 2 0 0 1-2.18 2"/></svg><a href="tel:{{ $hosto->emergency_phone }}" style="color:#E53935;font-weight:600;">Urgences : {{ $hosto->emergency_phone }}</a></div>
+            @endif
+            {{-- Reseaux sociaux --}}
+            @if($hosto->facebook_url || $hosto->instagram_url || $hosto->twitter_url || $hosto->linkedin_url || $hosto->youtube_url || $hosto->tiktok_url)
+            <div style="display:flex;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid #F5F5F5;flex-wrap:wrap;">
+                @if($hosto->facebook_url)<a href="{{ $hosto->facebook_url }}" target="_blank" title="Facebook" class="social-icon" style="background:#E3F2FD;"><svg width="16" height="16" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>@endif
+                @if($hosto->instagram_url)<a href="{{ $hosto->instagram_url }}" target="_blank" title="Instagram" class="social-icon" style="background:#FCE4EC;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="#E1306C"/></svg></a>@endif
+                @if($hosto->twitter_url)<a href="{{ $hosto->twitter_url }}" target="_blank" title="X / Twitter" class="social-icon" style="background:#E8F5FD;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#1DA1F2"><path d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z"/></svg></a>@endif
+                @if($hosto->linkedin_url)<a href="{{ $hosto->linkedin_url }}" target="_blank" title="LinkedIn" class="social-icon" style="background:#E3F2FD;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>@endif
+                @if($hosto->youtube_url)<a href="{{ $hosto->youtube_url }}" target="_blank" title="YouTube" class="social-icon" style="background:#FFEBEE;"><svg width="16" height="16" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>@endif
+                @if($hosto->tiktok_url)<a href="{{ $hosto->tiktok_url }}" target="_blank" title="TikTok" class="social-icon" style="background:#F5F5F5;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#000"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></a>@endif
+            </div>
+            @endif
         </div>
 
         @if($hours)

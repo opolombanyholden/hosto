@@ -46,6 +46,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $whatsapp
  * @property string|null $email
  * @property string|null $website
+ * @property string|null $facebook_url
+ * @property string|null $instagram_url
+ * @property string|null $twitter_url
+ * @property string|null $linkedin_url
+ * @property string|null $youtube_url
+ * @property string|null $tiktok_url
  * @property string|null $description_fr
  * @property string|null $description_en
  * @property bool $is_public
@@ -103,6 +109,12 @@ class Hosto extends Model
         'whatsapp',
         'email',
         'website',
+        'facebook_url',
+        'instagram_url',
+        'twitter_url',
+        'linkedin_url',
+        'youtube_url',
+        'tiktok_url',
         'description_fr',
         'description_en',
         'is_public',
