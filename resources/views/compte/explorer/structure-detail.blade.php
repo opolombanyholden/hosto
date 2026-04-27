@@ -167,6 +167,50 @@
 
 {{-- Signalement masque pour le moment --}}
 
+{{-- ===== MISE EN AVANT : Pharmacie → Catalogue medicaments ===== --}}
+@if($types->pluck('slug')->contains('pharmacie'))
+<div class="section-block" style="border:2px solid #C8E6C9;background:#FAFFF9;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <img src="/images/icons/icon-pharamcie.png" alt="" style="width:32px;height:32px;">
+        <div>
+            <h3 style="margin:0;color:#2E7D32;">Catalogue medicaments</h3>
+            <p style="font-size:.72rem;color:#757575;margin:0;">Recherchez un medicament disponible dans cette pharmacie</p>
+        </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <input type="text" id="pharmaSearch" placeholder="Rechercher un medicament..." class="filter-input" style="margin:0;flex:1;" onkeydown="if(event.key==='Enter')searchPharma()">
+        <button onclick="searchPharma()" style="padding:8px 18px;background:#388E3C;color:white;border:none;border-radius:8px;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;">Rechercher</button>
+    </div>
+    <div id="pharmaResults"></div>
+    <div id="pharmaEmpty" style="display:none;text-align:center;padding:16px;color:#757575;font-size:.82rem;">Aucun medicament trouve.</div>
+    <div id="pharmaPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
+</div>
+@endif
+
+{{-- ===== MISE EN AVANT : Laboratoire → Liste des examens ===== --}}
+@if($types->pluck('slug')->contains('laboratoire') || $types->pluck('slug')->contains('centre-imagerie'))
+<div class="section-block" style="border:2px solid #BBDEFB;background:#F5F9FF;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <img src="/images/icons/icon-labo.png" alt="" style="width:32px;height:32px;">
+        <div>
+            <h3 style="margin:0;color:#1565C0;">Catalogue des examens</h3>
+            <p style="font-size:.72rem;color:#757575;margin:0;">Examens proposes par ce laboratoire avec tarifs</p>
+        </div>
+    </div>
+    <input type="text" placeholder="Filtrer les examens..." oninput="filterList(this,'laboExamens')" class="filter-input">
+    <div id="laboExamens">
+        @forelse($services->get('examen', collect()) as $svc)
+        <div class="service-row filterable" data-text="{{ mb_strtolower($svc->name_fr) }}">
+            <span>{{ $svc->name_fr }}</span>
+            <span style="color:#1565C0;font-weight:600;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span>
+        </div>
+        @empty
+        <div class="section-empty">Aucun examen disponible.</div>
+        @endforelse
+    </div>
+</div>
+@endif
+
 {{-- Description --}}
 @if($hosto->description_fr)
 <div class="section-block"><h3>A propos</h3><p style="font-size:.85rem;color:#424242;line-height:1.7;">{{ $hosto->description_fr }}</p></div>
@@ -250,14 +294,7 @@
             </div>
         </div>
 
-        {{-- 6. Medicaments --}}
-        @if($types->pluck('slug')->contains('pharmacie'))
-        <div class="section-block">
-            <h3>Medicaments</h3>
-            <p style="font-size:.82rem;color:#757575;margin-bottom:8px;">Cette structure est une pharmacie.</p>
-            <a href="/compte/medicaments" style="font-size:.82rem;color:#388E3C;font-weight:500;">Rechercher un medicament &rarr;</a>
-        </div>
-        @endif
+        {{-- Medicaments deplace en section mise en avant --}}
 
         <div class="section-block">
             <h3>Contact</h3>
@@ -355,6 +392,41 @@ function filterList(input, containerId) {
 const CSRF = '{{ csrf_token() }}';
 const HOSTO_UUID = '{{ $hosto->uuid }}';
 const ajaxHeaders = {'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':CSRF,'X-Requested-With':'XMLHttpRequest'};
+
+// --- Recherche medicaments pharmacie ---
+@if($types->pluck('slug')->contains('pharmacie'))
+async function searchPharma(page) {
+    const q = document.getElementById('pharmaSearch').value.trim();
+    if (!q) return;
+    const params = new URLSearchParams({pharmacy:HOSTO_UUID, medication:q, per_page:'8', page:page||1});
+    const results = document.getElementById('pharmaResults');
+    const empty = document.getElementById('pharmaEmpty');
+    results.innerHTML = '<div style="text-align:center;padding:12px;color:#757575;font-size:.78rem;">Recherche...</div>';
+    empty.style.display = 'none';
+    try {
+        const res = await fetch(`${API}/pharma/stock?${params}`);
+        const data = await res.json();
+        results.innerHTML = '';
+        if (!data.data.length) { empty.style.display='block'; return; }
+        data.data.forEach(m => {
+            const price = m.unit_price ? new Intl.NumberFormat('fr-FR').format(m.unit_price)+' XAF' : '';
+            const stock = m.quantity_in_stock > 20 ? '<span style="padding:2px 6px;background:#E8F5E9;color:#2E7D32;border-radius:100px;font-size:.6rem;font-weight:600;">En stock</span>' : '<span style="padding:2px 6px;background:#FFF3E0;color:#E65100;border-radius:100px;font-size:.6rem;font-weight:600;">Stock limite</span>';
+            const brands = (m.medication.brands||[]).map(b=>b.name).join(', ');
+            results.insertAdjacentHTML('beforeend', `<div class="service-row" style="align-items:center;"><div><div style="font-weight:600;">${m.medication.dci} ${m.medication.strength||''}</div>${brands?'<div style="font-size:.68rem;color:#757575;">'+brands+'</div>':''}</div><div style="display:flex;gap:8px;align-items:center;"><span style="font-weight:700;color:#388E3C;">${price}</span>${stock}</div></div>`);
+        });
+        const pg = document.getElementById('pharmaPagination'); pg.innerHTML='';
+        if (data.meta?.last_page > 1) {
+            for (let i=1;i<=data.meta.last_page;i++) {
+                const btn=document.createElement('button');btn.textContent=i;
+                btn.style.cssText='padding:4px 10px;border:1px solid #EEE;border-radius:6px;background:white;font-size:.72rem;cursor:pointer;font-family:Poppins,sans-serif;';
+                if(i===data.meta.current_page) btn.style.cssText+='background:#388E3C;color:white;border-color:#388E3C;';
+                btn.onclick=()=>searchPharma(i); pg.appendChild(btn);
+            }
+        }
+    } catch(e) { results.innerHTML=''; }
+}
+document.getElementById('pharmaSearch').addEventListener('keydown', e => { if(e.key==='Enter') searchPharma(); });
+@endif
 
 async function toggleLike() {
     try {
