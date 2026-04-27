@@ -142,8 +142,10 @@ final class AnnuaireWebController
             ->get();
 
         $userLiked = auth()->check() && $hosto->likes()->where('user_id', auth()->id())->exists();
+        $userRecommended = auth()->check() && HostoRecommendation::where('user_id', auth()->id())->where('hosto_id', $hosto->id)->exists();
+        $recoCount = HostoRecommendation::where('hosto_id', $hosto->id)->count();
 
-        return view('compte.explorer.structure-detail', compact('hosto', 'practitioners', 'recommendations', 'userLiked'));
+        return view('compte.explorer.structure-detail', compact('hosto', 'practitioners', 'recommendations', 'userLiked', 'userRecommended', 'recoCount'));
     }
 
     /**

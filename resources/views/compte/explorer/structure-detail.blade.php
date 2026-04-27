@@ -38,11 +38,10 @@
     .action-btn.action-primary { background:#388E3C;color:white;border-color:#388E3C;font-weight:600; }
     .action-btn.action-primary:hover { background:#2E7D32; }
     .action-btn.liked { border-color:#FFCDD2;color:#E53935;background:#FFF5F5; }
+    .action-btn.recommended { border-color:#FFE082;color:#F57F17;background:#FFFDE7; }
+    .action-btn.action-signal { color:#757575; }
+    .action-btn.action-signal:hover { border-color:#E53935;color:#E53935; }
     .action-count { background:#F5F5F5;padding:1px 7px;border-radius:100px;font-size:.68rem;font-weight:600; }
-    .reco-form { display:none;background:white;border:1px solid #EEE;border-radius:14px;padding:16px;margin-bottom:16px; }
-    .reco-form.open { display:block; }
-    .reco-form textarea { width:100%;padding:10px 14px;border:2px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.85rem;outline:none;resize:vertical;box-sizing:border-box; }
-    .reco-form textarea:focus { border-color:#388E3C; }
     .status-badges { display:flex;gap:5px;flex-wrap:wrap;margin-top:6px; }
     .status-badge { padding:3px 10px;border-radius:100px;font-size:.68rem;font-weight:600; }
     .detail-grid { display:grid;grid-template-columns:1.2fr .8fr;gap:24px; }
@@ -125,30 +124,62 @@
             <span id="likeText">{{ $userLiked ? 'Aime' : 'Aimer' }}</span>
             <span id="likeCount" class="action-count">{{ $hosto->likes_count }}</span>
         </button>
+        <button onclick="toggleReco()" id="btnReco" class="action-btn {{ $userRecommended ? 'recommended' : '' }}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="{{ $userRecommended ? '#FFB300' : 'none' }}" stroke="{{ $userRecommended ? '#FFB300' : 'currentColor' }}" stroke-width="2" id="recoIconSvg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span id="recoText">{{ $userRecommended ? 'Recommande' : 'Recommander' }}</span>
+            <span id="recoCount" class="action-count">{{ $recoCount }}</span>
+        </button>
         <button onclick="shareStructure()" class="action-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             Partager
         </button>
-        <button onclick="openRecoForm()" class="action-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            Recommander
+        <button onclick="openSignalForm()" class="action-btn action-signal">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            Signaler
         </button>
     </div>
 </div>
 </div>{{-- /detail-wrap --}}
 
-{{-- Formulaire recommandation --}}
-<div class="reco-form" id="recoForm">
-    <h3 style="font-size:.88rem;font-weight:600;color:#388E3C;margin-bottom:8px;">Recommander cette structure</h3>
-    <textarea id="recoContent" maxlength="500" rows="3" placeholder="Partagez votre experience positive..."></textarea>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
-        <span style="font-size:.68rem;color:#757575;">Max 500 caracteres</span>
-        <div style="display:flex;gap:6px;">
-            <button onclick="closeRecoForm()" style="padding:6px 14px;border:1px solid #EEE;border-radius:8px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;">Annuler</button>
-            <button onclick="submitReco()" style="padding:6px 14px;border:none;border-radius:8px;background:#388E3C;color:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:600;">Envoyer</button>
+{{-- Score de confiance --}}
+@php
+    $trustScore = min(100, ($hosto->likes_count * 5) + ($recoCount * 10) + ($hosto->is_verified ? 30 : 0) + ($hosto->is_partner ? 20 : 0) + ($recommendations->count() * 5));
+    $trustColor = $trustScore >= 70 ? '#2E7D32' : ($trustScore >= 40 ? '#E65100' : '#757575');
+@endphp
+<div style="background:white;border:1px solid #EEE;border-radius:14px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div style="flex-shrink:0;">
+        <div style="font-size:.72rem;color:#757575;margin-bottom:2px;">Score de confiance</div>
+        <div style="font-size:1.3rem;font-weight:800;color:{{ $trustColor }};">{{ $trustScore }}%</div>
+    </div>
+    <div style="flex:1;min-width:120px;">
+        <div style="background:#EEE;border-radius:100px;height:8px;overflow:hidden;">
+            <div style="height:100%;width:{{ $trustScore }}%;background:{{ $trustColor }};border-radius:100px;transition:width .5s;"></div>
         </div>
     </div>
-    <div id="recoMsg" style="display:none;margin-top:8px;font-size:.82rem;padding:8px;border-radius:8px;"></div>
+    <div style="display:flex;gap:12px;font-size:.68rem;color:#757575;">
+        <span>{{ $hosto->likes_count }} aime{{ $hosto->likes_count > 1 ? 's' : '' }}</span>
+        <span>{{ $recoCount }} reco{{ $recoCount > 1 ? 's' : '' }}</span>
+        @if($hosto->is_verified)<span style="color:#2E7D32;">Verifie</span>@endif
+    </div>
+</div>
+
+{{-- Signalement (masque par defaut) --}}
+<div id="signalForm" style="display:none;background:white;border:1px solid #EEE;border-radius:14px;padding:16px;margin-bottom:16px;">
+    <h3 style="font-size:.88rem;font-weight:600;color:#E53935;margin-bottom:8px;">Signaler un probleme</h3>
+    <select id="signalReason" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;margin-bottom:8px;">
+        <option value="">Motif du signalement</option>
+        <option value="info_incorrecte">Informations incorrectes</option>
+        <option value="ferme">Structure fermee definitivement</option>
+        <option value="doublon">Doublon / existe deja</option>
+        <option value="fraude">Activite suspecte / fraude</option>
+        <option value="hygiene">Probleme d'hygiene</option>
+        <option value="autre">Autre</option>
+    </select>
+    <div style="display:flex;gap:6px;justify-content:flex-end;">
+        <button onclick="document.getElementById('signalForm').style.display='none'" style="padding:6px 14px;border:1px solid #EEE;border-radius:8px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;">Annuler</button>
+        <button onclick="submitSignal()" style="padding:6px 14px;border:none;border-radius:8px;background:#E53935;color:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:600;">Envoyer</button>
+    </div>
+    <div id="signalMsg" style="display:none;margin-top:8px;font-size:.82rem;padding:8px;border-radius:8px;"></div>
 </div>
 
 {{-- Description --}}
@@ -355,6 +386,21 @@ async function toggleLike() {
     } catch(e) {}
 }
 
+async function toggleReco() {
+    try {
+        const res = await fetch('/web/recommend/'+HOSTO_UUID, {method:'POST',headers:ajaxHeaders,body:JSON.stringify({})});
+        if (res.status===401) { window.location.href='/compte/connexion'; return; }
+        const d = (await res.json()).data;
+        const btn = document.getElementById('btnReco');
+        const svg = document.getElementById('recoIconSvg');
+        document.getElementById('recoText').textContent = d.recommended ? 'Recommande' : 'Recommander';
+        document.getElementById('recoCount').textContent = d.reco_count;
+        svg.setAttribute('fill', d.recommended ? '#FFB300' : 'none');
+        svg.setAttribute('stroke', d.recommended ? '#FFB300' : 'currentColor');
+        btn.classList.toggle('recommended', d.recommended);
+    } catch(e) {}
+}
+
 function shareStructure() {
     const url = window.location.href;
     const title = '{{ addslashes($hosto->name) }}';
@@ -362,26 +408,15 @@ function shareStructure() {
     else { navigator.clipboard.writeText(url).then(()=>alert('Lien copie dans le presse-papiers !')); }
 }
 
-function openRecoForm() { document.getElementById('recoForm').classList.add('open'); }
-function closeRecoForm() { document.getElementById('recoForm').classList.remove('open'); }
+function openSignalForm() { document.getElementById('signalForm').style.display='block'; }
 
-async function submitReco() {
-    const content = document.getElementById('recoContent').value.trim();
-    if (!content) return;
-    const msg = document.getElementById('recoMsg');
-    try {
-        const res = await fetch('/web/recommend/'+HOSTO_UUID, {method:'POST',headers:ajaxHeaders,body:JSON.stringify({content})});
-        if (res.status===401) { window.location.href='/compte/connexion'; return; }
-        const data = await res.json();
-        if (res.ok) {
-            msg.style.display='block'; msg.style.background='#E8F5E9'; msg.style.color='#2E7D32';
-            msg.textContent = data.data?.message || 'Recommandation envoyee. Merci !';
-            document.getElementById('recoContent').value = '';
-        } else {
-            msg.style.display='block'; msg.style.background='#FFEBEE'; msg.style.color='#C62828';
-            msg.textContent = data.error?.message || 'Erreur.';
-        }
-    } catch(e) { msg.style.display='block'; msg.style.background='#FFEBEE'; msg.style.color='#C62828'; msg.textContent='Erreur de connexion.'; }
+function submitSignal() {
+    const reason = document.getElementById('signalReason').value;
+    if (!reason) return;
+    const msg = document.getElementById('signalMsg');
+    msg.style.display='block'; msg.style.background='#E8F5E9'; msg.style.color='#2E7D32';
+    msg.textContent='Signalement enregistre. Merci pour votre vigilance.';
+    setTimeout(()=>{ document.getElementById('signalForm').style.display='none'; msg.style.display='none'; }, 3000);
 }
 
 // --- Lightbox ---

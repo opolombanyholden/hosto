@@ -145,28 +145,35 @@ final class BookingWebController
     }
 
     /**
-     * Submit a recommendation.
+     * Toggle recommendation (like-style).
      */
     public function recommend(Request $request, string $uuid, AuditLogger $audit): JsonResponse
     {
-        $hosto = Hosto::where('uuid', $uuid)->where('is_partner', true)->firstOrFail();
+        $hosto = Hosto::where('uuid', $uuid)->firstOrFail();
+        $userId = $request->user()->id;
 
-        $data = $request->validate(['content' => 'required|string|max:500']);
+        $existing = HostoRecommendation::where('user_id', $userId)->where('hosto_id', $hosto->id)->first();
 
-        $existing = HostoRecommendation::where('user_id', $request->user()->id)->where('hosto_id', $hosto->id)->first();
         if ($existing) {
-            return response()->json(['error' => ['code' => 'ALREADY_RECOMMENDED', 'message' => 'Vous avez deja recommande cette structure.']], 409);
+            $existing->delete();
+            $audit->record(AuditLogger::ACTION_DELETE, 'recommendation', $existing->uuid);
+            $recommended = false;
+        } else {
+            $reco = HostoRecommendation::create([
+                'user_id' => $userId,
+                'hosto_id' => $hosto->id,
+                'content' => '',
+                'is_approved' => true,
+            ]);
+            $audit->record(AuditLogger::ACTION_CREATE, 'recommendation', $reco->uuid);
+            $recommended = true;
         }
 
-        $reco = HostoRecommendation::create([
-            'user_id' => $request->user()->id,
-            'hosto_id' => $hosto->id,
-            'content' => $data['content'],
-            'is_approved' => false,
-        ]);
+        $recoCount = HostoRecommendation::where('hosto_id', $hosto->id)->count();
 
-        $audit->record(AuditLogger::ACTION_CREATE, 'recommendation', $reco->uuid);
-
-        return response()->json(['data' => ['message' => 'Votre recommandation sera publiee apres moderation.']], 201);
+        return response()->json(['data' => [
+            'recommended' => $recommended,
+            'reco_count' => $recoCount,
+        ]]);
     }
 }
