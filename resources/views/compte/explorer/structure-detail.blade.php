@@ -133,10 +133,12 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             Partager
         </button>
+        {{-- Signalement masque pour le moment
         <button onclick="openSignalForm()" class="action-btn action-signal">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
             Signaler
         </button>
+        --}}
     </div>
 </div>
 </div>{{-- /detail-wrap --}}
@@ -163,24 +165,7 @@
     </div>
 </div>
 
-{{-- Signalement (masque par defaut) --}}
-<div id="signalForm" style="display:none;background:white;border:1px solid #EEE;border-radius:14px;padding:16px;margin-bottom:16px;">
-    <h3 style="font-size:.88rem;font-weight:600;color:#E53935;margin-bottom:8px;">Signaler un probleme</h3>
-    <select id="signalReason" style="width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;margin-bottom:8px;">
-        <option value="">Motif du signalement</option>
-        <option value="info_incorrecte">Informations incorrectes</option>
-        <option value="ferme">Structure fermee definitivement</option>
-        <option value="doublon">Doublon / existe deja</option>
-        <option value="fraude">Activite suspecte / fraude</option>
-        <option value="hygiene">Probleme d'hygiene</option>
-        <option value="autre">Autre</option>
-    </select>
-    <div style="display:flex;gap:6px;justify-content:flex-end;">
-        <button onclick="document.getElementById('signalForm').style.display='none'" style="padding:6px 14px;border:1px solid #EEE;border-radius:8px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;">Annuler</button>
-        <button onclick="submitSignal()" style="padding:6px 14px;border:none;border-radius:8px;background:#E53935;color:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:600;">Envoyer</button>
-    </div>
-    <div id="signalMsg" style="display:none;margin-top:8px;font-size:.82rem;padding:8px;border-radius:8px;"></div>
-</div>
+{{-- Signalement masque pour le moment --}}
 
 {{-- Description --}}
 @if($hosto->description_fr)
