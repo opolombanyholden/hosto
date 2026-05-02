@@ -52,6 +52,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $linkedin_url
  * @property string|null $youtube_url
  * @property string|null $tiktok_url
+ * @property array<int, string>|null $featured_sections
  * @property string|null $description_fr
  * @property string|null $description_en
  * @property bool $is_public
@@ -115,6 +116,7 @@ class Hosto extends Model
         'linkedin_url',
         'youtube_url',
         'tiktok_url',
+        'featured_sections',
         'description_fr',
         'description_en',
         'is_public',
@@ -262,6 +264,56 @@ class Hosto extends Model
     }
 
     /**
+     * Get featured sections (admin-defined or auto-detected by type).
+     *
+     * @return list<string>
+     */
+    public function getFeaturedSections(): array
+    {
+        if (! empty($this->featured_sections)) {
+            return $this->featured_sections;
+        }
+
+        // Auto-detect by structure type
+        $typeSlugs = $this->structureTypes->pluck('slug')->toArray();
+        $sections = [];
+
+        if (in_array('pharmacie', $typeSlugs, true)) {
+            $sections[] = 'catalogue_medicaments';
+        }
+        if (array_intersect($typeSlugs, ['laboratoire', 'centre-imagerie'])) {
+            $sections[] = 'examens';
+        }
+        if ($this->is_emergency_service) {
+            $sections[] = 'urgences';
+        }
+        if ($this->does_teleconsultation ?? false) {
+            $sections[] = 'teleconsultation';
+        }
+
+        return $sections;
+    }
+
+    /**
+     * Available section definitions for admin UI.
+     *
+     * @return array<string, string>
+     */
+    public static function availableFeaturedSections(): array
+    {
+        return [
+            'catalogue_medicaments' => 'Catalogue medicaments (pharmacie)',
+            'examens' => 'Catalogue des examens (laboratoire)',
+            'urgences' => 'Services d\'urgence',
+            'teleconsultation' => 'Teleconsultation',
+            'prestations' => 'Prestations',
+            'soins' => 'Soins',
+            'specialites' => 'Specialites',
+            'medecins' => 'Medecins',
+        ];
+    }
+
+    /**
      * Filter by structure type slug.
      *
      * @param  Builder<self>  $query
@@ -348,6 +400,7 @@ class Hosto extends Model
             'verified_at' => 'immutable_datetime',
             'opening_hours' => 'array',
             'accepted_insurances' => 'array',
+            'featured_sections' => 'array',
         ];
     }
 }

@@ -63,6 +63,7 @@
     .filter-input { width:100%;padding:8px 12px;border:1px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;box-sizing:border-box;margin-bottom:10px; }
     .filter-input:focus { border-color:#388E3C; }
     .section-empty { text-align:center;padding:12px;color:#757575;font-size:.82rem; }
+    .featured-section { border-width:2px;margin-bottom:14px; }
     .ins-badges { display:flex;gap:3px;flex-wrap:wrap;margin-top:6px; }
     .ins-badge { padding:2px 8px;background:#E3F2FD;color:#1565C0;border-radius:100px;font-size:.62rem;font-weight:600; }
     .gallery-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px; }
@@ -167,15 +168,14 @@
 
 {{-- Signalement masque pour le moment --}}
 
-{{-- ===== MISE EN AVANT : Pharmacie → Catalogue medicaments ===== --}}
-@if($types->pluck('slug')->contains('pharmacie'))
-<div class="section-block" style="border:2px solid #C8E6C9;background:#FAFFF9;">
+{{-- ===== SECTIONS MISES EN AVANT (admin ou auto-detect) ===== --}}
+@php $featured = $hosto->getFeaturedSections(); @endphp
+
+@if(in_array('catalogue_medicaments', $featured))
+<div class="section-block featured-section" style="border-color:#C8E6C9;background:#FAFFF9;">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
         <img src="/images/icons/icon-pharamcie.png" alt="" style="width:32px;height:32px;">
-        <div>
-            <h3 style="margin:0;color:#2E7D32;">Catalogue medicaments</h3>
-            <p style="font-size:.72rem;color:#757575;margin:0;">Recherchez un medicament disponible dans cette pharmacie</p>
-        </div>
+        <div><h3 style="margin:0;color:#2E7D32;">Catalogue medicaments</h3><p style="font-size:.72rem;color:#757575;margin:0;">Recherchez un medicament disponible dans cette pharmacie</p></div>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:10px;">
         <input type="text" id="pharmaSearch" placeholder="Rechercher un medicament..." class="filter-input" style="margin:0;flex:1;" onkeydown="if(event.key==='Enter')searchPharma()">
@@ -187,26 +187,41 @@
 </div>
 @endif
 
-{{-- ===== MISE EN AVANT : Laboratoire → Liste des examens ===== --}}
-@if($types->pluck('slug')->contains('laboratoire') || $types->pluck('slug')->contains('centre-imagerie'))
-<div class="section-block" style="border:2px solid #BBDEFB;background:#F5F9FF;">
+@if(in_array('examens', $featured))
+<div class="section-block featured-section" style="border-color:#BBDEFB;background:#F5F9FF;">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
         <img src="/images/icons/icon-labo.png" alt="" style="width:32px;height:32px;">
-        <div>
-            <h3 style="margin:0;color:#1565C0;">Catalogue des examens</h3>
-            <p style="font-size:.72rem;color:#757575;margin:0;">Examens proposes par ce laboratoire avec tarifs</p>
-        </div>
+        <div><h3 style="margin:0;color:#1565C0;">Catalogue des examens</h3><p style="font-size:.72rem;color:#757575;margin:0;">Examens proposes avec tarifs</p></div>
     </div>
     <input type="text" placeholder="Filtrer les examens..." oninput="filterList(this,'laboExamens')" class="filter-input">
     <div id="laboExamens">
         @forelse($services->get('examen', collect()) as $svc)
-        <div class="service-row filterable" data-text="{{ mb_strtolower($svc->name_fr) }}">
-            <span>{{ $svc->name_fr }}</span>
-            <span style="color:#1565C0;font-weight:600;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span>
-        </div>
+        <div class="service-row filterable" data-text="{{ mb_strtolower($svc->name_fr) }}"><span>{{ $svc->name_fr }}</span><span style="color:#1565C0;font-weight:600;font-size:.78rem;">@if($svc->pivot->tarif_min){{ number_format($svc->pivot->tarif_min,0,',',' ') }} - {{ number_format($svc->pivot->tarif_max,0,',',' ') }} XAF @endif</span></div>
         @empty
         <div class="section-empty">Aucun examen disponible.</div>
         @endforelse
+    </div>
+</div>
+@endif
+
+@if(in_array('urgences', $featured))
+<div class="section-block featured-section" style="border-color:#EF9A9A;background:#FFF5F5;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <img src="/images/icons/icon-ambulance.png" alt="" style="width:32px;height:32px;">
+        <div><h3 style="margin:0;color:#C62828;">Services d'urgence</h3></div>
+    </div>
+    <p style="font-size:.82rem;color:#424242;">Cette structure dispose d'un service d'urgence.</p>
+    @if($hosto->emergency_phone)<p style="font-size:.88rem;font-weight:600;color:#C62828;margin-top:4px;">Urgences : <a href="tel:{{ $hosto->emergency_phone }}" style="color:#C62828;">{{ $hosto->emergency_phone }}</a></p>@endif
+</div>
+@endif
+
+@if(in_array('teleconsultation', $featured))
+<div class="section-block featured-section" style="border-color:#BBDEFB;background:#F5F9FF;">
+    <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:32px;height:32px;background:#E3F2FD;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94"/><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+        </div>
+        <div><h3 style="margin:0;color:#1565C0;">Teleconsultation disponible</h3><p style="font-size:.72rem;color:#757575;margin:0;">Consultez un medecin a distance depuis cette structure</p></div>
     </div>
 </div>
 @endif

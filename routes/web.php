@@ -265,6 +265,11 @@ Route::prefix('admin')->group(function (): void {
         Route::get('/structures', [AdminWebController::class, 'structures'])->name('admin.structures');
         Route::get('/demandes', [AdminWebController::class, 'claims'])->name('admin.claims');
         Route::post('/demandes/{uuid}/review', [AdminWebController::class, 'reviewClaim'])->name('admin.claims.review');
+
+        // Structure configuration
+        Route::get('/structures/{uuid}/config', [AdminWebController::class, 'structureConfig'])->name('admin.structure.config');
+        Route::put('/structures/{uuid}/featured-sections', [AdminWebController::class, 'updateFeaturedSections']);
+
         Route::get('/profil', [ProfileController::class, 'show'])->name('admin.profil');
         Route::put('/profil/info', [ProfileController::class, 'updateInfo']);
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);

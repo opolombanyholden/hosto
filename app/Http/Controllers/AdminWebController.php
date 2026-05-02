@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Annuaire\Models\StructureClaim;
 use App\Modules\Core\Services\AuditLogger;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -79,5 +80,38 @@ final class AdminWebController
         $messages = ['approve' => 'Demande approuvee.', 'reject' => 'Demande rejetee.', 'suspend' => 'Demande suspendue.'];
 
         return redirect('/admin/demandes')->with('success', $messages[$data['action']]);
+    }
+
+    /**
+     * Show structure config page (featured sections).
+     */
+    public function structureConfig(string $uuid): View
+    {
+        $structure = Hosto::where('uuid', $uuid)->with('structureTypes')->firstOrFail();
+        $availableSections = Hosto::availableFeaturedSections();
+
+        return view('admin.structure-config', compact('structure', 'availableSections'));
+    }
+
+    /**
+     * Update featured sections for a structure.
+     */
+    public function updateFeaturedSections(Request $request, string $uuid, AuditLogger $audit): JsonResponse
+    {
+        $structure = Hosto::where('uuid', $uuid)->firstOrFail();
+
+        $data = $request->validate([
+            'featured_sections' => 'present|array',
+            'featured_sections.*' => 'string|max:50',
+        ]);
+
+        $structure->update(['featured_sections' => $data['featured_sections'] ?: null]);
+
+        $audit->record(AuditLogger::ACTION_UPDATE, 'hosto', $structure->uuid, [
+            'section' => 'featured_sections',
+            'values' => $data['featured_sections'],
+        ]);
+
+        return response()->json(['data' => ['message' => 'Sections mises en avant mises a jour.']]);
     }
 }
