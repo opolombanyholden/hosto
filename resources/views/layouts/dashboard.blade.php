@@ -164,5 +164,6 @@
         document.getElementById('sidebar').classList.toggle('expanded');
     }
     </script>
+    @yield('scripts')
 </body>
 </html>
