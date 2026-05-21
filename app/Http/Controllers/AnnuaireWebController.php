@@ -10,6 +10,7 @@ use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Annuaire\Models\PractitionerPublication;
 use App\Modules\RendezVous\Models\TimeSlot;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -84,15 +85,24 @@ final class AnnuaireWebController
         return view('annuaire.practitioner-show', compact('practitioner', 'slots', 'publications'));
     }
 
-    public function bookRdv(string $slug): View
+    public function bookRdv(string $slug): View|RedirectResponse
     {
         $hosto = Hosto::where('slug', $slug)
             ->with('specialties')
             ->firstOrFail();
 
-        $specialties = $hosto->specialties;
+        if (! $hosto->is_partner) {
+            abort(403, 'La prise de rendez-vous n\'est disponible que pour les structures partenaires HOSTO.');
+        }
 
-        return view('annuaire.book-rdv', compact('hosto', 'specialties'));
+        if (! auth()->check()) {
+            session(['url.intended' => url()->current()]);
+
+            return redirect()->route('compte.connexion')
+                ->with('info', 'Connectez-vous pour prendre rendez-vous chez '.$hosto->name.'.');
+        }
+
+        return redirect()->route('compte.book-rdv', ['slug' => $slug]);
     }
 
     public function medications(): View

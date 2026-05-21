@@ -168,7 +168,15 @@ class Hosto extends Model
     public function specialties(): BelongsToMany
     {
         return $this->belongsToMany(Specialty::class, 'hosto_specialty')
-            ->withPivot('display_order')
+            ->withPivot(
+                'display_order',
+                'consultation_conditions',
+                'consultation_hours',
+                'consultation_location',
+                'tarif_min',
+                'tarif_max',
+                'currency_code',
+            )
             ->orderByPivot('display_order');
     }
 

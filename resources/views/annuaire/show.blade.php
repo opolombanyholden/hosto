@@ -140,12 +140,24 @@
                 <span class="status-badge {{ $hosto->is_public ? 'status-public' : 'status-private' }}">{{ $hosto->is_public ? 'Public' : 'Prive' }}</span>
             </div>
 
-            {{-- Book appointment button --}}
+            {{-- Book appointment button (partenaire HOSTO uniquement) --}}
             <div style="margin-top:12px;">
-                <a href="/annuaire/{{ $hosto->slug }}/rendez-vous" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#388E3C;color:white;border-radius:100px;font-family:Poppins,sans-serif;font-size:.85rem;font-weight:600;text-decoration:none;transition:background .2s;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                    Prendre rendez-vous
-                </a>
+                @if($hosto->is_partner)
+                    <a href="/annuaire/{{ $hosto->slug }}/rendez-vous" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#388E3C;color:white;border-radius:100px;font-family:Poppins,sans-serif;font-size:.85rem;font-weight:600;text-decoration:none;transition:background .2s;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                        Prendre rendez-vous
+                    </a>
+                @else
+                    <button type="button" disabled
+                            title="La prise de rendez-vous est reservee aux structures partenaires HOSTO."
+                            style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#E0E0E0;color:#9E9E9E;border:none;border-radius:100px;font-family:Poppins,sans-serif;font-size:.85rem;font-weight:600;cursor:not-allowed;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                        Rendez-vous (non disponible)
+                    </button>
+                    <div style="margin-top:6px;font-size:.72rem;color:#757575;max-width:340px;">
+                        La prise de rendez-vous en ligne est reservee aux structures partenaires HOSTO.
+                    </div>
+                @endif
             </div>
 
             {{-- Interaction buttons (partner only) --}}
@@ -204,11 +216,44 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                     Specialites
                 </div>
-                <div class="specs-list">
-                    @foreach($specialties as $spec)
-                        <span class="spec-badge">{{ $spec->name_fr }}</span>
-                    @endforeach
-                </div>
+                @foreach($specialties as $spec)
+                    @php
+                        $pivot = $spec->pivot;
+                        $hasDetails = $pivot && (
+                            $pivot->consultation_conditions ||
+                            $pivot->consultation_hours ||
+                            $pivot->consultation_location ||
+                            $pivot->tarif_min
+                        );
+                        $specPayload = json_encode([
+                            'name' => $spec->name_fr,
+                            'conditions' => $pivot?->consultation_conditions,
+                            'hours' => $pivot?->consultation_hours,
+                            'location' => $pivot?->consultation_location,
+                            'tarif_min' => $pivot?->tarif_min,
+                            'tarif_max' => $pivot?->tarif_max,
+                            'currency' => $pivot?->currency_code,
+                        ], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP);
+                    @endphp
+                    <div class="service-row"
+                         @if($hasDetails) role="button" tabindex="0" style="cursor:pointer;" onclick="openSpecialtyModal({{ $specPayload }})" @endif>
+                        <span class="service-name">
+                            {{ $spec->name_fr }}
+                            @if($hasDetails)
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2" style="margin-left:6px;vertical-align:middle;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                            @endif
+                        </span>
+                        <span class="service-price">
+                            @if($pivot && $pivot->tarif_min)
+                                {{ number_format($pivot->tarif_min, 0, ',', ' ') }}
+                                @if($pivot->tarif_max && $pivot->tarif_max !== $pivot->tarif_min)
+                                    - {{ number_format($pivot->tarif_max, 0, ',', ' ') }}
+                                @endif
+                                {{ $pivot->currency_code ?? 'XAF' }}
+                            @endif
+                        </span>
+                    </div>
+                @endforeach
             </div>
             @endif
 
@@ -368,9 +413,71 @@
         </div>
     </div>
 </div>
+
+{{-- Modal details specialite --}}
+<div id="specialtyModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeSpecialtyModal()">
+    <div style="background:white;max-width:560px;width:100%;border-radius:16px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h3 id="specialtyModalTitle" style="font-size:1.2rem;font-weight:700;color:#1B2A1B;margin:0;"></h3>
+            <button type="button" onclick="closeSpecialtyModal()" aria-label="Fermer" style="background:none;border:none;font-size:1.4rem;color:#757575;cursor:pointer;line-height:1;">&times;</button>
+        </div>
+        <div id="specialtyModalBody" style="font-size:.88rem;color:#424242;line-height:1.7;"></div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
+<script>
+function openSpecialtyModal(data) {
+    document.getElementById('specialtyModalTitle').textContent = data.name;
+    const body = document.getElementById('specialtyModalBody');
+    while (body.firstChild) body.removeChild(body.firstChild);
+
+    function addRow(label, value, multiline) {
+        if (!value) return;
+        const row = document.createElement('div');
+        row.style.marginBottom = '10px';
+        const strong = document.createElement('strong');
+        strong.style.color = '#388E3C';
+        strong.textContent = label + ' : ';
+        row.appendChild(strong);
+        if (multiline) {
+            row.appendChild(document.createElement('br'));
+            String(value).split('\n').forEach((line, i) => {
+                if (i > 0) row.appendChild(document.createElement('br'));
+                row.appendChild(document.createTextNode(line));
+            });
+        } else {
+            row.appendChild(document.createTextNode(value));
+        }
+        body.appendChild(row);
+    }
+
+    addRow('Horaires de consultation', data.hours);
+    addRow('Lieu / salle', data.location);
+    addRow('Conditions de consultation', data.conditions, true);
+    if (data.tarif_min) {
+        const fmt = n => Number(n).toLocaleString('fr-FR');
+        const cur = data.currency || 'XAF';
+        const range = data.tarif_max && data.tarif_max !== data.tarif_min
+            ? `${fmt(data.tarif_min)} - ${fmt(data.tarif_max)} ${cur}`
+            : `${fmt(data.tarif_min)} ${cur}`;
+        addRow('Tarif', range);
+    }
+
+    if (!body.childNodes.length) {
+        const empty = document.createElement('div');
+        empty.style.color = '#9E9E9E';
+        empty.textContent = 'Aucun detail supplementaire pour cette specialite.';
+        body.appendChild(empty);
+    }
+    document.getElementById('specialtyModal').style.display = 'flex';
+}
+function closeSpecialtyModal() {
+    document.getElementById('specialtyModal').style.display = 'none';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSpecialtyModal(); });
+</script>
 @if($coords)
 <script>
 document.addEventListener('DOMContentLoaded', function() {
