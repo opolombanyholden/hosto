@@ -31,6 +31,14 @@ final class PractitionersController
             $query->whereHas('structures', fn ($q) => $q->where('hostos.uuid', $request->input('structure')));
         }
 
+        if ($request->filled('city')) {
+            $cityValue = (string) $request->input('city');
+            $query->whereHas('structures.city', function ($q) use ($cityValue) {
+                $q->where('cities.uuid', $cityValue)
+                    ->orWhere('cities.name_fr', 'ILIKE', $cityValue);
+            });
+        }
+
         if ($request->filled('q')) {
             $search = (string) $request->input('q');
             $query->where(fn ($q) => $q->where('last_name', 'ILIKE', "%{$search}%")->orWhere('first_name', 'ILIKE', "%{$search}%"));
@@ -38,6 +46,10 @@ final class PractitionersController
 
         if ($request->boolean('teleconsultation')) {
             $query->where('does_teleconsultation', true);
+        }
+
+        if ($request->boolean('partner_only')) {
+            $query->whereHas('structures', fn ($q) => $q->where('hostos.is_partner', true));
         }
 
         return PractitionerResource::collection(

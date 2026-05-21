@@ -151,6 +151,15 @@ class Practitioner extends Model
     }
 
     /**
+     * A practitioner is "partenaire HOSTO" if at least one of his structures is.
+     * Used to gate online booking and teleconsultation features.
+     */
+    public function getIsPartnerAttribute(): bool
+    {
+        return $this->structures->contains(fn (Hosto $h) => (bool) $h->is_partner);
+    }
+
+    /**
      * @param  Builder<self>  $query
      * @return Builder<self>
      */

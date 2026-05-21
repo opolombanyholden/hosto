@@ -218,14 +218,33 @@
             </div>
             @endif
 
-            {{-- Time slots --}}
+            {{-- Time slots (RDV/teleconsultation : partenaires HOSTO uniquement) --}}
             <div class="section-card">
                 <div class="section-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
                     Creneaux disponibles
                 </div>
 
-                @if($hasSlots)
+                @if(! $practitioner->is_partner)
+                    <div class="no-slots">
+                        <p style="font-size:.85rem;color:#757575;line-height:1.6;">
+                            La prise de rendez-vous et la teleconsultation en ligne sont reservees aux medecins exerçant dans une structure <strong>partenaire HOSTO</strong>.
+                        </p>
+                        @if($practitioner->phone || $practitioner->email)
+                            <p style="font-size:.82rem;color:#388E3C;margin-top:8px;">
+                                Vous pouvez contacter directement le praticien
+                                @if($practitioner->phone && $practitioner->isFieldVisible('phone'))
+                                    au <a href="tel:{{ $practitioner->phone }}" style="color:#388E3C;font-weight:600;">{{ $practitioner->phone }}</a>
+                                @endif
+                                @if($practitioner->email && $practitioner->isFieldVisible('email'))
+                                    @if($practitioner->phone && $practitioner->isFieldVisible('phone')) ou @endif
+                                    par email a <a href="mailto:{{ $practitioner->email }}" style="color:#388E3C;font-weight:600;">{{ $practitioner->email }}</a>
+                                @endif
+                                .
+                            </p>
+                        @endif
+                    </div>
+                @elseif($hasSlots)
                     @foreach($slots as $date => $daySlots)
                     <div class="slot-day">
                         <div class="slot-day-label">{{ \Carbon\Carbon::parse($date)->translatedFormat('l d F') }}</div>

@@ -41,11 +41,13 @@ final class PractitionerResource extends JsonResource
             'bio_en' => $this->when($isDetail, $this->bio_en),
             'languages' => $this->when($isDetail, $this->languages),
 
-            'consultation_fee_min' => $this->consultation_fee_min,
-            'consultation_fee_max' => $this->consultation_fee_max,
+            'consultation_fee_min' => $this->isFieldVisible('consultation_fee') ? $this->consultation_fee_min : null,
+            'consultation_fee_max' => $this->isFieldVisible('consultation_fee') ? $this->consultation_fee_max : null,
             'accepts_new_patients' => $this->accepts_new_patients,
             'does_teleconsultation' => $this->does_teleconsultation,
+            'does_home_care' => $this->does_home_care,
             'is_verified' => $this->is_verified,
+            'is_partner' => $this->whenLoaded('structures', fn () => $this->is_partner),
         ];
     }
 }
