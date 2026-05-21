@@ -337,6 +337,79 @@
         .footer-social a:hover { background: var(--green); transform: translateY(-2px); }
         .footer-social a svg { width: 16px; height: 16px; color: rgba(255,255,255,.7); }
 
+        /* HERO ANIMATIONS */
+        @keyframes hero-fade-up {
+            from { opacity: 0; transform: translateY(28px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes hero-card-float-main {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-14px) rotate(-.6deg); }
+        }
+        @keyframes hero-card-float-back {
+            0%, 100% { transform: translateY(0) rotate(2deg); }
+            50% { transform: translateY(-8px) rotate(2.8deg); }
+        }
+        @keyframes hero-card-float-side {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(10px) rotate(.8deg); }
+        }
+        @keyframes hero-blob-drift-1 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-40px, 30px) scale(1.08); }
+        }
+        @keyframes hero-blob-drift-2 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(40px, -25px) scale(1.12); }
+        }
+        @keyframes hero-shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes phone-float {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-12px) rotate(-1deg); }
+        }
+        @keyframes phone-glow {
+            0%, 100% { box-shadow: var(--shadow-lg), 0 0 0 rgba(102,187,106,0); }
+            50% { box-shadow: var(--shadow-lg), 0 0 60px rgba(102,187,106,.35); }
+        }
+
+        .hero-badge { animation: hero-fade-up .8s cubic-bezier(.4,0,.2,1) .1s both; }
+        .hero h1 { animation: hero-fade-up .9s cubic-bezier(.4,0,.2,1) .25s both; }
+        .hero-text { animation: hero-fade-up .9s cubic-bezier(.4,0,.2,1) .4s both; }
+        .hero-buttons { animation: hero-fade-up .9s cubic-bezier(.4,0,.2,1) .55s both; }
+        .hero-stats { animation: hero-fade-up .9s cubic-bezier(.4,0,.2,1) .7s both; }
+        .hero-visual { animation: hero-fade-up 1s cubic-bezier(.4,0,.2,1) .5s both; }
+
+        .hero-blob-1 { animation: hero-blob-drift-1 14s ease-in-out infinite; }
+        .hero-blob-2 { animation: hero-blob-drift-2 18s ease-in-out infinite; }
+
+        .hero-card-main { animation: hero-card-float-main 6s ease-in-out 1s infinite; }
+        .hero-card-back { animation: hero-card-float-back 7s ease-in-out 1.2s infinite; transform: rotate(2deg); }
+        .hero-card-side { animation: hero-card-float-side 5.5s ease-in-out .8s infinite; }
+        .hero-card-main:hover, .hero-card-side:hover { animation-play-state: paused; }
+
+        .hero-screenshot {
+            width: 100%; max-width: 460px; height: auto; border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0,0,0,.25), 0 0 0 1px rgba(255,255,255,.1);
+            animation: hero-card-float-main 6s ease-in-out 1s infinite;
+        }
+        .features-phone { animation: phone-float 7s ease-in-out infinite, phone-glow 4s ease-in-out infinite; }
+        .features-phone-screenshot {
+            width: 300px; border-radius: 40px;
+            box-shadow: var(--shadow-lg);
+            animation: phone-float 7s ease-in-out infinite, phone-glow 4s ease-in-out infinite;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-badge, .hero h1, .hero-text, .hero-buttons, .hero-stats, .hero-visual,
+            .hero-blob-1, .hero-blob-2, .hero-card-main, .hero-card-back, .hero-card-side,
+            .hero-screenshot, .features-phone, .features-phone-screenshot {
+                animation: none !important;
+            }
+        }
+
         /* RESPONSIVE */
         @media (max-width: 1024px) {
             .hero .container { grid-template-columns: 1fr; text-align: center; }
@@ -447,6 +520,16 @@
             </div>
         </div>
         <div class="hero-visual">
+            @php
+                $heroScreenshot = public_path('images/screenshots/hero-mockup.png');
+                $heroScreenshotExists = file_exists($heroScreenshot);
+            @endphp
+            @if ($heroScreenshotExists)
+                <img src="{{ asset('images/screenshots/hero-mockup.png') }}"
+                     alt="Aperçu de l'application HOSTO"
+                     class="hero-screenshot"
+                     loading="eager">
+            @else
             <div class="hero-card-stack">
                 <div class="hero-card hero-card-back"></div>
                 <div class="hero-card hero-card-main">
@@ -498,6 +581,7 @@
                     <div class="card-side-label">Structures referencees</div>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </section>
@@ -630,6 +714,16 @@
                 </div>
             </div>
             <div class="features-visual">
+                @php
+                    $phoneScreenshot = public_path('images/screenshots/phone-mockup.png');
+                    $phoneScreenshotExists = file_exists($phoneScreenshot);
+                @endphp
+                @if ($phoneScreenshotExists)
+                    <img src="{{ asset('images/screenshots/phone-mockup.png') }}"
+                         alt="Aperçu de l'application mobile HOSTO"
+                         class="features-phone-screenshot"
+                         loading="lazy">
+                @else
                 <div class="features-phone">
                     <div class="phone-notch"></div>
                     <div class="features-phone-screen">
@@ -656,6 +750,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>
