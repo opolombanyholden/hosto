@@ -97,6 +97,7 @@
         ['id' => 'sec5', 'done' => (bool) $user->security_question, 'icon' => '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', 'title' => 'Question secrete', 'sub' => 'Securite du compte'],
         ['id' => 'sec6', 'done' => (bool) $user->medical_pin, 'icon' => '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>', 'title' => 'PIN dossier medical', 'sub' => 'Code secret 4-6 chiffres'],
         ['id' => 'sec7', 'done' => $user->emergencyContacts->isNotEmpty(), 'icon' => '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>', 'title' => 'Contacts d\'urgence', 'sub' => 'Personnes a prevenir'],
+        ['id' => 'sec8', 'done' => $user->hasMedicalBioInfo(), 'icon' => '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7z"/>', 'title' => 'Informations medicales', 'sub' => 'Taille, poids, allergies, antecedents'],
     ];
     $firstIncomplete = collect($sections)->first(fn($s) => !$s['done']);
 @endphp
@@ -428,6 +429,88 @@
         </div>
     </div>
 
+    {{-- ====== Section 8 : Informations biologiques / medicales ====== --}}
+    <div class="section-card {{ $firstIncomplete && $firstIncomplete['id'] === 'sec8' ? 'active' : '' }}" data-section="sec8">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-icon {{ $sections[7]['done'] ? 'done' : 'todo' }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2">{!! $sections[7]['icon'] !!}</svg>
+            </div>
+            <div class="section-label">
+                <div class="section-label-title">Informations biologiques et medicales</div>
+                <div class="section-label-sub">Taille, poids, allergies, pathologies, traitements, antecedents</div>
+            </div>
+            <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="section-body" id="sec8">
+            <div id="msgMedicalBio" class="msg"></div>
+            <p style="font-size:.78rem;color:#757575;margin-bottom:14px;">
+                Ces informations facilitent la prise en charge medicale (urgences, consultations, prescriptions). Elles restent strictement confidentielles et soumises a votre PIN medical.
+            </p>
+            <div class="field-row">
+                <div class="field">
+                    <label>Taille (cm)</label>
+                    <input type="number" id="heightCm" min="30" max="260" step="1" value="{{ $user->height_cm }}" placeholder="170">
+                </div>
+                <div class="field">
+                    <label>Poids (kg)</label>
+                    <input type="number" id="weightKg" min="1" max="500" step="0.1" value="{{ $user->weight_kg }}" placeholder="70.5">
+                </div>
+            </div>
+            <div class="field">
+                <label>Allergies connues <span style="font-weight:400;color:#757575;">— medicaments, aliments, latex, pollens...</span></label>
+                <textarea id="allergies" rows="2" maxlength="2000" placeholder="Ex : penicilline, arachides...">{{ $user->allergies }}</textarea>
+            </div>
+            <div class="field">
+                <label>Pathologies chroniques <span style="font-weight:400;color:#757575;">— diabete, hypertension, asthme, drepanocytose...</span></label>
+                <textarea id="chronicConditions" rows="2" maxlength="2000" placeholder="Ex : diabete type 2 depuis 2018...">{{ $user->chronic_conditions }}</textarea>
+            </div>
+            <div class="field">
+                <label>Traitements en cours <span style="font-weight:400;color:#757575;">— medicaments pris regulierement</span></label>
+                <textarea id="currentMedications" rows="2" maxlength="2000" placeholder="Ex : metformine 500mg matin et soir...">{{ $user->current_medications }}</textarea>
+            </div>
+            <div class="field">
+                <label>Antecedents chirurgicaux</label>
+                <textarea id="surgicalHistory" rows="2" maxlength="2000" placeholder="Ex : appendicectomie 2015...">{{ $user->surgical_history }}</textarea>
+            </div>
+            <div class="field">
+                <label>Antecedents familiaux <span style="font-weight:400;color:#757575;">— maladies hereditaires connues</span></label>
+                <textarea id="familyHistory" rows="2" maxlength="2000" placeholder="Ex : pere diabetique, mere hypertendue...">{{ $user->family_history }}</textarea>
+            </div>
+            <div class="field">
+                <label>Handicap ou situation particuliere</label>
+                <textarea id="disabilities" rows="2" maxlength="2000" placeholder="Ex : malvoyant, mobilite reduite...">{{ $user->disabilities }}</textarea>
+            </div>
+            <div class="field-row-3">
+                <div class="field">
+                    <label>Tabac</label>
+                    <select id="smokingStatus">
+                        <option value="">—</option>
+                        <option value="non_fumeur" {{ $user->smoking_status === 'non_fumeur' ? 'selected' : '' }}>Non fumeur</option>
+                        <option value="occasionnel" {{ $user->smoking_status === 'occasionnel' ? 'selected' : '' }}>Occasionnel</option>
+                        <option value="regulier" {{ $user->smoking_status === 'regulier' ? 'selected' : '' }}>Regulier</option>
+                        <option value="ancien_fumeur" {{ $user->smoking_status === 'ancien_fumeur' ? 'selected' : '' }}>Ancien fumeur</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Alcool</label>
+                    <select id="alcoholConsumption">
+                        <option value="">—</option>
+                        <option value="non" {{ $user->alcohol_consumption === 'non' ? 'selected' : '' }}>Aucune</option>
+                        <option value="occasionnel" {{ $user->alcohol_consumption === 'occasionnel' ? 'selected' : '' }}>Occasionnelle</option>
+                        <option value="regulier" {{ $user->alcohol_consumption === 'regulier' ? 'selected' : '' }}>Reguliere</option>
+                    </select>
+                </div>
+                <div class="field" style="display:flex;align-items:center;padding-top:20px;">
+                    <label style="display:flex;align-items:center;gap:8px;margin:0;cursor:pointer;font-size:.85rem;">
+                        <input type="checkbox" id="organDonor" {{ $user->organ_donor ? 'checked' : '' }}>
+                        Donneur d'organes
+                    </label>
+                </div>
+            </div>
+            <button class="save-btn" onclick="saveMedicalBio()">Enregistrer</button>
+        </div>
+    </div>
+
     </div>{{-- /sections-grid --}}
 
     <p style="text-align:center;margin-top:20px;"><a href="/compte" style="font-size:.82rem;color:#388E3C;font-weight:500;">Retour a mon espace</a></p>
@@ -535,6 +618,24 @@ function saveResidence() {
         city_of_residence: document.getElementById('city').value || null,
         address_of_residence: document.getElementById('address').value || null,
     }, 'msgResidence');
+}
+
+function saveMedicalBio() {
+    const heightVal = document.getElementById('heightCm').value;
+    const weightVal = document.getElementById('weightKg').value;
+    saveSection('/compte/profil/bio-medical', {
+        height_cm: heightVal ? parseInt(heightVal, 10) : null,
+        weight_kg: weightVal ? parseFloat(weightVal) : null,
+        allergies: document.getElementById('allergies').value.trim() || null,
+        chronic_conditions: document.getElementById('chronicConditions').value.trim() || null,
+        current_medications: document.getElementById('currentMedications').value.trim() || null,
+        surgical_history: document.getElementById('surgicalHistory').value.trim() || null,
+        family_history: document.getElementById('familyHistory').value.trim() || null,
+        disabilities: document.getElementById('disabilities').value.trim() || null,
+        organ_donor: document.getElementById('organDonor').checked,
+        smoking_status: document.getElementById('smokingStatus').value || null,
+        alcohol_consumption: document.getElementById('alcoholConsumption').value || null,
+    }, 'msgMedicalBio');
 }
 
 function saveSecurityQuestion() {

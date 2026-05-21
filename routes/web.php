@@ -194,6 +194,7 @@ Route::prefix('compte')->group(function (): void {
             Route::put('/profil/identite', [ProfileController::class, 'updateIdentity'])->name('compte.profil.identity');
             Route::post('/profil/identite/document', [ProfileController::class, 'uploadIdDocument'])->name('compte.profil.id-document');
             Route::put('/profil/residence', [ProfileController::class, 'updateResidence'])->name('compte.profil.residence');
+            Route::put('/profil/bio-medical', [ProfileController::class, 'updateMedicalBio'])->name('compte.profil.medical-bio');
             Route::put('/profil/question-secrete', [ProfileController::class, 'updateSecurityQuestion'])->name('compte.profil.security-question');
             Route::put('/profil/pin-medical', [ProfileController::class, 'updateMedicalPin'])->name('compte.profil.medical-pin');
             Route::post('/profil/pin-medical/verify', [ProfileController::class, 'verifyMedicalPin'])->name('compte.profil.verify-pin');

@@ -147,6 +147,40 @@ final class ProfileController
     }
 
     /**
+     * Save biological and medical information section.
+     */
+    public function updateMedicalBio(Request $request, AuditLogger $audit): JsonResponse
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'height_cm' => 'nullable|integer|min:30|max:260',
+            'weight_kg' => 'nullable|numeric|min:1|max:500',
+            'allergies' => 'nullable|string|max:2000',
+            'chronic_conditions' => 'nullable|string|max:2000',
+            'current_medications' => 'nullable|string|max:2000',
+            'surgical_history' => 'nullable|string|max:2000',
+            'family_history' => 'nullable|string|max:2000',
+            'disabilities' => 'nullable|string|max:2000',
+            'organ_donor' => 'nullable|boolean',
+            'smoking_status' => 'nullable|in:non_fumeur,occasionnel,regulier,ancien_fumeur',
+            'alcohol_consumption' => 'nullable|in:non,occasionnel,regulier',
+        ]);
+
+        $data['medical_bio_updated_at'] = now();
+
+        $user->update($data);
+        $this->checkProfileCompletion($user);
+
+        $audit->record(AuditLogger::ACTION_UPDATE, 'user', $user->uuid, [
+            'fields' => array_keys($data),
+            'section' => 'medical_bio',
+        ]);
+
+        return response()->json(['data' => ['message' => 'Informations medicales mises a jour.']]);
+    }
+
+    /**
      * Save residence section (country, city, address).
      */
     public function updateResidence(Request $request, AuditLogger $audit): JsonResponse

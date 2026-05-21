@@ -81,6 +81,10 @@ use Laravel\Sanctum\HasApiTokens;
     'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at',
     'nip', 'id_document_type', 'id_document_number', 'id_document_file_path',
     'date_of_birth', 'gender', 'blood_group',
+    'height_cm', 'weight_kg', 'allergies', 'chronic_conditions',
+    'current_medications', 'surgical_history', 'family_history',
+    'disabilities', 'organ_donor', 'smoking_status', 'alcohol_consumption',
+    'medical_bio_updated_at',
     'country_of_residence', 'city_of_residence', 'address_of_residence',
     'profile_photo_path', 'security_question', 'security_answer',
     'medical_pin', 'medical_pin_set_at', 'profile_completed_at',
@@ -171,9 +175,20 @@ class User extends Authenticatable
             $this->security_question !== null,
             $this->medical_pin !== null,
             $this->emergencyContacts()->exists(),
+            $this->hasMedicalBioInfo(),
         ];
 
         return (int) round(array_sum(array_map('intval', $checks)) / count($checks) * 100);
+    }
+
+    public function hasMedicalBioInfo(): bool
+    {
+        return $this->blood_group !== null
+            || $this->height_cm !== null
+            || $this->weight_kg !== null
+            || $this->allergies !== null
+            || $this->chronic_conditions !== null
+            || $this->current_medications !== null;
     }
 
     public function hasMedicalPin(): bool
@@ -193,7 +208,10 @@ class User extends Authenticatable
             'locked_until' => 'immutable_datetime',
             'medical_pin_set_at' => 'immutable_datetime',
             'profile_completed_at' => 'immutable_datetime',
+            'medical_bio_updated_at' => 'immutable_datetime',
             'date_of_birth' => 'date',
+            'weight_kg' => 'decimal:2',
+            'organ_donor' => 'boolean',
             'password' => 'hashed',
         ];
     }
