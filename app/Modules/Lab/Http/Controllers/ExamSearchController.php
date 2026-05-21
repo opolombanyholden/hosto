@@ -69,6 +69,9 @@ final class ExamSearchController
                         'phone' => $hosto->phone,
                         'types' => $hosto->structureTypes->pluck('name_fr')->toArray(),
                         'accepted_insurances' => $hosto->accepted_insurances ?? [],
+                        'is_partner' => (bool) $hosto->is_partner,
+                        'accepts_online_payment' => (bool) $hosto->accepts_online_payment,
+                        'accepts_on_site_payment' => (bool) $hosto->accepts_on_site_payment,
                     ],
                     'exams' => $exams->map(function ($s) {
                         /** @var Pivot $pivot */

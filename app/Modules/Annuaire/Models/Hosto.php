@@ -131,6 +131,8 @@ class Hosto extends Model
         'is_active',
         'is_verified',
         'accepted_insurances',
+        'accepts_online_payment',
+        'accepts_on_site_payment',
     ];
 
     public function getRouteKeyName(): string

@@ -67,6 +67,33 @@
     .popular-chip { padding:6px 14px; background:white; border:1px solid #E0E0E0; border-radius:100px; font-size:.78rem; color:#424242; cursor:pointer; font-family:Poppins,sans-serif; transition:all .2s; }
     .popular-chip:hover { background:#E3F2FD; border-color:#1565C0; color:#1565C0; }
 
+    /* Selected exam chips */
+    .selected-chips { display:flex; flex-wrap:wrap; gap:6px; align-items:center; flex:1; min-width:0; }
+    .sel-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; background:#E3F2FD; color:#1565C0; border-radius:100px; font-size:.78rem; font-weight:500; }
+    .sel-chip button { border:none; background:none; cursor:pointer; color:#1565C0; font-size:1rem; padding:0; line-height:1; }
+    .chip-input { border:none; outline:none; font-family:Poppins,sans-serif; font-size:.85rem; min-width:120px; flex:1; padding:6px 0; }
+
+    /* Order modal */
+    .order-modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:9999; align-items:center; justify-content:center; padding:20px; }
+    .order-modal-backdrop.open { display:flex; }
+    .order-modal { background:white; max-width:560px; width:100%; border-radius:16px; padding:24px; box-shadow:0 20px 60px rgba(0,0,0,.3); max-height:90vh; overflow:auto; }
+    .order-modal h3 { font-size:1.1rem; font-weight:700; color:#1B2A1B; margin-bottom:8px; }
+    .order-modal .item { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #EEE; font-size:.82rem; }
+    .order-modal label { display:block; font-size:.78rem; font-weight:600; color:#424242; margin-top:14px; margin-bottom:6px; }
+    .order-modal textarea, .order-modal select { width:100%; padding:10px; border:2px solid #EEE; border-radius:8px; font-family:Poppins,sans-serif; font-size:.85rem; outline:none; }
+    .order-modal textarea:focus, .order-modal select:focus { border-color:#1565C0; }
+    .order-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:18px; }
+    .order-btn { padding:10px 20px; border:none; border-radius:8px; font-family:Poppins,sans-serif; font-size:.85rem; font-weight:600; cursor:pointer; }
+    .order-btn-primary { background:#1565C0; color:white; }
+    .order-btn-secondary { background:#EEE; color:#424242; }
+    .order-msg { margin-top:10px; padding:10px; border-radius:8px; font-size:.82rem; display:none; }
+    .order-msg.ok { background:#E8F5E9; color:#2E7D32; display:block; }
+    .order-msg.err { background:#FFEBEE; color:#C62828; display:block; }
+
+    /* Order button on row */
+    .order-mini { padding:6px 12px; background:white; border:1px solid #1565C0; color:#1565C0; border-radius:8px; font-family:Poppins,sans-serif; font-size:.72rem; font-weight:600; cursor:pointer; margin-left:6px; }
+    .order-mini:hover { background:#1565C0; color:white; }
+
     @media(max-width:768px) {
         .search-bar { flex-direction:column; }
         .lab-header { flex-direction:column; }
@@ -86,9 +113,12 @@
 <div class="container">
     <div class="search-wrapper">
         <form class="search-bar" onsubmit="searchExam(event)">
-            <div class="search-field">
+            <div class="search-field" style="flex-wrap:wrap;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                <input type="text" id="examQ" placeholder="Nom de l'examen (bilan sanguin, echographie, IRM...)" autofocus>
+                <div class="selected-chips" id="chipsArea">
+                    <input type="text" id="examQ" class="chip-input" placeholder="Examen (bilan sanguin, IRM...) — entree pour ajouter" list="examList" autocomplete="off" autofocus>
+                    <datalist id="examList"></datalist>
+                </div>
             </div>
             <div class="search-field" id="cityFieldWrap">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -123,6 +153,27 @@
     </div>
     <button id="loadMoreBtn" class="load-more" style="display:none;" onclick="loadMore()">Voir plus de resultats</button>
 </div>
+
+{{-- Order modal --}}
+<div class="order-modal-backdrop" id="orderModal" onclick="if(event.target===this)closeOrder()">
+    <div class="order-modal">
+        <h3 id="orderLabName"></h3>
+        <div id="orderItems" style="margin-top:10px;"></div>
+        <div id="orderTotal" style="margin-top:10px;font-size:.95rem;font-weight:700;color:#1565C0;text-align:right;"></div>
+
+        <label for="orderNotes">Indications (optionnel)</label>
+        <textarea id="orderNotes" rows="2" maxlength="1000" placeholder="Symptomes, ordonnance, precisions..."></textarea>
+
+        <label for="orderPayment">Mode de paiement</label>
+        <select id="orderPayment"></select>
+
+        <div id="orderMsg" class="order-msg"></div>
+        <div class="order-actions">
+            <button type="button" class="order-btn order-btn-secondary" onclick="closeOrder()">Annuler</button>
+            <button type="button" class="order-btn order-btn-primary" onclick="submitOrder()">Confirmer la commande</button>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -131,10 +182,56 @@ let currentPage = 1;
 let lastPage = 1;
 let cityDebounce = null;
 let acActiveIdx = -1;
+const SELECTED_EXAMS = [];
+let CURRENT_LAB_FOR_ORDER = null;
+let CURRENT_ITEMS_FOR_ORDER = [];
+
+const POPULAR_TERMS = ['Bilan sanguin','Echographie','Radiographie','Depistage paludisme','Depistage VIH','Scanner','IRM','ECG','Mammographie','Analyse urine','Glycemie','NFS','VS','Beta HCG','TSH','Cholesterol','Transaminases','Creatinine','HBA1c','Coproculture'];
 
 function quickSearch(term) {
-    document.getElementById('examQ').value = term;
+    addExamChip(term);
     searchExam();
+}
+
+function addExamChip(term) {
+    const t = (term || '').trim();
+    if (!t) return;
+    if (SELECTED_EXAMS.some(x => x.toLowerCase() === t.toLowerCase())) return;
+    SELECTED_EXAMS.push(t);
+    renderChips();
+}
+
+function removeExamChip(term) {
+    const idx = SELECTED_EXAMS.findIndex(x => x.toLowerCase() === term.toLowerCase());
+    if (idx >= 0) { SELECTED_EXAMS.splice(idx, 1); renderChips(); searchExam(); }
+}
+
+function renderChips() {
+    const area = document.getElementById('chipsArea');
+    const input = document.getElementById('examQ');
+    // Remove existing chips (keep the input as last child)
+    Array.from(area.querySelectorAll('.sel-chip')).forEach(n => n.remove());
+    SELECTED_EXAMS.forEach(term => {
+        const chip = document.createElement('span');
+        chip.className = 'sel-chip';
+        chip.textContent = term;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('aria-label', 'Retirer ' + term);
+        btn.textContent = '×';
+        btn.addEventListener('click', () => removeExamChip(term));
+        chip.appendChild(btn);
+        area.insertBefore(chip, input);
+    });
+}
+
+function initExamDatalist() {
+    const dl = document.getElementById('examList');
+    POPULAR_TERMS.forEach(t => {
+        const o = document.createElement('option');
+        o.value = t;
+        dl.appendChild(o);
+    });
 }
 
 // ===== City autocomplete =====
@@ -209,12 +306,19 @@ async function loadMore() {
     await fetchResults(true);
 }
 
+function clearChildren(el) { while (el && el.firstChild) el.removeChild(el.firstChild); }
+
 async function fetchResults(append = false) {
-    const q = document.getElementById('examQ').value.trim();
+    const typed = document.getElementById('examQ').value.trim();
+    if (typed && !SELECTED_EXAMS.some(x => x.toLowerCase() === typed.toLowerCase())) {
+        addExamChip(typed);
+        document.getElementById('examQ').value = '';
+    }
     const city = document.getElementById('examCity').value.trim();
+    const q = SELECTED_EXAMS.join(' ');
 
     if (!q) {
-        document.getElementById('examResults').innerHTML = '';
+        clearChildren(document.getElementById('examResults'));
         document.getElementById('resultsInfo').style.display = 'none';
         document.getElementById('examEmpty').style.display = 'none';
         document.getElementById('loadMoreBtn').style.display = 'none';
@@ -229,7 +333,7 @@ async function fetchResults(append = false) {
 
     document.getElementById('examLoading').style.display = 'block';
     if (!append) {
-        document.getElementById('examResults').innerHTML = '';
+        clearChildren(document.getElementById('examResults'));
         document.getElementById('examEmpty').style.display = 'none';
     }
     document.getElementById('loadMoreBtn').style.display = 'none';
@@ -267,17 +371,22 @@ async function fetchResults(append = false) {
                     ? `<span class="price-range">${fmt(ex.tarif_min)} - ${fmt(ex.tarif_max)} <span class="price-currency">${ex.currency}</span></span>`
                     : `<span style="font-size:.78rem;color:#757575;">Prix non communique</span>`;
 
-                examsHtml += `<div class="exam-row">
+                examsHtml += `<div class="exam-row" data-exam-code="${esc(ex.code)}" data-exam-name="${esc(ex.name)}" data-tarif-min="${ex.tarif_min || ''}" data-tarif-max="${ex.tarif_max || ''}" data-currency="${esc(ex.currency || 'XAF')}">
                     <div>
                         <span class="exam-name">${esc(ex.name)}</span>
                         <span class="exam-code">${esc(ex.code)}</span>
                     </div>
-                    <div class="exam-right">${price}</div>
+                    <div class="exam-right">${price}<button type="button" class="order-mini js-order-btn">Commander</button></div>
                 </div>`;
             });
 
             const card = document.createElement('div');
             card.className = 'lab-group';
+            card.dataset.labUuid = lab.uuid || '';
+            card.dataset.labSlug = lab.slug || '';
+            card.dataset.labName = lab.name || '';
+            card.dataset.labPaymentOnline = lab.accepts_online_payment ? '1' : '0';
+            card.dataset.labPaymentOnSite = lab.accepts_on_site_payment ? '1' : '0';
             card.innerHTML = `
                 <div class="lab-header">
                     <div>
@@ -293,6 +402,9 @@ async function fetchResults(append = false) {
                 </div>
                 <div class="exam-rows">${examsHtml}</div>`;
             container.appendChild(card);
+            card.querySelectorAll('.js-order-btn').forEach(btn => {
+                btn.addEventListener('click', () => openOrderModalFromBtn(btn));
+            });
         });
 
         document.getElementById('loadMoreBtn').style.display = currentPage < lastPage ? 'block' : 'none';
@@ -306,8 +418,147 @@ function esc(str) { if (!str) return ''; const d = document.createElement('div')
 function escAttr(str) { return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initExamDatalist();
+    const examQ = document.getElementById('examQ');
+    examQ.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const v = examQ.value.trim();
+            if (v) { addExamChip(v); examQ.value = ''; searchExam(); }
+        } else if (e.key === 'Backspace' && !examQ.value && SELECTED_EXAMS.length) {
+            removeExamChip(SELECTED_EXAMS[SELECTED_EXAMS.length - 1]);
+        }
+    });
     const urlQ = new URLSearchParams(window.location.search).get('q');
-    if (urlQ) { document.getElementById('examQ').value = urlQ; searchExam(); }
+    if (urlQ) { addExamChip(urlQ); searchExam(); }
 });
+
+// ===== Order modal =====
+function openOrderModalFromBtn(btn) {
+    const row = btn.closest('.exam-row');
+    const group = btn.closest('.lab-group');
+    if (!row || !group) return;
+
+    CURRENT_LAB_FOR_ORDER = {
+        uuid: group.dataset.labUuid,
+        name: group.dataset.labName,
+        online: group.dataset.labPaymentOnline === '1',
+        on_site: group.dataset.labPaymentOnSite === '1',
+    };
+    CURRENT_ITEMS_FOR_ORDER = [{
+        code: row.dataset.examCode,
+        name: row.dataset.examName,
+        tarif_min: row.dataset.tarifMin ? parseInt(row.dataset.tarifMin, 10) : null,
+        tarif_max: row.dataset.tarifMax ? parseInt(row.dataset.tarifMax, 10) : null,
+        currency_code: row.dataset.currency || 'XAF',
+    }];
+
+    if (!CURRENT_LAB_FOR_ORDER.uuid) { alert('Identifiant laboratoire manquant.'); return; }
+
+    document.getElementById('orderLabName').textContent = 'Commande chez ' + CURRENT_LAB_FOR_ORDER.name;
+    const items = document.getElementById('orderItems');
+    clearChildren(items);
+    let totalMax = 0;
+    CURRENT_ITEMS_FOR_ORDER.forEach(it => {
+        const row = document.createElement('div');
+        row.className = 'item';
+        const left = document.createElement('span');
+        left.textContent = it.name;
+        const right = document.createElement('span');
+        if (it.tarif_min && it.tarif_max) {
+            right.textContent = it.tarif_min === it.tarif_max
+                ? `${it.tarif_min.toLocaleString('fr-FR')} ${it.currency_code}`
+                : `${it.tarif_min.toLocaleString('fr-FR')} - ${it.tarif_max.toLocaleString('fr-FR')} ${it.currency_code}`;
+            totalMax += it.tarif_max;
+        } else {
+            right.textContent = 'Prix sur place';
+        }
+        row.appendChild(left);
+        row.appendChild(right);
+        items.appendChild(row);
+    });
+    document.getElementById('orderTotal').textContent = totalMax > 0
+        ? `Estimation max : ${totalMax.toLocaleString('fr-FR')} ${CURRENT_ITEMS_FOR_ORDER[0].currency_code}`
+        : '';
+
+    // Payment options
+    const sel = document.getElementById('orderPayment');
+    clearChildren(sel);
+    if (CURRENT_LAB_FOR_ORDER.on_site) {
+        const o = document.createElement('option');
+        o.value = 'on_site'; o.textContent = 'A la caisse du laboratoire';
+        sel.appendChild(o);
+    }
+    if (CURRENT_LAB_FOR_ORDER.online) {
+        const o = document.createElement('option');
+        o.value = 'online'; o.textContent = 'En ligne (carte / mobile money)';
+        sel.appendChild(o);
+    }
+    if (!sel.children.length) {
+        const o = document.createElement('option');
+        o.value = ''; o.textContent = 'Aucun mode de paiement configure';
+        sel.appendChild(o);
+        sel.disabled = true;
+    } else { sel.disabled = false; }
+
+    document.getElementById('orderNotes').value = '';
+    const msg = document.getElementById('orderMsg');
+    msg.className = 'order-msg';
+    msg.textContent = '';
+    document.getElementById('orderModal').classList.add('open');
+}
+
+function closeOrder() {
+    document.getElementById('orderModal').classList.remove('open');
+}
+
+async function submitOrder() {
+    if (!CURRENT_LAB_FOR_ORDER || !CURRENT_LAB_FOR_ORDER.uuid) return;
+    const msg = document.getElementById('orderMsg');
+    msg.className = 'order-msg';
+    msg.textContent = '';
+
+    const body = {
+        hosto_uuid: CURRENT_LAB_FOR_ORDER.uuid,
+        exam_items: CURRENT_ITEMS_FOR_ORDER,
+        notes: document.getElementById('orderNotes').value.trim() || null,
+        payment_method: document.getElementById('orderPayment').value || null,
+    };
+
+    try {
+        const res = await fetch('/web/public/exam-orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (res.status === 401) {
+            msg.className = 'order-msg err';
+            msg.textContent = (data.error?.message || 'Connexion requise.') + ' Redirection...';
+            const loginUrl = data.error?.login_url || '/compte/connexion';
+            setTimeout(() => { window.location.href = loginUrl + '?next=' + encodeURIComponent(window.location.pathname + window.location.search); }, 1200);
+            return;
+        }
+        if (!res.ok) {
+            msg.className = 'order-msg err';
+            msg.textContent = data.error?.message || 'Erreur lors de la commande.';
+            return;
+        }
+        msg.className = 'order-msg ok';
+        msg.textContent = `Commande creee (reference ${data.data.reference}). Redirection...`;
+        setTimeout(() => { window.location.href = data.data.next_url; }, 1000);
+    } catch (e) {
+        msg.className = 'order-msg err';
+        msg.textContent = 'Erreur de connexion.';
+    }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOrder(); });
 </script>
 @endsection

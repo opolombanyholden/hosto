@@ -324,7 +324,14 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/web/publication/{uuid}/comment', [PublicationInteractionController::class, 'addComment'])->name('web.pub.comment');
     Route::post('/web/recommend/{uuid}', [BookingWebController::class, 'recommend'])->name('web.recommend');
     Route::post('/web/evaluate/{uuid}', [ClaimsWebController::class, 'submitEvaluation'])->name('web.evaluate');
+
+    // Exam orders (lab module)
+    Route::post('/web/exam-orders', [\App\Modules\Lab\Http\Controllers\ExamOrdersController::class, 'store'])->name('web.exam-order.store');
+    Route::get('/web/exam-orders/{uuid}', [\App\Modules\Lab\Http\Controllers\ExamOrdersController::class, 'show'])->name('web.exam-order.show');
 });
+
+// Exam orders : the POST endpoint also accepts guests (returns 401 with login_url for the JS to redirect)
+Route::post('/web/public/exam-orders', [\App\Modules\Lab\Http\Controllers\ExamOrdersController::class, 'store'])->name('web.exam-order.store-public');
 
 // ---------------------------------------------------------------
 // Verification (email + phone)
