@@ -14,13 +14,20 @@ final class EVaxServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
-        $routesFile = __DIR__.'/../Routes/api.php';
-        if (file_exists($routesFile)) {
+        $apiRoutes = __DIR__.'/../Routes/api.php';
+        if (file_exists($apiRoutes)) {
             Route::middleware('api')
                 ->prefix('api/'.config('hosto.api.current_version').'/evax')
                 ->name('evax.api.')
-                ->group($routesFile);
+                ->group($apiRoutes);
         }
+
+        $webRoutes = __DIR__.'/../Routes/web.php';
+        if (file_exists($webRoutes)) {
+            Route::middleware('web')->group($webRoutes);
+        }
+
+        $this->loadViewsFrom(__DIR__.'/../../../../resources/views/evax', 'evax');
 
         if ($this->app->runningInConsole()) {
             $this->commands([GenerateCarnetKeypair::class]);
