@@ -3,6 +3,7 @@
 @section('title', 'Mes dépendants')
 @section('page-title', 'Mes dépendants')
 @section('user-role', 'Patient')
+@section('sidebar-nav') @include('compte.partials.sidebar', ['active' => 'carnet-vaccination']) @endsection
 
 @section('content')
 <div style="max-width:760px;">

@@ -3,6 +3,7 @@
 @section('title', 'Mon carnet de vaccination')
 @section('page-title', 'Carnet de vaccination')
 @section('user-role', 'Patient')
+@section('sidebar-nav') @include('compte.partials.sidebar', ['active' => 'carnet-vaccination']) @endsection
 
 @section('content')
 <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start;">
