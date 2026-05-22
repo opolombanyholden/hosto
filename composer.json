@@ -8,6 +8,8 @@
     "require": {
         "php": "^8.3",
         "bacon/bacon-qr-code": "^3.1",
+        "dompdf/dompdf": "^3.0",
+        "firebase/php-jwt": "^6.10",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.26",
@@ -84,6 +86,11 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": {
+                "PKSA-y2cr-5h3j-g3ys": "firebase/php-jwt advisory; package already used transitively by laravel/socialite, no fixed version available, our use case (carnet vaccination signing with our own keys) is unaffected"
+            }
         }
     },
     "minimum-stability": "stable",
