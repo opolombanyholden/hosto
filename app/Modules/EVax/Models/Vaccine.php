@@ -46,6 +46,9 @@ class Vaccine extends Model
             'diseases' => 'array',
             'is_standardized' => 'boolean',
             'is_active' => 'boolean',
+            'doses_total' => 'integer',
+            'display_order' => 'integer',
+            'schedule_age_days' => 'integer',
         ];
     }
 }

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('display_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestampTz('created_at')->useCurrent();
-            $table->timestampTz('updated_at')->useCurrent();
+            $table->timestampTz('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->index(['is_active', 'display_order']);
         });
     }
