@@ -70,6 +70,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $medical_pin
  * @property CarbonImmutable|null $medical_pin_set_at
  * @property CarbonImmutable|null $profile_completed_at
+ * @property string|null $carnet_qr_secret
  * @property string|null $created_by
  * @property string|null $updated_by
  * @property-read Collection<int, Role> $roles
@@ -88,9 +89,10 @@ use Laravel\Sanctum\HasApiTokens;
     'country_of_residence', 'city_of_residence', 'address_of_residence',
     'profile_photo_path', 'security_question', 'security_answer',
     'medical_pin', 'medical_pin_set_at', 'profile_completed_at',
+    'carnet_qr_secret',
     'oauth_provider', 'oauth_provider_id', 'avatar_url',
 ])]
-#[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes', 'security_answer', 'medical_pin'])]
+#[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes', 'security_answer', 'medical_pin', 'carnet_qr_secret'])]
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -101,6 +103,15 @@ class User extends Authenticatable
     use HasUuid;
     use Notifiable;
     use SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $u): void {
+            if (empty($u->carnet_qr_secret)) {
+                $u->carnet_qr_secret = \Illuminate\Support\Str::random(32);
+            }
+        });
+    }
 
     public function getRouteKeyName(): string
     {
