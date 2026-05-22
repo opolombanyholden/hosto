@@ -125,4 +125,18 @@ return [
         'supported_versions' => ['v1'],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Carnet de vaccination (EVax)
+    |--------------------------------------------------------------------------
+    */
+    'carnet' => [
+        'kid' => env('CARNET_KEY_ID', 'hosto-dev-2026'),
+        'private_key_path' => env('CARNET_PRIVATE_KEY_PATH', storage_path('keys/carnet-private.pem')),
+        'public_keys' => array_filter([
+            env('CARNET_KEY_ID', 'hosto-dev-2026') => env('CARNET_PUBLIC_KEY_CURRENT'),
+        ]),
+        'verify_base_url' => env('CARNET_VERIFY_BASE_URL', env('APP_URL', 'http://localhost').'/c/v'),
+    ],
+
 ];

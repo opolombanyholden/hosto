@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\EVax\Providers;
 
+use App\Modules\EVax\Console\Commands\GenerateCarnetKeypair;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +20,10 @@ final class EVaxServiceProvider extends ServiceProvider
                 ->prefix('api/'.config('hosto.api.current_version').'/evax')
                 ->name('evax.api.')
                 ->group($routesFile);
+        }
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([GenerateCarnetKeypair::class]);
         }
     }
 }
