@@ -8,9 +8,11 @@ use App\Modules\Core\Services\AuditLogger;
 use App\Modules\EVax\Models\Dependent;
 use App\Modules\EVax\Models\Vaccine;
 use App\Modules\EVax\Models\VaccinationRecord;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Modules\EVax\Services\VaccinationCatalogService;
 
 final class EVaxProController
 {
@@ -134,10 +136,24 @@ final class EVaxProController
         ], 201);
     }
 
-    public function showAddForm(Request $request): mixed
+    public function showAddForm(Request $request, VaccinationCatalogService $catalog): View
     {
-        // Implemented in T10.t14 when the view exists.
-        abort(501, 'Not implemented yet (T10.t14)');
+        $this->ensureVerifiedPro($request);
+        $target = (string) $request->query('target', '');
+
+        $patient = null;
+        $dependent = null;
+        if (str_starts_with($target, 'user-')) {
+            $patient = User::where('uuid', substr($target, 5))->firstOrFail();
+        } elseif (str_starts_with($target, 'dep-')) {
+            $dependent = Dependent::where('uuid', substr($target, 4))->firstOrFail();
+        }
+
+        return view('evax::pro.vaccination-form', [
+            'patient' => $patient,
+            'dependent' => $dependent,
+            'vaccines' => $catalog->all(),
+        ]);
     }
 
     /** @return array<string, mixed> */

@@ -25,6 +25,7 @@ Route::middleware('auth')->prefix('compte/carnet-vaccination')->name('evax.patie
 
 // Pro (auth required, controller enforces verified pro)
 Route::middleware('auth')->prefix('pro/evax')->name('evax.pro.')->group(function (): void {
+    Route::get('/', fn () => view('evax::pro.search'))->name('home');
     Route::get('/search', [EVaxProController::class, 'searchPatient'])->name('search');
     Route::post('/resolve-qr', [EVaxProController::class, 'resolvePatientFromQr'])->name('resolve-qr');
     Route::get('/vaccinations/new', [EVaxProController::class, 'showAddForm'])->name('vaccinations.new');
