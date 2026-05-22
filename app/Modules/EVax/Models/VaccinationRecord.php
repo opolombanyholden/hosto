@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Models;
@@ -15,22 +14,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * @property int $id
  * @property string $uuid
- * @property int $patient_id
+ * @property int|null $patient_id
+ * @property int|null $dependent_id
  * @property string $vaccine_name
  * @property string|null $vaccine_code
+ * @property int|null $vaccine_id
+ * @property bool $is_standardized
  * @property int $dose_number
- * @property string $administered_at
+ * @property CarbonImmutable $administered_at
  * @property int|null $administered_by_id
  * @property int|null $hosto_id
+ * @property CarbonImmutable|null $signed_at
+ * @property string|null $signed_by_signature
+ * @property int $carnet_revision
  * @property string|null $batch_number
- * @property string|null $next_dose_date
+ * @property CarbonImmutable|null $next_dose_date
  * @property string|null $notes
- * @property CarbonImmutable $created_at
- * @property CarbonImmutable $updated_at
- * @property CarbonImmutable|null $deleted_at
- * @property-read User $patient
- * @property-read User|null $administeredBy
- * @property-read Hosto|null $hosto
  */
 class VaccinationRecord extends Model
 {
@@ -38,8 +37,10 @@ class VaccinationRecord extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'patient_id', 'vaccine_name', 'vaccine_code', 'dose_number',
+        'patient_id', 'dependent_id', 'vaccine_name', 'vaccine_code',
+        'vaccine_id', 'is_standardized', 'dose_number',
         'administered_at', 'administered_by_id', 'hosto_id',
+        'signed_at', 'signed_by_signature', 'carnet_revision',
         'batch_number', 'next_dose_date', 'notes',
     ];
 
@@ -47,6 +48,12 @@ class VaccinationRecord extends Model
     public function patient(): BelongsTo
     {
         return $this->belongsTo(User::class, 'patient_id');
+    }
+
+    /** @return BelongsTo<Dependent, $this> */
+    public function dependent(): BelongsTo
+    {
+        return $this->belongsTo(Dependent::class, 'dependent_id');
     }
 
     /** @return BelongsTo<User, $this> */
@@ -61,12 +68,22 @@ class VaccinationRecord extends Model
         return $this->belongsTo(Hosto::class);
     }
 
+    /** @return BelongsTo<Vaccine, $this> */
+    public function vaccine(): BelongsTo
+    {
+        return $this->belongsTo(Vaccine::class);
+    }
+
     /** @return array<string, string> */
     protected function casts(): array
     {
         return [
-            'administered_at' => 'date',
-            'next_dose_date' => 'date',
+            'administered_at' => 'immutable_date',
+            'next_dose_date' => 'immutable_date',
+            'signed_at' => 'immutable_datetime',
+            'is_standardized' => 'boolean',
+            'dose_number' => 'integer',
+            'carnet_revision' => 'integer',
         ];
     }
 }
