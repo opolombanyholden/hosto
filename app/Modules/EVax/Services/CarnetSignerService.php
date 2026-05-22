@@ -10,17 +10,12 @@ use Throwable;
 /**
  * Signs and verifies EVax carnet tokens using ES256 (EC P-256).
  *
- * To keep QR-code tokens scanner-friendly (< 2500 bytes even for 50+ vaccinations),
- * the full payload is gzip-compressed and stored in a single JWT claim (`d`).
- * verify() transparently decompresses and returns the original payload array.
+ * Emits standard JWT/JWS tokens — readable by any JWT-aware tool (jwt.io,
+ * OpenID-Connect libraries, etc.). The payload size is bounded by
+ * CarnetQrService which truncates the `vacc` array to 15 entries.
  */
 final class CarnetSignerService
 {
-    /**
-     * Sign an arbitrary payload array.
-     * The payload is gzip-compressed before being placed in the JWT so that
-     * large vaccination lists stay well under the 2500-byte scanner limit.
-     */
     public function sign(array $payload): string
     {
         $kid = config('hosto.carnet.kid');
@@ -31,15 +26,11 @@ final class CarnetSignerService
         }
         $privateKey = file_get_contents($privateKeyPath);
 
-        $compressed = base64_encode(gzcompress(json_encode($payload), 9));
-
-        return JWT::encode(['d' => $compressed], $privateKey, 'ES256', $kid);
+        return JWT::encode($payload, $privateKey, 'ES256', $kid);
     }
 
     /**
-     * Verify a signed carnet JWS token.
-     *
-     * @return array<string, mixed>|null  The original payload, or null on any failure.
+     * @return array<string, mixed>|null  The verified payload, or null on any failure.
      */
     public function verify(string $jws): ?array
     {
@@ -55,24 +46,7 @@ final class CarnetSignerService
             if (empty($keys)) {
                 return null;
             }
-
-            $decoded = (array) JWT::decode($jws, $keys);
-
-            if (! isset($decoded['d'])) {
-                return null;
-            }
-
-            $json = gzuncompress(base64_decode($decoded['d']));
-            if ($json === false) {
-                return null;
-            }
-
-            $payload = json_decode($json, true);
-            if (! is_array($payload)) {
-                return null;
-            }
-
-            return $payload;
+            return (array) JWT::decode($jws, $keys);
         } catch (Throwable $e) {
             return null;
         }

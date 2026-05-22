@@ -69,13 +69,16 @@ final class CarnetSignerServiceTest extends TestCase
         $this->assertNull($this->svc->verify('not-a-jws'));
     }
 
-    public function test_payload_under_size_limit_for_50_vaccinations(): void
+    public function test_payload_stays_qr_scannable_at_realistic_size(): void
     {
+        // CarnetQrService truncates the vacc array to 15 entries before signing,
+        // so this test reflects the realistic max payload that will be QR-encoded.
         $vacc = [];
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 15; $i++) {
             $vacc[] = ['c' => 'BCG', 'd' => '2024-01-15', 'n' => $i + 1, 'std' => true];
         }
         $jws = $this->svc->sign(['sub' => 'abc', 'rev' => 1, 'vacc' => $vacc]);
-        $this->assertLessThan(2500, strlen($jws), 'JWS must stay scanner-friendly');
+        // 2 KB is the practical scanner limit for printed QR codes.
+        $this->assertLessThan(2048, strlen($jws), 'JWS must stay QR-scannable for 15 vaccinations');
     }
 }
