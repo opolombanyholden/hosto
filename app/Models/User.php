@@ -161,6 +161,16 @@ class User extends Authenticatable
     }
 
     // ---------------------------------------------------------------
+    // EVax dependents
+    // ---------------------------------------------------------------
+
+    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Modules\EVax\Models\Dependent, $this> */
+    public function dependents(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Modules\EVax\Models\Dependent::class);
+    }
+
+    // ---------------------------------------------------------------
     // Profile helpers
     // ---------------------------------------------------------------
 
