@@ -5,12 +5,14 @@ namespace App\Modules\EVax\Http\Controllers;
 
 use App\Modules\EVax\Models\Dependent;
 use App\Modules\EVax\Models\VaccinationRecord;
+use App\Modules\EVax\Services\CarnetPdfService;
 use App\Modules\EVax\Services\CarnetQrService;
 use App\Modules\EVax\Services\VaccinationCatalogService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 final class EVaxPatientController
 {
@@ -105,9 +107,26 @@ final class EVaxPatientController
         ]);
     }
 
-    public function downloadPdf(Request $request, string $target): Response
+    public function downloadPdf(Request $request, string $target, CarnetPdfService $pdf): Response
     {
-        // Implemented in T10.t18 (CarnetPdfService).
-        abort(501, 'Not implemented yet (T10.t18)');
+        $user = $request->user();
+        if ($target === 'me') {
+            $carnet = $user;
+            $name = 'carnet-'.($user->name ?: 'patient');
+        } elseif (str_starts_with($target, 'dep-')) {
+            $dep = Dependent::where('uuid', substr($target, 4))->firstOrFail();
+            abort_unless($dep->user_id === $user->id, 403);
+            $carnet = $dep;
+            $name = 'carnet-'.$dep->first_name.'-'.$dep->last_name;
+        } else {
+            abort(404);
+        }
+
+        $bytes = $pdf->render($carnet);
+        $filename = Str::slug($name).'.pdf';
+        return response($bytes, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
     }
 }
