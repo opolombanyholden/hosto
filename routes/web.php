@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AdminReferenceController;
+use App\Modules\Annuaire\Http\Controllers\Admin\AdminPractitionerCategoriesController;
 use App\Http\Controllers\AdminWebController;
 use App\Http\Controllers\AnnuaireWebController;
 use App\Http\Controllers\BookingWebController;
@@ -327,6 +328,17 @@ Route::prefix('admin')->group(function (): void {
             Route::delete('/{slug}', [AdminRolesController::class, 'destroy'])->middleware('perm:roles.delete')->name('destroy');
         });
         Route::get('/permissions', [AdminPermissionsController::class, 'index'])->middleware('perm:permissions.view')->name('admin.permissions.index');
+
+        // CRUD: Practitioner Categories
+        Route::prefix('practitioner-categories')->name('admin.pro-cats.')->group(function (): void {
+            Route::get('/', [AdminPractitionerCategoriesController::class, 'index'])->middleware('perm:pro_categories.view')->name('index');
+            Route::get('/create', [AdminPractitionerCategoriesController::class, 'create'])->middleware('perm:pro_categories.manage')->name('create');
+            Route::post('/', [AdminPractitionerCategoriesController::class, 'store'])->middleware('perm:pro_categories.manage')->name('store');
+            Route::post('/reorder', [AdminPractitionerCategoriesController::class, 'reorder'])->middleware('perm:pro_categories.manage')->name('reorder');
+            Route::get('/{uuid}/edit', [AdminPractitionerCategoriesController::class, 'edit'])->middleware('perm:pro_categories.manage')->name('edit');
+            Route::put('/{uuid}', [AdminPractitionerCategoriesController::class, 'update'])->middleware('perm:pro_categories.manage')->name('update');
+            Route::delete('/{uuid}', [AdminPractitionerCategoriesController::class, 'destroy'])->middleware('perm:pro_categories.manage')->name('destroy');
+        });
     });
 });
 
