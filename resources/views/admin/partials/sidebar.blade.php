@@ -15,6 +15,16 @@
     <span>Demandes</span>
 </a>
 
+<div class="sidebar-section">Accès &amp; sécurité</div>
+<a href="/admin/roles" class="{{ request()->is('admin/roles*') ? 'active' : '' }}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span>Rôles &amp; permissions</span>
+</a>
+<a href="/admin/permissions" class="{{ request()->is('admin/permissions*') ? 'active' : '' }}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    <span>Catalogue permissions</span>
+</a>
+
 <div class="sidebar-section">Referentiel</div>
 <a href="/admin/structure-types" class="{{ request()->is('admin/structure-types') ? 'active' : '' }}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>

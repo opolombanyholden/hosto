@@ -13,6 +13,8 @@ use App\Http\Controllers\PublicationInteractionController;
 use App\Http\Controllers\TeleconWebController;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Annuaire\Models\Practitioner;
+use App\Modules\Core\Http\Controllers\Admin\AdminPermissionsController;
+use App\Modules\Core\Http\Controllers\Admin\AdminRolesController;
 use App\Modules\Core\Http\Controllers\Admin\AdminUsersController;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\PasswordResetController;
@@ -314,6 +316,15 @@ Route::prefix('admin')->group(function (): void {
         Route::post('/references/{category}', [AdminReferenceController::class, 'storeReferenceData']);
         Route::put('/references/item/{id}', [AdminReferenceController::class, 'updateReferenceData']);
         Route::delete('/references/item/{id}', [AdminReferenceController::class, 'deleteReferenceData']);
+
+        // Roles & Permissions
+        Route::prefix('roles')->name('admin.roles.')->group(function (): void {
+            Route::get('/', [AdminRolesController::class, 'index'])->middleware('perm:roles.view')->name('index');
+            Route::get('/{slug}/permissions', [AdminRolesController::class, 'showPermissions'])->middleware('perm:permissions.assign')->name('permissions');
+            Route::put('/{slug}/permissions', [AdminRolesController::class, 'updatePermissions'])->middleware('perm:permissions.assign')->name('permissions.update');
+            Route::delete('/{slug}', [AdminRolesController::class, 'destroy'])->middleware('perm:roles.delete')->name('destroy');
+        });
+        Route::get('/permissions', [AdminPermissionsController::class, 'index'])->middleware('perm:permissions.view')->name('admin.permissions.index');
     });
 });
 
