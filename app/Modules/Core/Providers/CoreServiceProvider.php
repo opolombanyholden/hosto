@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Core\Providers;
 
 use App\Modules\Core\Services\AuditLogger;
+use App\Modules\Core\Services\PermissionResolver;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,6 +28,7 @@ final class CoreServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(AuditLogger::class);
+        $this->app->singleton(PermissionResolver::class);
     }
 
     public function boot(): void
@@ -33,6 +36,16 @@ final class CoreServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
 
         $this->registerRoutes();
+
+        Gate::before(function ($user, $ability, $arguments = []) {
+            if (! $user) {
+                return null;
+            }
+            $resolver = app(PermissionResolver::class);
+            $scope = $arguments[0] ?? null;
+
+            return $resolver->userCan($user, $ability, $scope) ? true : null;
+        });
     }
 
     private function registerRoutes(): void
