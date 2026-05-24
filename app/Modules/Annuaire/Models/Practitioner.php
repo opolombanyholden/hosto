@@ -76,6 +76,7 @@ class Practitioner extends Model
         'accepts_new_patients', 'does_teleconsultation', 'does_home_care',
         'is_active', 'is_verified',
         'visibility_settings', 'offered_services', 'cover_image_url',
+        'practitioner_category_id',
     ];
 
     public function getRouteKeyName(): string
@@ -94,6 +95,12 @@ class Practitioner extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** @return \Illuminate\Database\Eloquent\Relations\BelongsTo<PractitionerCategory, $this> */
+    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(PractitionerCategory::class, 'practitioner_category_id');
     }
 
     /**

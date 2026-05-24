@@ -77,7 +77,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Collection<int, EmergencyContact> $emergencyContacts
  */
 #[Fillable([
-    'name', 'email', 'phone', 'password',
+    'name', 'email', 'phone', 'password', 'must_change_password',
     'email_verified_at', 'phone_verified_at',
     'two_factor_secret', 'two_factor_recovery_codes', 'two_factor_confirmed_at',
     'nip', 'id_document_type', 'id_document_number', 'id_document_file_path',
