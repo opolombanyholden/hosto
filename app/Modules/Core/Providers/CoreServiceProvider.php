@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Core\Providers;
 
+use App\Modules\Core\Http\Middleware\EnsurePermission;
 use App\Modules\Core\Services\AuditLogger;
 use App\Modules\Core\Services\PermissionResolver;
 use Illuminate\Support\Facades\Gate;
@@ -46,6 +47,8 @@ final class CoreServiceProvider extends ServiceProvider
 
             return $resolver->userCan($user, $ability, $scope) ? true : null;
         });
+
+        $this->app['router']->aliasMiddleware('perm', EnsurePermission::class);
     }
 
     private function registerRoutes(): void
