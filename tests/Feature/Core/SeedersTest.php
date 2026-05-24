@@ -16,11 +16,12 @@ final class SeedersTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_permissions_seeder_creates_41_permissions(): void
+    public function test_permissions_seeder_creates_42_permissions(): void
     {
         $this->seed(PermissionsSeeder::class);
-        $this->assertSame(41, Permission::count());
+        $this->assertSame(42, Permission::count());
         $this->assertNotNull(Permission::where('slug', 'users.create')->first());
+        $this->assertNotNull(Permission::where('slug', 'self.medical_record')->first());
         $this->assertNotNull(Permission::where('slug', 'self.carnet_vaccination')->first());
     }
 

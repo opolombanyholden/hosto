@@ -53,7 +53,7 @@ class RolePermissionsSeeder extends Seeder
                 'consultations.view', 'self.profile',
             ],
             'patient' => [
-                'self.profile', 'self.carnet_vaccination',
+                'self.profile', 'self.medical_record', 'self.carnet_vaccination',
                 'appointments.book.self',
             ],
         ];

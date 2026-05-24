@@ -50,8 +50,9 @@ class PermissionsSeeder extends Seeder
             ['slug' => 'exports.structures',    'scope' => 'exports',       'name_fr' => 'Exporter les structures'],
             ['slug' => 'exports.financial',     'scope' => 'exports',       'name_fr' => 'Exporter les données financières'],
             ['slug' => 'exports.stats',         'scope' => 'exports',       'name_fr' => 'Exporter les rapports stats'],
-            ['slug' => 'self.profile',          'scope' => 'self',          'name_fr' => 'Gérer son propre profil (tous comptes)'],
-            ['slug' => 'self.carnet_vaccination','scope' => 'self',         'name_fr' => 'Voir/imprimer son carnet de vaccination'],
+            ['slug' => 'self.profile',           'scope' => 'self', 'name_fr' => 'Gérer son propre profil (tous comptes)'],
+            ['slug' => 'self.medical_record',    'scope' => 'self', 'name_fr' => 'Accéder à son dossier médical (patient)'],
+            ['slug' => 'self.carnet_vaccination','scope' => 'self', 'name_fr' => 'Voir/imprimer son carnet de vaccination'],
         ];
 
         foreach ($perms as $i => $p) {
