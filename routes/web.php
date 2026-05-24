@@ -16,6 +16,7 @@ use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Http\Controllers\Admin\AdminPermissionsController;
 use App\Modules\Core\Http\Controllers\Admin\AdminRolesController;
 use App\Modules\Core\Http\Controllers\Admin\AdminUsersController;
+use App\Modules\Core\Http\Controllers\Admin\ImpersonationController;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\PasswordResetController;
 use App\Modules\Core\Http\Controllers\ProfileController;
@@ -283,6 +284,7 @@ Route::prefix('admin')->group(function (): void {
             Route::put('/{uuid}/roles', [AdminUsersController::class, 'updateRoles'])->middleware('perm:roles.assign')->name('roles.update');
             Route::get('/{uuid}/sessions', [AdminUsersController::class, 'sessions'])->middleware('perm:users.sessions')->name('sessions');
             Route::delete('/{uuid}/sessions/{tokenId}', [AdminUsersController::class, 'revokeSession'])->middleware('perm:users.sessions')->name('sessions.revoke');
+            Route::post('/{uuid}/impersonate', [AdminUsersController::class, 'impersonate'])->middleware('perm:users.impersonate')->name('impersonate');
         });
         Route::get('/structures', [AdminWebController::class, 'structures'])->name('admin.structures');
         Route::get('/demandes', [AdminWebController::class, 'claims'])->name('admin.claims');
@@ -327,6 +329,13 @@ Route::prefix('admin')->group(function (): void {
         Route::get('/permissions', [AdminPermissionsController::class, 'index'])->middleware('perm:permissions.view')->name('admin.permissions.index');
     });
 });
+
+// ---------------------------------------------------------------
+// Impersonation stop (outside admin group — reachable as impersonated user)
+// ---------------------------------------------------------------
+
+Route::get('/stop-impersonate', [ImpersonationController::class, 'stop'])
+    ->middleware('auth')->name('impersonate.stop');
 
 // ---------------------------------------------------------------
 // Logout (shared)

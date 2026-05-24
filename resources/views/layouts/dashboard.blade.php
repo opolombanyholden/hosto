@@ -117,6 +117,7 @@
     </script>
 </head>
 <body>
+    @include('layouts.partials.impersonation-banner')
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <button class="sidebar-toggle" onclick="toggleSidebar()" title="Menu">

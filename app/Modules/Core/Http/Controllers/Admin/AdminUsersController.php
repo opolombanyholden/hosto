@@ -6,6 +6,7 @@ namespace App\Modules\Core\Http\Controllers\Admin;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Core\Models\Role;
+use App\Modules\Core\Services\ImpersonationService;
 use App\Modules\Core\Services\RoleAssignmentService;
 use App\Modules\Core\Services\UserAdminService;
 use App\Modules\Core\Services\UserExportService;
@@ -148,6 +149,29 @@ final class AdminUsersController
         $user = User::where('uuid', $uuid)->firstOrFail();
         $plain = $svc->resetPassword($user);
         return back()->with('success', 'Mot de passe réinitialisé')->with('temp_password', $plain);
+    }
+
+    public function impersonate(Request $request, string $uuid, ImpersonationService $svc): RedirectResponse
+    {
+        $target = User::where('uuid', $uuid)->firstOrFail();
+        $data = $request->validate(['reason' => 'required|string|max:500']);
+
+        try {
+            $session = $svc->start($request->user(), $target, $data['reason'], $request);
+        } catch (\DomainException $e) {
+            if (str_contains($e->getMessage(), 'super_admin')) {
+                abort(403, $e->getMessage());
+            }
+            abort(422, $e->getMessage());
+        }
+
+        session([
+            'impersonator_id'          => $request->user()->id,
+            'impersonation_session_id' => $session->uuid,
+        ]);
+        \Illuminate\Support\Facades\Auth::loginUsingId($target->id);
+
+        return redirect('/compte');
     }
 
     public function validatePro(Request $request, string $uuid, UserAdminService $svc): RedirectResponse
