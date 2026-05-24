@@ -13,6 +13,7 @@ use App\Http\Controllers\PublicationInteractionController;
 use App\Http\Controllers\TeleconWebController;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Annuaire\Models\Practitioner;
+use App\Modules\Core\Http\Controllers\Admin\AdminUsersController;
 use App\Modules\Core\Http\Controllers\AuthController;
 use App\Modules\Core\Http\Controllers\PasswordResetController;
 use App\Modules\Core\Http\Controllers\ProfileController;
@@ -262,7 +263,25 @@ Route::prefix('admin')->group(function (): void {
         Route::get('/', function () {
             return view('admin.dashboard');
         })->name('admin.dashboard');
-        Route::get('/utilisateurs', [AdminWebController::class, 'users'])->name('admin.users');
+        Route::prefix('utilisateurs')->name('admin.users.')->group(function (): void {
+            Route::get('/', [AdminUsersController::class, 'index'])->middleware('perm:users.view')->name('index');
+            Route::get('/export.csv', [AdminUsersController::class, 'export'])->middleware('perm:exports.users')->name('export');
+            Route::get('/create', [AdminUsersController::class, 'create'])->middleware('perm:users.create')->name('create');
+            Route::post('/', [AdminUsersController::class, 'store'])->middleware('perm:users.create')->name('store');
+            Route::post('/bulk', [AdminUsersController::class, 'bulk'])->middleware('perm:users.bulk')->name('bulk');
+            Route::get('/{uuid}', [AdminUsersController::class, 'show'])->middleware('perm:users.view')->name('show');
+            Route::get('/{uuid}/edit', [AdminUsersController::class, 'edit'])->middleware('perm:users.edit')->name('edit');
+            Route::put('/{uuid}', [AdminUsersController::class, 'update'])->middleware('perm:users.edit')->name('update');
+            Route::delete('/{uuid}', [AdminUsersController::class, 'destroy'])->middleware('perm:users.delete')->name('destroy');
+            Route::post('/{uuid}/restore', [AdminUsersController::class, 'restoreUser'])->middleware('perm:users.delete')->name('restore');
+            Route::post('/{uuid}/suspend', [AdminUsersController::class, 'suspend'])->middleware('perm:users.suspend')->name('suspend');
+            Route::post('/{uuid}/reactivate', [AdminUsersController::class, 'reactivate'])->middleware('perm:users.suspend')->name('reactivate');
+            Route::post('/{uuid}/reset-password', [AdminUsersController::class, 'resetPassword'])->middleware('perm:users.reset_password')->name('reset_password');
+            Route::post('/{uuid}/validate-pro', [AdminUsersController::class, 'validatePro'])->middleware('perm:users.validate_pro')->name('validate_pro');
+            Route::put('/{uuid}/roles', [AdminUsersController::class, 'updateRoles'])->middleware('perm:roles.assign')->name('roles.update');
+            Route::get('/{uuid}/sessions', [AdminUsersController::class, 'sessions'])->middleware('perm:users.sessions')->name('sessions');
+            Route::delete('/{uuid}/sessions/{tokenId}', [AdminUsersController::class, 'revokeSession'])->middleware('perm:users.sessions')->name('sessions.revoke');
+        });
         Route::get('/structures', [AdminWebController::class, 'structures'])->name('admin.structures');
         Route::get('/demandes', [AdminWebController::class, 'claims'])->name('admin.claims');
         Route::post('/demandes/{uuid}/review', [AdminWebController::class, 'reviewClaim'])->name('admin.claims.review');
