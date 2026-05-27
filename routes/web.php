@@ -20,6 +20,7 @@ use App\Modules\Core\Http\Controllers\Admin\AdminRolesController;
 use App\Modules\Core\Http\Controllers\Admin\AdminUsersController;
 use App\Modules\Core\Http\Controllers\Admin\ImpersonationController;
 use App\Modules\Core\Http\Controllers\AuthController;
+use App\Modules\Core\Http\Controllers\MedicalRecordGrantsController;
 use App\Modules\Core\Http\Controllers\PasswordResetController;
 use App\Modules\Core\Http\Controllers\ProfileController;
 use App\Modules\Core\Http\Controllers\SocialAuthController;
@@ -206,6 +207,13 @@ Route::prefix('compte')->group(function (): void {
             Route::post('/profil/pin-medical/verify', [ProfileController::class, 'verifyMedicalPin'])->name('compte.profil.verify-pin');
             Route::put('/profil/contacts-urgence', [ProfileController::class, 'updateEmergencyContacts'])->name('compte.profil.emergency');
             Route::post('/profil/photo', [ProfileController::class, 'updatePhoto'])->name('compte.profil.photo');
+        });
+
+        // Partages du dossier médical (le patient liste / révoque / consulte l'historique)
+        Route::prefix('dossier/partages')->name('compte.dossier.partages.')->group(function (): void {
+            Route::get('/', [MedicalRecordGrantsController::class, 'index'])->name('index');
+            Route::get('/{uuid}/historique', [MedicalRecordGrantsController::class, 'show'])->name('show');
+            Route::post('/{uuid}/revoke', [MedicalRecordGrantsController::class, 'revoke'])->name('revoke');
         });
     });
 });
