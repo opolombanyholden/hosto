@@ -13,6 +13,7 @@ use App\Http\Controllers\ProWebController;
 use App\Http\Controllers\PublicationInteractionController;
 use App\Http\Controllers\TeleconWebController;
 use App\Modules\Annuaire\Models\Hosto;
+use App\Modules\RendezVous\Http\Controllers\AppointmentDocumentsController;
 use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Http\Controllers\Admin\AdminPermissionsController;
 use App\Modules\Core\Http\Controllers\Admin\AdminRolesController;
@@ -370,6 +371,14 @@ Route::middleware('auth')->group(function (): void {
     // RDV booking (requires phone verification)
     Route::post('/web/rdv/book', [BookingWebController::class, 'bookAppointment'])->middleware('phone.verified')->name('web.rdv.book');
     Route::post('/web/rdv/{uuid}/cancel', [BookingWebController::class, 'cancelAppointment'])->name('web.rdv.cancel');
+
+    // RDV documents (upload/download/delete)
+    Route::post('/web/rdv/{appointmentUuid}/documents', [AppointmentDocumentsController::class, 'store'])
+        ->name('rdv.documents.store');
+    Route::get('/web/rdv/documents/{uuid}/download', [AppointmentDocumentsController::class, 'download'])
+        ->name('rdv.documents.download');
+    Route::delete('/web/rdv/documents/{uuid}', [AppointmentDocumentsController::class, 'destroy'])
+        ->name('rdv.documents.destroy');
     Route::post('/web/like/{uuid}', [BookingWebController::class, 'toggleLike'])->name('web.like');
     Route::post('/web/publication/{uuid}/like', [PublicationInteractionController::class, 'toggleLike'])->name('web.pub.like');
     Route::post('/web/publication/{uuid}/comment', [PublicationInteractionController::class, 'addComment'])->name('web.pub.comment');
