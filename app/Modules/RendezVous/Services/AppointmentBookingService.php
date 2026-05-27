@@ -39,15 +39,13 @@ final class AppointmentBookingService
         $thirdPartyUserId = null;
         $thirdPartyPhoneNormalized = null;
         if (! empty($data['is_for_third_party'])) {
-            $rawPhone = trim((string) ($data['third_party_phone'] ?? ''));
-            if ($rawPhone === '') {
-                throw new \InvalidArgumentException('Phone tiers requis');
-            }
+            $rawPhone = $data['third_party_phone'] ?? '';
             $normalized = $this->thirdParty->normalizePhone($rawPhone, 'GA');
-            // Fallback: if libphonenumber rejects but raw input is plausible,
-            // keep the raw value so the invitation can still be sent.
-            $thirdPartyPhoneNormalized = $normalized ?? $rawPhone;
-            $match = $this->thirdParty->findUserByPhone($thirdPartyPhoneNormalized);
+            if ($normalized === null) {
+                throw new \InvalidArgumentException('Phone tiers invalide');
+            }
+            $thirdPartyPhoneNormalized = $normalized;
+            $match = $this->thirdParty->findUserByPhone($normalized);
             if ($match) {
                 $thirdPartyUserId = $match->id;
             }

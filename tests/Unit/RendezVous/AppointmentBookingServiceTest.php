@@ -132,11 +132,11 @@ final class AppointmentBookingServiceTest extends TestCase
             'hosto_id' => $this->hosto->id,
             'is_for_third_party' => true,
             'third_party_name' => 'Cousin',
-            'third_party_phone' => '+24199999998',
+            'third_party_phone' => '+24106000098',
         ]);
         $this->assertNull($apt->third_party_user_id);
         $this->assertDatabaseHas('invitation_links', [
-            'phone_normalized' => '+24199999998',
+            'phone_normalized' => '+24106000098',
             'context' => 'appointment_third_party',
             'context_id' => $apt->id,
         ]);
