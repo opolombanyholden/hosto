@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\RendezVous\Http\Controllers\AppointmentsController;
+use App\Modules\RendezVous\Http\Controllers\ThirdPartyLookupController;
 use App\Modules\RendezVous\Http\Controllers\TimeSlotsController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
@@ -25,4 +26,8 @@ Route::middleware([EnsureFrontendRequestsAreStateful::class, 'auth:sanctum'])->g
     Route::post('appointments', [AppointmentsController::class, 'store'])->name('appointments.store');
     Route::get('appointments/{uuid}', [AppointmentsController::class, 'show'])->name('appointments.show');
     Route::post('appointments/{uuid}/cancel', [AppointmentsController::class, 'cancel'])->name('appointments.cancel');
+
+    Route::get('third-party/lookup', ThirdPartyLookupController::class)
+        ->middleware('throttle:30,60')
+        ->name('rdv.third-party.lookup');
 });
