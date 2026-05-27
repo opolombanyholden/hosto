@@ -62,6 +62,13 @@ return [
             'report' => false,
         ],
 
+        'private_appointments' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/appointments'),
+            'serve' => false,
+            'throw' => false,
+        ],
+
     ],
 
     /*
