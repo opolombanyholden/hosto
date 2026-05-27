@@ -35,6 +35,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $name
  * @property string $email
  * @property string|null $phone
+ * @property string|null $phone_normalized
  * @property CarbonImmutable|null $email_verified_at
  * @property CarbonImmutable|null $phone_verified_at
  * @property string $password
@@ -91,6 +92,7 @@ use Laravel\Sanctum\HasApiTokens;
     'medical_pin', 'medical_pin_set_at', 'profile_completed_at',
     'carnet_qr_secret',
     'oauth_provider', 'oauth_provider_id', 'avatar_url',
+    'phone_normalized',
 ])]
 #[Hidden(['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes', 'security_answer', 'medical_pin', 'carnet_qr_secret'])]
 class User extends Authenticatable
