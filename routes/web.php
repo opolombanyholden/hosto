@@ -378,6 +378,7 @@ Route::middleware('auth')->group(function (): void {
 
     // RDV booking (requires phone verification)
     Route::post('/web/rdv/book', [BookingWebController::class, 'bookAppointment'])->middleware('phone.verified')->name('web.rdv.book');
+    Route::post('/web/rdv/book-form', [BookingWebController::class, 'bookAppointmentFromForm'])->middleware('phone.verified')->name('web.rdv.book-form');
     Route::post('/web/rdv/{uuid}/cancel', [BookingWebController::class, 'cancelAppointment'])->name('web.rdv.cancel');
 
     // RDV documents (upload/download/delete)

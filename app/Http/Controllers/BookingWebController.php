@@ -8,8 +8,10 @@ use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Annuaire\Models\HostoLike;
 use App\Modules\Annuaire\Models\HostoRecommendation;
 use App\Modules\Core\Services\AuditLogger;
+use App\Modules\RendezVous\Http\Requests\BookAppointmentRequest;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\RendezVous\Models\TimeSlot;
+use App\Modules\RendezVous\Services\AppointmentBookingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -92,6 +94,26 @@ final class BookingWebController
         $audit->record(AuditLogger::ACTION_CREATE, 'appointment', $appointment->uuid);
 
         return response()->json(['data' => ['uuid' => $appointment->uuid, 'status' => 'pending', 'message' => 'Rendez-vous pris avec succes !']], 201);
+    }
+
+    /**
+     * Book appointment from the full form (Task 15 / T9.A).
+     * Uses BookAppointmentRequest validation + AppointmentBookingService orchestrator.
+     * Returns a redirect (web form), unlike legacy bookAppointment which returns JSON.
+     */
+    public function bookAppointmentFromForm(BookAppointmentRequest $request, AppointmentBookingService $svc): RedirectResponse
+    {
+        $data = $request->validated();
+        $data['patient'] = $request->user();
+        try {
+            $apt = $svc->book($data);
+        } catch (\DomainException $e) {
+            return back()->withErrors(['booking' => $e->getMessage()])->withInput();
+        } catch (\InvalidArgumentException $e) {
+            return back()->withErrors(['booking' => $e->getMessage()])->withInput();
+        }
+
+        return redirect()->route('compte.rdv')->with('success', "RDV demandé (réf. {$apt->uuid}). Le médecin va vous proposer un horaire.");
     }
 
     /**
