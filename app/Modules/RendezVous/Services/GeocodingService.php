@@ -12,15 +12,33 @@ final class GeocodingService
 {
     private const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
     private const USER_AGENT = 'HOSTO/1.0 (contact@hosto.ga)';
+    private const CONTACT_EMAIL = 'contact@hosto.ga';
+    private const RATE_LIMIT_KEY = 'nominatim';
+
+    private function throttle(): void
+    {
+        // Nominatim policy: max 1 req/s. Wait if we're over budget.
+        while (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts(self::RATE_LIMIT_KEY, 1)) {
+            usleep(100_000); // 100 ms
+        }
+        \Illuminate\Support\Facades\RateLimiter::hit(self::RATE_LIMIT_KEY, 1);
+    }
 
     /** @return array{lat: float, lng: float, accuracy_m: int|null}|null */
     public function geocode(string $address): ?array
     {
+        $this->throttle();
         try {
-            $resp = Http::withHeaders(['User-Agent' => self::USER_AGENT])
+            $resp = Http::withHeaders([
+                    'User-Agent' => self::USER_AGENT,
+                    'Accept-Language' => 'fr',
+                ])
                 ->timeout(10)
                 ->get(self::NOMINATIM_BASE.'/search', [
-                    'q' => $address, 'format' => 'json', 'limit' => 1,
+                    'q' => $address,
+                    'format' => 'json',
+                    'limit' => 1,
+                    'email' => self::CONTACT_EMAIL,
                 ]);
             if (! $resp->ok()) return null;
             $data = $resp->json();
@@ -38,11 +56,17 @@ final class GeocodingService
 
     public function reverseGeocode(float $lat, float $lng): ?string
     {
+        $this->throttle();
         try {
-            $resp = Http::withHeaders(['User-Agent' => self::USER_AGENT])
+            $resp = Http::withHeaders([
+                    'User-Agent' => self::USER_AGENT,
+                    'Accept-Language' => 'fr',
+                ])
                 ->timeout(10)
                 ->get(self::NOMINATIM_BASE.'/reverse', [
-                    'lat' => $lat, 'lon' => $lng, 'format' => 'json',
+                    'lat' => $lat, 'lon' => $lng,
+                    'format' => 'json',
+                    'email' => self::CONTACT_EMAIL,
                 ]);
             if (! $resp->ok()) return null;
             $data = $resp->json();

@@ -40,31 +40,39 @@ final class DocumentUploadService
         if ($size > self::MAX_PER_FILE_BYTES) {
             throw new \DomainException('File exceeds 10 MB limit');
         }
-        $existing = AppointmentDocument::where('appointment_id', $apt->id)->get();
-        if ($existing->count() >= self::MAX_FILES_PER_APPOINTMENT) {
-            throw new \DomainException('Max 5 documents per appointment');
-        }
-        $total = $existing->sum('size_bytes') + $size;
-        if ($total > self::MAX_TOTAL_BYTES) {
-            throw new \DomainException('Total size exceeds 30 MB limit');
-        }
 
-        $ext = $file->getClientOriginalExtension() ?: $this->extensionForMime($mime);
-        $hash = hash('sha256', $apt->uuid.$file->getClientOriginalName().microtime(true));
-        $relativePath = $apt->uuid.'/'.substr($hash, 0, 32).'.'.$ext;
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($apt, $file, $uploader, $category, $mime, $size) {
+            // Lock the appointment row so parallel uploads queue up.
+            Appointment::whereKey($apt->id)->lockForUpdate()->firstOrFail();
 
-        Storage::disk(self::DISK)->putFileAs($apt->uuid, $file, substr($hash, 0, 32).'.'.$ext);
+            $existing = AppointmentDocument::where('appointment_id', $apt->id)
+                ->lockForUpdate()
+                ->get();
+            if ($existing->count() >= self::MAX_FILES_PER_APPOINTMENT) {
+                throw new \DomainException('Max 5 documents per appointment');
+            }
+            $total = $existing->sum('size_bytes') + $size;
+            if ($total > self::MAX_TOTAL_BYTES) {
+                throw new \DomainException('Total size exceeds 30 MB limit');
+            }
 
-        return AppointmentDocument::create([
-            'appointment_id' => $apt->id,
-            'uploaded_by_id' => $uploader->id,
-            'original_name' => $file->getClientOriginalName(),
-            'stored_path' => 'appointments/'.$relativePath,
-            'mime_type' => $mime,
-            'size_bytes' => $size,
-            'category' => $category,
-            'keep_in_dpe' => false,
-        ]);
+            $ext = $file->getClientOriginalExtension() ?: $this->extensionForMime($mime);
+            $hash = hash('sha256', $apt->uuid.$file->getClientOriginalName().microtime(true));
+            $relativePath = $apt->uuid.'/'.substr($hash, 0, 32).'.'.$ext;
+
+            Storage::disk(self::DISK)->putFileAs($apt->uuid, $file, substr($hash, 0, 32).'.'.$ext);
+
+            return AppointmentDocument::create([
+                'appointment_id' => $apt->id,
+                'uploaded_by_id' => $uploader->id,
+                'original_name' => $file->getClientOriginalName(),
+                'stored_path' => 'appointments/'.$relativePath,
+                'mime_type' => $mime,
+                'size_bytes' => $size,
+                'category' => $category,
+                'keep_in_dpe' => false,
+            ]);
+        });
     }
 
     public function download(AppointmentDocument $doc, User $accessor): StreamedResponse
