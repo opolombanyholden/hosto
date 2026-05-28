@@ -176,7 +176,7 @@ async function lookupThird() {
         if (data.matched) {
             const ok = document.createElement('span');
             ok.style.color = '#2E7D32';
-            ok.textContent = '✓ ' + data.full_name + ' a un compte HOSTO. Le RDV sera lié à son dossier.';
+            ok.textContent = '✓ Compte HOSTO trouvé. Le RDV sera lié à son dossier.';
             out.appendChild(ok);
         } else {
             const ko = document.createElement('span');

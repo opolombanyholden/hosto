@@ -30,7 +30,6 @@ final class ThirdPartyLookupController
         }
         return response()->json([
             'matched' => true,
-            'full_name' => $user->name,
         ]);
     }
 }

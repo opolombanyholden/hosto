@@ -28,7 +28,7 @@ final class DocumentUploadServiceTest extends TestCase
     {
         parent::setUp();
         Storage::fake('private_appointments');
-        $this->svc = new DocumentUploadService();
+        $this->svc = app(DocumentUploadService::class);
 
         $this->patient = User::factory()->create();
         $hosto = Hosto::factory()->create();

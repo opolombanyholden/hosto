@@ -12,6 +12,14 @@ final class BookAppointmentRequest extends FormRequest
         return $this->user() !== null;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'is_for_third_party' => $this->boolean('is_for_third_party'),
+            'share_medical_record' => $this->boolean('share_medical_record'),
+        ]);
+    }
+
     /** @return array<string, mixed> */
     public function rules(): array
     {

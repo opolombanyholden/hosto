@@ -21,7 +21,7 @@ final class ThirdPartyLookupApiTest extends TestCase
             ->getJson('/api/v1/rdv/third-party/lookup?phone=06000099');
 
         $resp->assertOk();
-        $resp->assertJson(['matched' => true, 'full_name' => 'M. Diop']);
+        $resp->assertJson(['matched' => true]);
     }
 
     public function test_lookup_returns_not_matched_for_unknown(): void

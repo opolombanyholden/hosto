@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Modules\RendezVous\Services;
 
 use App\Models\User;
+use App\Modules\Core\Services\AuditLogger;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\RendezVous\Models\AppointmentDocument;
 use Illuminate\Http\UploadedFile;
@@ -20,6 +21,10 @@ final class DocumentUploadService
     private const ALLOWED_MIMES = [
         'application/pdf', 'image/jpeg', 'image/png', 'image/heic', 'image/heif',
     ];
+
+    public function __construct(
+        private readonly AuditLogger $audit,
+    ) {}
 
     public function store(
         Appointment $apt,
@@ -71,6 +76,12 @@ final class DocumentUploadService
         if (! Storage::disk(self::DISK)->exists($relativeOnDisk)) {
             abort(404, 'Fichier introuvable.');
         }
+        $this->audit->record(
+            AuditLogger::ACTION_READ,
+            'appointment_document',
+            $doc->uuid,
+            ['appointment_uuid' => $doc->appointment->uuid, 'accessor_id' => $accessor->id]
+        );
         return Storage::disk(self::DISK)->download($relativeOnDisk, $doc->original_name, [
             'Content-Type' => $doc->mime_type,
         ]);
@@ -92,7 +103,7 @@ final class DocumentUploadService
         if ($apt->patient_id === $user->id) return true;
         if ($apt->third_party_user_id === $user->id) return true;
         if ($apt->practitioner && $apt->practitioner->user_id === $user->id) return true;
-        if ($user->can('appointments.manage') || $user->can('users.view')) return true;
+        if ($user->can('appointments.manage')) return true;
         return false;
     }
 

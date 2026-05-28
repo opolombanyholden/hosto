@@ -8,6 +8,7 @@ use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Services\AuditLogger;
 use App\Modules\Core\Services\MedicalRecordGrantService;
 use App\Modules\RendezVous\Models\Appointment;
+use App\Modules\RendezVous\Models\TimeSlot;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -27,12 +28,26 @@ final class AppointmentBookingService
     {
         /** @var User $patient */
         $patient = $data['patient'];
-        $practitioner = Practitioner::findOrFail($data['practitioner_id']);
         $mode = $data['consultation_mode'] ?? 'in_hospital';
+
+        // Derive authoritative slot/practitioner/hosto from the slot itself, ignoring client claims.
+        $slot = TimeSlot::findOrFail($data['time_slot_id']);
+        $data['practitioner_id'] = $slot->practitioner_id;
+        $data['hosto_id'] = $slot->hosto_id;
+        $practitioner = Practitioner::findOrFail($slot->practitioner_id);
 
         $this->validateConsultationMode($mode, $practitioner);
         if ($mode === 'home') {
             $this->validateHomeAddress($data);
+        }
+
+        // If share_medical_record requested, validate PIN early so we don't create a phantom appointment.
+        if (! empty($data['share_medical_record'])) {
+            $pin = $data['medical_pin'] ?? null;
+            $stored = $patient->medical_pin;
+            if (! $stored || ! Hash::check((string) $pin, $stored)) {
+                throw new \DomainException('PIN médical invalide ou non défini');
+            }
         }
 
         // Resolve third party
@@ -52,11 +67,20 @@ final class AppointmentBookingService
         }
 
         $apt = DB::transaction(function () use ($data, $patient, $mode, $thirdPartyUserId) {
+            // Lock the slot row + re-check no active booking exists.
+            $slot = TimeSlot::lockForUpdate()->findOrFail($data['time_slot_id']);
+            $existing = Appointment::where('time_slot_id', $slot->id)
+                ->whereNotIn('status', ['cancelled_by_patient', 'cancelled_by_practitioner'])
+                ->lockForUpdate()
+                ->exists();
+            if ($existing) {
+                throw new \DomainException('Ce créneau n\'est plus disponible.');
+            }
             return Appointment::create([
-                'time_slot_id' => $data['time_slot_id'],
+                'time_slot_id' => $slot->id,
                 'patient_id' => $patient->id,
-                'practitioner_id' => $data['practitioner_id'],
-                'hosto_id' => $data['hosto_id'],
+                'practitioner_id' => $slot->practitioner_id,
+                'hosto_id' => $slot->hosto_id,
                 'appointment_type' => $data['appointment_type'] ?? 'ordinaire',
                 'consultation_mode' => $mode,
                 'reason' => $data['reason'] ?? null,
@@ -91,13 +115,7 @@ final class AppointmentBookingService
         }
 
         if (! empty($data['share_medical_record'])) {
-            $pin = $data['medical_pin'] ?? null;
-            $stored = $patient->medical_pin;
-            if (! $stored || ! Hash::check((string) $pin, $stored)) {
-                throw new \DomainException('PIN médical invalide ou non défini');
-            }
-            $practitionerModel = $apt->practitioner;
-            $this->grants->grant($patient, $practitionerModel, null, $apt);
+            $this->grants->grant($patient, $apt->practitioner, null, $apt);
         }
 
         $this->audit->record(AuditLogger::ACTION_CREATE, 'appointment', $apt->uuid, [
