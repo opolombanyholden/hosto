@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Core\Providers;
 
+use App\Modules\Core\Console\Commands\EnsureAuditPartitions;
 use App\Modules\Core\Http\Middleware\EnsurePermission;
 use App\Modules\Core\Services\AuditLogger;
 use App\Modules\Core\Services\PermissionResolver;
@@ -35,6 +36,12 @@ final class CoreServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                EnsureAuditPartitions::class,
+            ]);
+        }
 
         $this->registerRoutes();
 
