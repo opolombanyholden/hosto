@@ -22,6 +22,14 @@
     .rdv-form .field-row { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
     .rdv-form .btn { padding:10px 22px;background:#388E3C;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer; }
     #leafletMap { height:240px;border-radius:8px;margin-top:8px; }
+    .rdv-form .identity-card { background:#F1F8E9;border:1px solid #DCEDC8;border-radius:10px;padding:14px; }
+    .rdv-form .identity-card .field-row { margin-bottom:8px; }
+    .rdv-form .identity-card .row-label { font-size:.72rem;color:#616161;text-transform:uppercase;letter-spacing:.4px; }
+    .rdv-form .identity-card .row-value { font-size:.88rem;color:#1B2A1B;font-weight:500;margin-top:2px; }
+    .rdv-form .identity-card .row-missing { font-size:.82rem;color:#B71C1C;font-style:italic;margin-top:2px; }
+    .rdv-form .identity-warning { background:#FFF8E1;border:1px solid #FFECB3;color:#5D4037;padding:10px 12px;border-radius:8px;margin-top:10px;font-size:.82rem; }
+    .rdv-form .identity-warning a { color:#388E3C;font-weight:600;text-decoration:none;margin-left:4px; }
+    .rdv-form .identity-warning a:hover { text-decoration:underline; }
 </style>
 @endsection
 
@@ -38,8 +46,107 @@
         </div>
     @endif
 
+    @php
+        $me = auth()->user();
+        $genderLabels = ['male' => 'Masculin', 'female' => 'Féminin', 'other' => 'Autre'];
+        $missingCritical = collect(['date_of_birth', 'gender', 'phone', 'city_of_residence'])
+            ->filter(fn (string $k) => empty($me?->{$k}))
+            ->values();
+    @endphp
+
     <section>
-        <h3>1. Type de RDV</h3>
+        <h3>1. Vos informations</h3>
+        <p style="font-size:.78rem;color:#616161;margin:0 0 10px;">Ces informations sont transmises au praticien avec votre demande. Elles proviennent de votre profil.</p>
+        <div class="identity-card">
+            <div class="field-row">
+                <div>
+                    <div class="row-label">Nom complet</div>
+                    <div class="row-value">{{ $me->name }}</div>
+                </div>
+                <div>
+                    <div class="row-label">Date de naissance</div>
+                    @if($me->date_of_birth)
+                        <div class="row-value">{{ \Illuminate\Support\Carbon::parse($me->date_of_birth)->format('d/m/Y') }} ({{ \Illuminate\Support\Carbon::parse($me->date_of_birth)->age }} ans)</div>
+                    @else
+                        <div class="row-missing">Non renseignée</div>
+                    @endif
+                </div>
+            </div>
+            <div class="field-row">
+                <div>
+                    <div class="row-label">Sexe</div>
+                    @if($me->gender && isset($genderLabels[$me->gender]))
+                        <div class="row-value">{{ $genderLabels[$me->gender] }}</div>
+                    @else
+                        <div class="row-missing">Non renseigné</div>
+                    @endif
+                </div>
+                <div>
+                    <div class="row-label">Téléphone</div>
+                    @if($me->phone)
+                        <div class="row-value">{{ $me->phone }}</div>
+                    @else
+                        <div class="row-missing">Non renseigné</div>
+                    @endif
+                </div>
+            </div>
+            <div class="field-row">
+                <div>
+                    <div class="row-label">Email</div>
+                    <div class="row-value">{{ $me->email }}</div>
+                </div>
+                <div>
+                    <div class="row-label">Ville de résidence</div>
+                    @if($me->city_of_residence)
+                        <div class="row-value">{{ $me->city_of_residence }}</div>
+                    @else
+                        <div class="row-missing">Non renseignée</div>
+                    @endif
+                </div>
+            </div>
+            @if($me->nip || $me->id_document_number || $me->blood_group)
+            <div class="field-row">
+                <div>
+                    <div class="row-label">NIP</div>
+                    <div class="row-value">{{ $me->nip ?: '—' }}</div>
+                </div>
+                <div>
+                    <div class="row-label">Pièce d'identité</div>
+                    @if($me->id_document_number)
+                        <div class="row-value">{{ $me->id_document_type ? strtoupper($me->id_document_type).' · ' : '' }}{{ $me->id_document_number }}</div>
+                    @else
+                        <div class="row-value">—</div>
+                    @endif
+                </div>
+            </div>
+            @if($me->blood_group)
+            <div class="field-row">
+                <div>
+                    <div class="row-label">Groupe sanguin</div>
+                    <div class="row-value">{{ $me->blood_group }}</div>
+                </div>
+                <div></div>
+            </div>
+            @endif
+            @endif
+        </div>
+        @if($missingCritical->isNotEmpty())
+            <div class="identity-warning">
+                <strong>Informations manquantes :</strong>
+                {{ $missingCritical->map(fn ($k) => [
+                    'date_of_birth' => 'date de naissance',
+                    'gender' => 'sexe',
+                    'phone' => 'téléphone',
+                    'city_of_residence' => 'ville de résidence',
+                ][$k])->join(', ') }}.
+                Le praticien pourrait avoir besoin de vous joindre pour les compléter.
+                <a href="/compte/mon-dossier">Compléter mon profil →</a>
+            </div>
+        @endif
+    </section>
+
+    <section>
+        <h3>2. Type de RDV</h3>
         <div class="radio-group">
             <label><input type="radio" name="appointment_type" value="ordinaire" checked> Ordinaire</label>
             <label><input type="radio" name="appointment_type" value="urgence"> Urgence</label>
@@ -50,7 +157,7 @@
     </section>
 
     <section>
-        <h3>2. Type de consultation</h3>
+        <h3>3. Type de consultation</h3>
         <div class="radio-group" id="consultationModeGroup">
             <label><input type="radio" name="consultation_mode" value="in_hospital" checked> À l'hôpital</label>
             @if($practitioner->does_home_care ?? false)
@@ -75,12 +182,12 @@
     </section>
 
     <section>
-        <h3>3. Motif (facultatif)</h3>
+        <h3>4. Motif (facultatif)</h3>
         <input type="text" name="reason" maxlength="255" placeholder="Ex : douleur lombaire, suivi annuel...">
     </section>
 
     <section>
-        <h3>4. Pour qui ?</h3>
+        <h3>5. Pour qui ?</h3>
         <div class="radio-group">
             <label><input type="radio" name="is_for_third_party" value="0" checked onclick="toggleThirdParty(false)"> Pour moi</label>
             <label><input type="radio" name="is_for_third_party" value="1" onclick="toggleThirdParty(true)"> Pour un tiers</label>
@@ -104,12 +211,12 @@
     </section>
 
     <section>
-        <h3>5. Documents (max 5, 10 MB chacun, 30 MB total)</h3>
+        <h3>6. Documents (max 5, 10 MB chacun, 30 MB total)</h3>
         <input type="file" name="documents[]" multiple accept="application/pdf,image/jpeg,image/png,image/heic">
     </section>
 
     <section>
-        <h3>6. Partager mon dossier médical</h3>
+        <h3>7. Partager mon dossier médical</h3>
         <label style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox" name="share_medical_record" value="1" id="shareDpe" onchange="togglePin()">
             Je partage mon dossier médical avec ce médecin

@@ -102,6 +102,21 @@ final class AppointmentBookingService
                 'visit_lat' => $data['visit_lat'] ?? null,
                 'visit_lng' => $data['visit_lng'] ?? null,
                 'visit_location_accuracy_m' => $data['visit_location_accuracy_m'] ?? null,
+                // Patient identity snapshot — frozen at booking time. Symmetric
+                // with third_party_* columns; guarantees no data loss if the
+                // User profile is later edited or the account deleted.
+                'patient_name_snapshot' => $patient->name,
+                'patient_email_snapshot' => $patient->email,
+                'patient_phone_snapshot' => $patient->phone,
+                'patient_phone_normalized_snapshot' => $patient->phone_normalized,
+                'patient_dob_snapshot' => $patient->date_of_birth,
+                'patient_gender_snapshot' => $patient->gender,
+                'patient_city_snapshot' => $patient->city_of_residence,
+                'patient_address_snapshot' => $patient->address_of_residence,
+                'patient_nip_snapshot' => $patient->nip,
+                'patient_id_document_type_snapshot' => $patient->id_document_type,
+                'patient_id_document_number_snapshot' => $patient->id_document_number,
+                'patient_blood_group_snapshot' => $patient->blood_group,
             ]);
         });
 

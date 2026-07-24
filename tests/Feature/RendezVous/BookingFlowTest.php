@@ -159,4 +159,71 @@ final class BookingFlowTest extends TestCase
         $resp->assertSessionHasErrors();
         $this->assertSame(0, MedicalRecordGrant::count());
     }
+
+    public function test_booking_freezes_patient_identity_snapshot(): void
+    {
+        $this->patient->forceFill([
+            'name' => 'Alice Mbany',
+            'email' => 'alice@example.test',
+            'phone' => '+24106111222',
+            'phone_normalized' => '+24106111222',
+            'date_of_birth' => '1990-04-15',
+            'gender' => 'female',
+            'city_of_residence' => 'Libreville',
+            'address_of_residence' => 'BP 1234, Glass',
+            'nip' => 'GA-19900415-XYZ',
+            'id_document_type' => 'CNI',
+            'id_document_number' => '1234567890',
+            'blood_group' => 'O+',
+        ])->save();
+
+        $resp = $this->actingAs($this->patient)->post('/web/rdv/book-form', [
+            'time_slot_id' => $this->slot->id,
+            'practitioner_id' => $this->practitioner->id,
+            'hosto_id' => $this->hosto->id,
+        ]);
+        $resp->assertRedirect();
+
+        $apt = Appointment::where('patient_id', $this->patient->id)->firstOrFail();
+
+        $this->assertSame('Alice Mbany', $apt->patient_name_snapshot);
+        $this->assertSame('alice@example.test', $apt->patient_email_snapshot);
+        $this->assertSame('+24106111222', $apt->patient_phone_snapshot);
+        $this->assertSame('+24106111222', $apt->patient_phone_normalized_snapshot);
+        $this->assertSame('1990-04-15', $apt->patient_dob_snapshot?->toDateString());
+        $this->assertSame('female', $apt->patient_gender_snapshot);
+        $this->assertSame('Libreville', $apt->patient_city_snapshot);
+        $this->assertSame('BP 1234, Glass', $apt->patient_address_snapshot);
+        $this->assertSame('GA-19900415-XYZ', $apt->patient_nip_snapshot);
+        $this->assertSame('CNI', $apt->patient_id_document_type_snapshot);
+        $this->assertSame('1234567890', $apt->patient_id_document_number_snapshot);
+        $this->assertSame('O+', $apt->patient_blood_group_snapshot);
+    }
+
+    public function test_patient_snapshot_is_immutable_when_user_profile_changes(): void
+    {
+        $this->patient->forceFill([
+            'name' => 'Bob Original',
+            'phone' => '+24106333444',
+            'city_of_residence' => 'Port-Gentil',
+        ])->save();
+
+        $this->actingAs($this->patient)->post('/web/rdv/book-form', [
+            'time_slot_id' => $this->slot->id,
+            'practitioner_id' => $this->practitioner->id,
+            'hosto_id' => $this->hosto->id,
+        ])->assertRedirect();
+
+        $this->patient->forceFill([
+            'name' => 'Bob Renamed',
+            'phone' => '+24106999999',
+            'city_of_residence' => 'Franceville',
+        ])->save();
+
+        $apt = Appointment::where('patient_id', $this->patient->id)->firstOrFail()->refresh();
+
+        $this->assertSame('Bob Original', $apt->patient_name_snapshot);
+        $this->assertSame('+24106333444', $apt->patient_phone_snapshot);
+        $this->assertSame('Port-Gentil', $apt->patient_city_snapshot);
+    }
 }

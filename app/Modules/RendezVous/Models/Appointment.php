@@ -20,6 +20,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $uuid
  * @property int $time_slot_id
  * @property int $patient_id
+ * @property string|null $patient_name_snapshot
+ * @property string|null $patient_email_snapshot
+ * @property string|null $patient_phone_snapshot
+ * @property string|null $patient_phone_normalized_snapshot
+ * @property CarbonImmutable|null $patient_dob_snapshot
+ * @property string|null $patient_gender_snapshot
+ * @property string|null $patient_city_snapshot
+ * @property string|null $patient_address_snapshot
+ * @property string|null $patient_nip_snapshot
+ * @property string|null $patient_id_document_type_snapshot
+ * @property string|null $patient_id_document_number_snapshot
+ * @property string|null $patient_blood_group_snapshot
  * @property int $practitioner_id
  * @property int $hosto_id
  * @property string $status
@@ -66,6 +78,12 @@ class Appointment extends Model
         'appointment_type', 'consultation_mode', 'share_medical_record',
         'third_party_user_id', 'visit_address', 'visit_lat', 'visit_lng',
         'visit_geocoded_at', 'visit_location_accuracy_m', 'requested_at',
+        'patient_name_snapshot', 'patient_email_snapshot',
+        'patient_phone_snapshot', 'patient_phone_normalized_snapshot',
+        'patient_dob_snapshot', 'patient_gender_snapshot',
+        'patient_city_snapshot', 'patient_address_snapshot',
+        'patient_nip_snapshot', 'patient_id_document_type_snapshot',
+        'patient_id_document_number_snapshot', 'patient_blood_group_snapshot',
     ];
 
     public function getRouteKeyName(): string
@@ -147,6 +165,7 @@ class Appointment extends Model
             'visit_geocoded_at' => 'immutable_datetime',
             'visit_location_accuracy_m' => 'integer',
             'requested_at' => 'immutable_datetime',
+            'patient_dob_snapshot' => 'immutable_date',
         ];
     }
 }
