@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Core\Models;
 
 use App\Models\User;
+use App\Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -20,6 +21,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class EmergencyContact extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
         'user_id', 'name', 'phone', 'relation',
         'can_access_medical_record', 'priority',

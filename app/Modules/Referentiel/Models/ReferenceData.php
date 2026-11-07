@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Referentiel\Models;
 
+use App\Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ReferenceData extends Model
 {
+    use HasUuid;
+
     protected $table = 'reference_data';
 
     protected $fillable = [

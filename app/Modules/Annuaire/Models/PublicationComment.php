@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Annuaire\Models;
 
 use App\Models\User;
+use App\Modules\Core\Traits\HasUuid;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class PublicationComment extends Model
 {
+    use HasUuid;
+
     protected $fillable = ['publication_id', 'user_id', 'content', 'is_approved'];
 
     /**
