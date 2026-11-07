@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Core\Http\Controllers;
 
 use App\Models\User;
+use App\Modules\Core\Http\Middleware\EnsureTwoFactor;
 use App\Modules\Core\Services\AuditLogger;
 use App\Modules\Core\Services\TwoFactorService;
 use Illuminate\Http\RedirectResponse;
@@ -62,6 +63,8 @@ final class TwoFactorController
         $recoveryCodes = $this->twoFactor->enable($user, $secret);
 
         $request->session()->forget('2fa_secret');
+        // Enrolling proves possession of the second factor for this session.
+        $request->session()->put(EnsureTwoFactor::SESSION_KEY, $user->id);
 
         $this->audit->record(AuditLogger::ACTION_2FA_ENABLED, 'user', $user->uuid);
 
@@ -130,6 +133,7 @@ final class TwoFactorController
 
         $request->session()->forget(['2fa_user_id', '2fa_environment', '2fa_remember']);
         $request->session()->regenerate();
+        $request->session()->put(EnsureTwoFactor::SESSION_KEY, $user->id);
 
         return redirect()->intended($redirect);
     }
@@ -156,6 +160,12 @@ final class TwoFactorController
 
     private function detectEnvironment(Request $request): string
     {
+        // Set when an admin or pro space sent the user here to enrol.
+        $returnTo = $request->session()->get('2fa_return_env');
+        if (in_array($returnTo, ['admin', 'pro'], true)) {
+            return $returnTo;
+        }
+
         if ($request->is('admin*')) {
             return 'admin';
         }

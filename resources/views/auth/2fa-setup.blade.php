@@ -9,6 +9,9 @@
 @section('form')
 <h1>Activer la vérification en 2 etapes</h1>
 <p class="subtitle">Scannez le QR code avec votre application d'authentification</p>
+@if(session('warning'))
+<div role="alert" style="background:#FFF3E0;border:1px solid #FFB74D;border-radius:10px;padding:12px 14px;margin:12px 0;font-size:.82rem;color:#E65100;">{{ session('warning') }} Elle protege les donnees medicales des patients.</div>
+@endif
 
 @if($errors->any())
 <div class="auth-alert auth-alert-error">{{ $errors->first() }}</div>

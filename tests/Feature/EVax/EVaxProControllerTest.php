@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\EVax;
 
 use App\Models\User;
+use App\Modules\Core\Models\Role;
 use App\Modules\EVax\Models\Dependent;
 use App\Modules\EVax\Models\VaccinationRecord;
 use App\Modules\EVax\Models\Vaccine;
@@ -159,6 +160,12 @@ final class EVaxProControllerTest extends TestCase
 
     private function pro(): User
     {
-        return User::factory()->create(['pro_validated_at' => now()]);
+        $pro = User::factory()->create(['pro_validated_at' => now()]);
+        $pro->roles()->attach(Role::firstOrCreate(
+            ['slug' => 'doctor'],
+            ['name_fr' => 'Medecin', 'name_en' => 'Doctor', 'environment' => 'pro'],
+        ));
+
+        return $pro;
     }
 }

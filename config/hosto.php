@@ -148,6 +148,14 @@ return [
     | must point to a Jitsi server controlled by the operator.
     |
     */
+    /*
+    | Spaces where a second factor is mandatory (comma separated: admin,pro).
+    | Never empty in production: these spaces give access to many patients.
+    */
+    'security' => [
+        'two_factor_required' => array_values(array_filter(explode(',', (string) env('HOSTO_TWO_FACTOR_REQUIRED', 'admin,pro')))),
+    ],
+
     'medical_encryption' => [
         'key' => env('MEDICAL_ENCRYPTION_KEY'),
         'previous_keys' => array_values(array_filter(explode(',', (string) env('MEDICAL_ENCRYPTION_PREVIOUS_KEYS', '')))),

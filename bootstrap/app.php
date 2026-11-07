@@ -8,6 +8,7 @@ use App\Modules\Core\Http\Middleware\EnsureMedicalPin;
 use App\Modules\Core\Http\Middleware\EnsurePhoneVerified;
 use App\Modules\Core\Http\Middleware\EnsureProfilePin;
 use App\Modules\Core\Http\Middleware\EnsureProValidated;
+use App\Modules\Core\Http\Middleware\EnsureTwoFactor;
 use App\Modules\Core\Http\Middleware\EnsureVerified;
 use App\Modules\Core\Http\Middleware\ForceJsonResponse;
 use App\Modules\Core\Http\Middleware\SecurityHeaders;
@@ -42,6 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'phone.verified' => EnsurePhoneVerified::class,
             'medical.pin' => EnsureMedicalPin::class,
             'profile.pin' => EnsureProfilePin::class,
+            '2fa' => EnsureTwoFactor::class,
         ]);
 
         // Redirect unauthenticated users based on the URL prefix.

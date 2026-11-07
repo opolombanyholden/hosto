@@ -253,7 +253,7 @@ Route::prefix('pro')->group(function (): void {
         Route::post('/inscription', [AuthController::class, 'proInscription'])->middleware('throttle:10,1');
     });
 
-    Route::middleware(['auth', 'env:pro'])->group(function (): void {
+    Route::middleware(['auth', 'env:pro', '2fa:pro'])->group(function (): void {
         Route::get('/', [ProDashboardController::class, 'dashboard'])->name('pro.dashboard');
         Route::get('/patients', [ProDashboardController::class, 'patients'])->name('pro.patients');
 
@@ -315,7 +315,7 @@ Route::prefix('admin')->group(function (): void {
         Route::post('/connexion', [AuthController::class, 'adminConnexion'])->middleware('throttle:10,1');
     });
 
-    Route::middleware(['auth', 'env:admin'])->group(function (): void {
+    Route::middleware(['auth', 'env:admin', '2fa:admin'])->group(function (): void {
         Route::get('/', function () {
             return view('admin.dashboard');
         })->name('admin.dashboard');
