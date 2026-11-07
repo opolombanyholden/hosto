@@ -103,7 +103,10 @@ final class MedicalKeyEscrowTest extends TestCase
 
         $this->artisan('hosto:medical-key-recover')
             ->expectsQuestion('Fragment 1', $typo)
+            ->expectsQuestion('Fragment 1', $typo)
+            ->expectsQuestion('Fragment 1', $typo)
             ->expectsOutputToContain('Fragment illisible')
+            ->expectsOutputToContain('Trop de saisies invalides')
             ->assertFailed();
     }
 
@@ -227,6 +230,22 @@ final class MedicalKeyEscrowTest extends TestCase
         $this->artisan('hosto:medical-key-escrow', ['--output' => $this->dir])
             ->expectsOutputToContain('hosto:medical-key --write')
             ->assertFailed();
+    }
+
+    public function test_an_empty_or_mistyped_entry_is_asked_again(): void
+    {
+        $this->useKey($this->key('prod'));
+        $shares = $this->escrow();
+
+        $this->artisan('hosto:medical-key-recover', ['--verify' => true])
+            ->expectsQuestion('Fragment 1', '')
+            ->expectsOutputToContain('Aucun fragment saisi')
+            ->expectsQuestion('Fragment 1', $shares[0])
+            ->expectsQuestion('Fragment 2', 'HOSTO1-mauvais')
+            ->expectsQuestion('Fragment 2', $shares[2])
+            ->expectsQuestion('Fragment 3', $shares[4])
+            ->expectsOutputToContain('Exercice reussi')
+            ->assertSuccessful();
     }
 
     private function key(string $seed): string

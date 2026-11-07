@@ -17,6 +17,8 @@ use InvalidArgumentException;
  */
 final class RecoverMedicalKey extends Command
 {
+    private const MAX_FAILURES = 3;
+
     protected $signature = 'hosto:medical-key-recover
         {--verify : Exercice : verifie les fragments sans afficher la cle}
         {--write : Ecrit la cle reconstituee dans .env si aucune cle n\'y figure}';
@@ -35,15 +37,27 @@ final class RecoverMedicalKey extends Command
         $parsed = [];
         $needed = null;
 
+        $failures = 0;
+
         while ($needed === null || count($parsed) < $needed) {
-            $input = (string) $this->secret('Fragment '.(count($parsed) + 1));
+            $input = trim((string) $this->secret('Fragment '.(count($parsed) + 1)));
 
             try {
+                if ($input === '') {
+                    throw new InvalidShare('Aucun fragment saisi : collez la ligne HOSTO1-... de la fiche.');
+                }
+
                 $share = $escrow->parse($input);
             } catch (InvalidShare $e) {
                 $this->error($e->getMessage());
 
-                return self::FAILURE;
+                if (++$failures >= self::MAX_FAILURES) {
+                    $this->error('Trop de saisies invalides : reconstitution abandonnee.');
+
+                    return self::FAILURE;
+                }
+
+                continue;
             }
 
             if ($parsed !== [] && $share['key_id'] !== $parsed[0]['key_id']) {
