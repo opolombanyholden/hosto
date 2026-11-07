@@ -24,6 +24,10 @@ use Illuminate\View\View;
  */
 final class AuthController
 {
+    private const MAX_LOGIN_ATTEMPTS = 5;
+
+    private const LOCKOUT_MINUTES = 15;
+
     // ---------------------------------------------------------------
     // Usager (Patient)
     // ---------------------------------------------------------------
@@ -207,12 +211,28 @@ final class AuthController
         AuditLogger $audit,
     ): RedirectResponse {
         $identifier = $credentials['email'] ?? $credentials['phone'] ?? '';
+        $account = User::where(isset($credentials['email']) ? 'email' : 'phone', $identifier)->first();
+
+        if ($account?->locked_until?->isFuture()) {
+            $audit->record(AuditLogger::ACTION_LOGIN_FAILED, 'user', $account->uuid, [
+                'reason' => 'account_locked',
+                'environment' => $environment,
+            ]);
+
+            return redirect($failUrl)
+                ->withInput($request->only('email', 'login_mode', 'country_code', 'phone_number'))
+                ->withErrors(['login' => 'Ce compte est bloqué. Réessayez plus tard ou contactez le support.']);
+        }
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             $audit->record(AuditLogger::ACTION_LOGIN_FAILED, 'user', null, [
                 'identifier' => $identifier,
                 'environment' => $environment,
             ]);
+
+            if ($account !== null) {
+                $this->registerFailedAttempt($account);
+            }
 
             return redirect($failUrl)
                 ->withInput($request->only('email', 'login_mode', 'country_code', 'phone_number'))
@@ -221,6 +241,10 @@ final class AuthController
 
         $user = Auth::user();
         $user->load('roles');
+
+        if ($user->failed_login_attempts > 0 || $user->locked_until !== null) {
+            $user->forceFill(['failed_login_attempts' => 0, 'locked_until' => null])->save();
+        }
 
         if (! $user->canAccessEnvironment($environment)) {
             Auth::logout();
@@ -248,5 +272,15 @@ final class AuthController
         ]);
 
         return redirect()->intended($successUrl);
+    }
+
+    private function registerFailedAttempt(User $account): void
+    {
+        $attempts = $account->failed_login_attempts + 1;
+
+        $account->forceFill($attempts >= self::MAX_LOGIN_ATTEMPTS
+            ? ['failed_login_attempts' => 0, 'locked_until' => now()->addMinutes(self::LOCKOUT_MINUTES)]
+            : ['failed_login_attempts' => $attempts],
+        )->save();
     }
 }
