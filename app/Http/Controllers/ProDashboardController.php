@@ -26,11 +26,19 @@ use Illuminate\View\View;
  */
 final class ProDashboardController
 {
-    public function dashboard(Request $request): View
+    public function dashboard(Request $request): View|RedirectResponse
     {
         $practitioner = $this->currentPractitioner($request);
 
         if ($practitioner === null) {
+            if ($request->user()->hasRole('pharmacist')) {
+                return redirect('/pro/pharmacie');
+            }
+
+            if ($request->user()->hasRole('lab_tech')) {
+                return redirect('/pro/laboratoire');
+            }
+
             return view('pro.dashboard', ['practitioner' => null, 'stats' => [], 'upcoming' => collect()]);
         }
 

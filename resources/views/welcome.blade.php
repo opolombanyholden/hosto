@@ -456,10 +456,7 @@
 <nav class="navbar" id="navbar">
     <div class="container">
         <a href="#" class="navbar-logo">
-            <div class="logo-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            </div>
-            HOSTO
+            <img src="/images/logo-hosto.png" alt="HOSTO" style="height:38px;width:auto;background:#fff;border-radius:10px;padding:4px 8px;">
         </a>
         <div class="navbar-nav" id="navMenu">
             <a href="#services">Services</a>

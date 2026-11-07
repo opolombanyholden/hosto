@@ -57,6 +57,7 @@ class ReferenceData extends Model
             'treatment_type' => 'Types de traitements',
             'urgency_level' => 'Niveaux d\'urgence',
             'insurance_provider' => 'Assureurs',
+            'payment_method' => 'Moyens de paiement',
             'country_code' => 'Indicatifs telephoniques',
         ];
     }

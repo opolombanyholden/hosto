@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Services\AuditLogger;
+use App\Modules\Lab\Models\LabResult;
 use App\Modules\Pro\Models\CareAct;
 use App\Modules\Pro\Models\Consultation;
 use App\Modules\Pro\Models\ExamRequest;
@@ -104,7 +105,13 @@ final class ProWebController
             ->with(['patient', 'structure', 'examRequests', 'careActs', 'treatments', 'prescriptions.items'])
             ->firstOrFail();
 
-        return view('pro.consultation-show', compact('consultation', 'practitioner'));
+        $labResults = LabResult::whereIn('exam_request_id', $consultation->examRequests->pluck('id'))
+            ->where('status', 'transmitted')
+            ->with(['items', 'laboratory'])
+            ->get()
+            ->keyBy('exam_request_id');
+
+        return view('pro.consultation-show', compact('consultation', 'practitioner', 'labResults'));
     }
 
     /**

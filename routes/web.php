@@ -11,6 +11,9 @@ use App\Http\Controllers\ClaimsWebController;
 use App\Http\Controllers\PractitionerProfileController;
 use App\Http\Controllers\ProWebController;
 use App\Http\Controllers\PublicationInteractionController;
+use App\Http\Controllers\LabWebController;
+use App\Http\Controllers\PatientCareController;
+use App\Http\Controllers\PharmacyWebController;
 use App\Http\Controllers\ProDashboardController;
 use App\Http\Controllers\TeleconWebController;
 use App\Modules\Annuaire\Models\Hosto;
@@ -98,6 +101,12 @@ Route::prefix('compte')->group(function (): void {
 
             return view('compte.rendez-vous', compact('appointments', 'teleconsultations'));
         })->name('compte.rdv');
+        // Ordonnances et examens a envoyer, commandes et resultats (donnees medicales : PIN requis)
+        Route::middleware('medical.pin')->group(function (): void {
+            Route::get('/soins', [PatientCareController::class, 'index'])->name('compte.soins');
+            Route::post('/soins/ordonnances/{uuid}/commander', [PatientCareController::class, 'orderPrescription']);
+            Route::post('/soins/examens/{uuid}/laboratoire', [PatientCareController::class, 'sendExam']);
+        });
         Route::get('/dossier-medical', function () {
             return view('compte.mon-dossier', ['user' => auth()->user()]);
         })->name('compte.dossier');
@@ -248,6 +257,23 @@ Route::prefix('pro')->group(function (): void {
     Route::middleware(['auth', 'env:pro'])->group(function (): void {
         Route::get('/', [ProDashboardController::class, 'dashboard'])->name('pro.dashboard');
         Route::get('/patients', [ProDashboardController::class, 'patients'])->name('pro.patients');
+
+        // Espace pharmacien
+        Route::get('/pharmacie', [PharmacyWebController::class, 'index'])->name('pro.pharmacie');
+        Route::post('/pharmacie/stock', [PharmacyWebController::class, 'addStock']);
+        Route::post('/pharmacie/stock/{uuid}', [PharmacyWebController::class, 'updateStock']);
+        Route::get('/pharmacie/commandes/{uuid}', [PharmacyWebController::class, 'show'])->name('pro.pharmacie.order');
+        Route::post('/pharmacie/commandes/{uuid}/preparer', [PharmacyWebController::class, 'prepare']);
+        Route::post('/pharmacie/commandes/{uuid}/livrer', [PharmacyWebController::class, 'deliver']);
+        Route::post('/pharmacie/commandes/{uuid}/annuler', [PharmacyWebController::class, 'cancel']);
+
+        // Espace laboratoire
+        Route::get('/laboratoire', [LabWebController::class, 'index'])->name('pro.laboratoire');
+        Route::get('/laboratoire/analyses/{uuid}', [LabWebController::class, 'show'])->name('pro.laboratoire.analysis');
+        Route::post('/laboratoire/analyses/{uuid}/prelevement', [LabWebController::class, 'collectSample']);
+        Route::post('/laboratoire/analyses/{uuid}/resultats', [LabWebController::class, 'saveResults']);
+        Route::post('/laboratoire/analyses/{uuid}/valider', [LabWebController::class, 'validateResults']);
+
         Route::get('/patients/{uuid}', [ProDashboardController::class, 'showPatient'])->name('pro.patient.show');
         Route::post('/rendez-vous/{uuid}/confirmer', [ProDashboardController::class, 'confirmAppointment'])->name('pro.rdv.confirm');
         Route::post('/rendez-vous/{uuid}/teleconsultation', [TeleconWebController::class, 'start'])

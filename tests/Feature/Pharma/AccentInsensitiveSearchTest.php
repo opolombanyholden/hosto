@@ -35,6 +35,11 @@ final class AccentInsensitiveSearchTest extends TestCase
         $this->getJson('/api/v1/pharma/stock?medication=zz%25xicilline')->assertOk()->assertJsonPath('meta.total', 0);
     }
 
+    public function test_exam_search_with_accents_runs_on_real_columns(): void
+    {
+        $this->getJson('/api/v1/lab/exams/search?exam=échographie')->assertOk();
+    }
+
     private function stockFor(string $dci): void
     {
         $medication = Medication::create(['dci' => $dci, 'strength' => '500mg', 'dosage_form' => 'comprime', 'is_active' => true]);
@@ -42,10 +47,5 @@ final class AccentInsensitiveSearchTest extends TestCase
             'hosto_id' => Hosto::factory()->create()->id, 'medication_id' => $medication->id,
             'quantity_in_stock' => 20, 'unit_price' => 900, 'currency_code' => 'XAF', 'is_available' => true,
         ]);
-    }
-
-    public function test_exam_search_with_accents_runs_on_real_columns(): void
-    {
-        $this->getJson('/api/v1/lab/exams/search?exam=échographie')->assertOk();
     }
 }

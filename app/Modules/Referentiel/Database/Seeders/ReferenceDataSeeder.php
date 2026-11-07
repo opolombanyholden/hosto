@@ -28,6 +28,12 @@ final class ReferenceDataSeeder extends Seeder
     private function data(): array
     {
         return [
+            // --- Payment methods ---
+            ['category' => 'payment_method', 'code' => 'cash', 'label_fr' => 'Espèces', 'label_en' => 'Cash', 'display_order' => 1],
+            ['category' => 'payment_method', 'code' => 'mobile_money', 'label_fr' => 'Mobile Money', 'label_en' => 'Mobile Money', 'display_order' => 2],
+            ['category' => 'payment_method', 'code' => 'card', 'label_fr' => 'Carte bancaire', 'label_en' => 'Card', 'display_order' => 3],
+            ['category' => 'payment_method', 'code' => 'insurance', 'label_fr' => 'Assurance', 'label_en' => 'Insurance', 'display_order' => 4],
+
             // --- ID Document Types ---
             ['category' => 'id_document_type', 'code' => 'cni', 'label_fr' => 'Carte Nationale d\'Identite', 'label_en' => 'National ID Card', 'display_order' => 1],
             ['category' => 'id_document_type', 'code' => 'passeport', 'label_fr' => 'Passeport', 'label_en' => 'Passport', 'display_order' => 2],

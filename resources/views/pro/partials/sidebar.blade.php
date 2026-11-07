@@ -11,6 +11,20 @@
         ['profil', '/pro/profil', 'Mon profil', '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'],
     ];
 @endphp
+@php
+    $roleSlugs = auth()->user()?->roles->pluck('slug') ?? collect();
+    $staff = [];
+    if ($roleSlugs->contains('pharmacist')) {
+        $staff[] = ['pharmacie', '/pro/pharmacie', 'Ma pharmacie', '<path d="M12 2v20M2 12h20"/>'];
+    }
+    if ($roleSlugs->contains('lab_tech')) {
+        $staff[] = ['laboratoire', '/pro/laboratoire', 'Mon laboratoire', '<path d="M9 2v6L4 18a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-10V2"/><line x1="8" y1="2" x2="16" y2="2"/>'];
+    }
+    if ($staff !== [] && ! $roleSlugs->contains('doctor')) {
+        $items = array_values(array_filter($items, fn ($item) => $item[0] === 'profil'));
+    }
+    $items = array_merge($staff, $items);
+@endphp
 @foreach($items as [$key, $href, $label, $icon])
 <a href="{{ $href }}" @class(['active' => ($active ?? '') === $key])>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">{!! $icon !!}</svg>

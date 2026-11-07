@@ -72,6 +72,15 @@
         <div style="display:flex;justify-content:space-between;"><div style="font-size:.82rem;font-weight:600;color:#1565C0;">{{ $ex->exam_type }}</div><span style="padding:2px 10px;border-radius:100px;font-size:.65rem;font-weight:600;background:{{ $ex->status==='completed' ? '#E8F5E9;color:#2E7D32' : '#FFF3E0;color:#E65100' }};">{{ $ex->status }}</span></div>
         @if($ex->clinical_info)<div style="font-size:.78rem;color:#757575;margin-top:4px;">{{ $ex->clinical_info }}</div>@endif
         @if($ex->urgency==='urgent')<div style="font-size:.7rem;color:#E53935;font-weight:600;margin-top:4px;">URGENT</div>@endif
+        @if($result = ($labResults[$ex->id] ?? null))
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid #EEE;">
+            <div style="font-size:.74rem;color:#757575;margin-bottom:4px;">Résultat validé — {{ $result->laboratory?->name }} ({{ $result->reference }})</div>
+            @foreach($result->items as $line)
+            <div style="font-size:.82rem;color:#1B2A1B;">{{ $line->test_name }} : <strong>{{ $line->value }}</strong> {{ $line->unit }} @if($line->reference_range)<span style="color:#757575;">(réf. {{ $line->reference_range }})</span>@endif @if(in_array($line->flag, ['H', 'L', 'C']))<span style="color:#C62828;font-weight:600;">{{ ['H' => 'Élevé', 'L' => 'Bas', 'C' => 'Critique'][$line->flag] }}</span>@endif</div>
+            @endforeach
+            @if($result->conclusion)<div style="font-size:.8rem;color:#424242;margin-top:4px;">Conclusion : {{ $result->conclusion }}</div>@endif
+        </div>
+        @endif
     </div>
     @endforeach
     <div class="mini-form"><form method="POST" action="/pro/consultations/{{ $consultation->uuid }}/examen">@csrf
