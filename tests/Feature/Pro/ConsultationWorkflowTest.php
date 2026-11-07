@@ -187,4 +187,19 @@ final class ConsultationWorkflowTest extends TestCase
             ->get("/compte/dossier-medical/{$consultation->uuid}")
             ->assertStatus(404);
     }
+
+    public function test_doctor_cannot_record_a_consultation_outside_their_structures(): void
+    {
+        $foreign = Hosto::factory()->create();
+
+        $this->actingAs($this->doctor)
+            ->post('/pro/consultations', [
+                'patient_email' => $this->patient->email,
+                'hosto_id' => $foreign->id,
+                'motif' => 'Consultation hors structure',
+            ])
+            ->assertSessionHasErrors('hosto_id');
+
+        $this->assertSame(0, Consultation::where('hosto_id', $foreign->id)->count());
+    }
 }

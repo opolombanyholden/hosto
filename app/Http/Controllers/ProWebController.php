@@ -16,6 +16,7 @@ use App\Modules\Pro\Models\PrescriptionItem;
 use App\Modules\Pro\Models\Treatment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 final class ProWebController
@@ -59,7 +60,8 @@ final class ProWebController
 
         $data = $request->validate([
             'patient_email' => 'required|email|exists:users,email',
-            'hosto_id' => 'required|exists:hostos,id',
+            // Only a structure the practitioner works in.
+            'hosto_id' => ['required', 'integer', Rule::in($practitioner->structures->pluck('id')->all())],
             'motif' => 'required|string|max:255',
             'anamnesis' => 'nullable|string',
             'examen_clinique' => 'nullable|string',
