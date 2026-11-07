@@ -8,6 +8,7 @@ use App\Http\Controllers\Concerns\ResolvesStaffStructure;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Core\Services\AuditLogger;
 use App\Modules\Pharma\Models\Dispensation;
+use App\Modules\Pharma\Models\DispensationItem;
 use App\Modules\Pharma\Models\PharmacyStock;
 use App\Modules\Referentiel\Models\Medication;
 use App\Modules\Referentiel\Models\ReferenceData;
@@ -111,7 +112,7 @@ final class PharmacyWebController
                 }
 
                 $reason = trim((string) ($line['substitution_reason'] ?? ''));
-                $isSubstituted = ! self::isPrescribedProduct($item->medication_name, $stock);
+                $isSubstituted = ! self::isPrescribedProduct($item, $stock);
 
                 if ($isSubstituted && $reason === '') {
                     throw ValidationException::withMessages([
@@ -253,13 +254,23 @@ final class PharmacyWebController
     }
 
     /**
-     * A prescription item is free text: it matches a stock line when it names its molecule.
+     * A prescription item is free text. It matches a stock line when it names
+     * the molecule and, if it states a strength, that exact strength. Equivalent
+     * notations (1 g and 1000 mg) deliberately ask for a reason rather than pass.
      */
-    public static function isPrescribedProduct(string $prescribedName, PharmacyStock $stock): bool
+    public static function isPrescribedProduct(DispensationItem $item, PharmacyStock $stock): bool
     {
-        $normalize = fn (string $text): string => mb_strtolower(Str::ascii($text));
+        $normalize = fn (?string $text): string => str_replace(' ', '', mb_strtolower(Str::ascii((string) $text)));
 
-        return str_contains($normalize($prescribedName), $normalize($stock->medication->dci));
+        $prescribed = $normalize($item->medication_name.' '.$item->dosage);
+
+        if (! str_contains($prescribed, $normalize($stock->medication->dci))) {
+            return false;
+        }
+
+        $statesStrength = preg_match('/\d/', $prescribed) === 1;
+
+        return ! $statesStrength || str_contains($prescribed, $normalize($stock->medication->strength));
     }
 
     private function order(Hosto $pharmacy, string $uuid): Dispensation

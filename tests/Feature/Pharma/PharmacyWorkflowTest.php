@@ -289,6 +289,41 @@ final class PharmacyWorkflowTest extends TestCase
             ->assertSee('value="'.$this->stock->uuid.'" selected', false);
     }
 
+    public function test_a_different_strength_counts_as_a_substitution(): void
+    {
+        $order = $this->order();
+        $item = $order->items()->firstOrFail();
+        $item->update(['medication_name' => 'Paracetamol 1000mg']);
+
+        $this->actingAs($this->pharmacist)->post("/pro/pharmacie/commandes/{$order->uuid}/preparer", [
+            'items' => [$item->id => ['stock' => $this->stock->uuid, 'quantity' => 1]],
+        ])->assertSessionHasErrors('items');
+
+        $this->assertSame('pending', $order->refresh()->status);
+    }
+
+    public function test_strength_given_in_the_dosage_field_is_compared_too(): void
+    {
+        $order = $this->order();
+        $item = $order->items()->firstOrFail();
+        $item->update(['medication_name' => 'Paracetamol', 'dosage' => '1000mg']);
+
+        $this->actingAs($this->pharmacist)->post("/pro/pharmacie/commandes/{$order->uuid}/preparer", [
+            'items' => [$item->id => ['stock' => $this->stock->uuid, 'quantity' => 1]],
+        ])->assertSessionHasErrors('items');
+    }
+
+    public function test_prescription_without_strength_matches_on_the_molecule(): void
+    {
+        $order = $this->order();
+        $item = $order->items()->firstOrFail();
+        $item->update(['medication_name' => 'Paracetamol', 'dosage' => null]);
+
+        $this->actingAs($this->pharmacist)->post("/pro/pharmacie/commandes/{$order->uuid}/preparer", [
+            'items' => [$item->id => ['stock' => $this->stock->uuid, 'quantity' => 1]],
+        ])->assertSessionHasNoErrors();
+    }
+
     private function staff(Role $role, Hosto $hosto): User
     {
         $user = User::factory()->create();

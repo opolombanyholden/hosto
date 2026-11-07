@@ -27,7 +27,7 @@
         <div style="flex:1;min-width:180px;font-size:.85rem;color:#1B2A1B;"><strong>{{ $item->medication_name }}</strong> {{ $item->dosage }}</div>
         <select name="items[{{ $item->id }}][stock]" aria-label="Produit en stock pour {{ $item->medication_name }}" style="padding:7px;border:1px solid #DDD;border-radius:6px;font-size:.8rem;">
             <option value="">Non délivré</option>
-            @foreach($stocks as $stock)<option value="{{ $stock->uuid }}" @selected(\App\Http\Controllers\PharmacyWebController::isPrescribedProduct($item->medication_name, $stock))>{{ $stock->medication->dci }} {{ $stock->medication->strength }} — {{ $stock->unit_price }} XAF ({{ $stock->quantity_in_stock }} en stock)</option>@endforeach
+            @foreach($stocks as $stock)<option value="{{ $stock->uuid }}" @selected(\App\Http\Controllers\PharmacyWebController::isPrescribedProduct($item, $stock))>{{ $stock->medication->dci }} {{ $stock->medication->strength }} — {{ $stock->unit_price }} XAF ({{ $stock->quantity_in_stock }} en stock)</option>@endforeach
         </select>
         <input type="number" name="items[{{ $item->id }}][quantity]" min="1" value="{{ $item->quantity }}" aria-label="Quantité" style="width:70px;padding:7px;border:1px solid #DDD;border-radius:6px;">
         <input type="text" name="items[{{ $item->id }}][substitution_reason]" maxlength="255" placeholder="Motif si produit différent" aria-label="Motif de substitution" style="flex-basis:100%;padding:7px;border:1px solid #DDD;border-radius:6px;font-size:.78rem;">
