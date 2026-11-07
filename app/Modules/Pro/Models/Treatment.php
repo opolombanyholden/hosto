@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pro\Models;
 
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Traits\HasUuid;
@@ -79,6 +80,10 @@ class Treatment extends Model
     protected function casts(): array
     {
         return [
+            'description' => EncryptedMedical::class,
+            'instructions' => EncryptedMedical::class,
+            'frequency' => EncryptedMedical::class,
+            'duration' => EncryptedMedical::class,
             'start_date' => 'date',
             'end_date' => 'date',
         ];

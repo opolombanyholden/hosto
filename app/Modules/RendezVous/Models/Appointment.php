@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\RendezVous\Models;
 
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Annuaire\Models\Practitioner;
@@ -154,6 +155,10 @@ class Appointment extends Model
     protected function casts(): array
     {
         return [
+            'reason' => EncryptedMedical::class,
+            'notes' => EncryptedMedical::class,
+            'third_party_notes' => EncryptedMedical::class,
+            'cancellation_reason' => EncryptedMedical::class,
             'cancelled_at' => 'immutable_datetime',
             'confirmed_at' => 'immutable_datetime',
             'completed_at' => 'immutable_datetime',

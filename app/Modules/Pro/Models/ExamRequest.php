@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pro\Models;
 
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Traits\HasUuid;
@@ -73,6 +74,9 @@ class ExamRequest extends Model
     protected function casts(): array
     {
         return [
+            'exam_type' => EncryptedMedical::class,
+            'clinical_info' => EncryptedMedical::class,
+            'results' => EncryptedMedical::class,
             'scheduled_at' => 'immutable_datetime',
             'completed_at' => 'immutable_datetime',
         ];

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pharma\Models;
 
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Core\Traits\HasUuid;
@@ -85,6 +86,8 @@ class Dispensation extends Model
     /** @return array<string, string> */
     protected function casts(): array
     {
-        return ['is_paid' => 'boolean', 'dispensed_at' => 'immutable_datetime', 'delivered_at' => 'immutable_datetime'];
+        return [
+            'notes' => EncryptedMedical::class,
+            'is_paid' => 'boolean', 'dispensed_at' => 'immutable_datetime', 'delivered_at' => 'immutable_datetime'];
     }
 }

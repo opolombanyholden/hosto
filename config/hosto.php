@@ -148,6 +148,11 @@ return [
     | must point to a Jitsi server controlled by the operator.
     |
     */
+    'medical_encryption' => [
+        'key' => env('MEDICAL_ENCRYPTION_KEY'),
+        'previous_keys' => array_values(array_filter(explode(',', (string) env('MEDICAL_ENCRYPTION_PREVIOUS_KEYS', '')))),
+    ],
+
     'telecon' => [
         'jitsi_domain' => env('JITSI_DOMAIN', 'meet.jit.si'),
     ],

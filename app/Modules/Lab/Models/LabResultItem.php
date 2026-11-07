@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Lab\Models;
 
+use App\Modules\Core\Casts\EncryptedMedical;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -34,5 +35,18 @@ class LabResultItem extends Model
     public function labResult(): BelongsTo
     {
         return $this->belongsTo(LabResult::class);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'test_name' => EncryptedMedical::class,
+            'value' => EncryptedMedical::class,
+            'reference_range' => EncryptedMedical::class,
+            'comment' => EncryptedMedical::class,
+        ];
     }
 }

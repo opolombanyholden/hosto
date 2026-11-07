@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Core\Providers;
 
+use App\Modules\Core\Console\Commands\EncryptMedicalData;
 use App\Modules\Core\Console\Commands\EnsureAuditPartitions;
+use App\Modules\Core\Console\Commands\GenerateMedicalKey;
 use App\Modules\Core\Http\Middleware\EnsurePermission;
 use App\Modules\Core\Services\AuditLogger;
+use App\Modules\Core\Services\MedicalCipher;
 use App\Modules\Core\Services\PermissionResolver;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +33,10 @@ final class CoreServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(AuditLogger::class);
+        $this->app->singleton(MedicalCipher::class, fn () => new MedicalCipher(
+            config('hosto.medical_encryption.key'),
+            config('hosto.medical_encryption.previous_keys'),
+        ));
         $this->app->singleton(PermissionResolver::class);
     }
 
@@ -40,6 +47,8 @@ final class CoreServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 EnsureAuditPartitions::class,
+                EncryptMedicalData::class,
+                GenerateMedicalKey::class,
             ]);
         }
 

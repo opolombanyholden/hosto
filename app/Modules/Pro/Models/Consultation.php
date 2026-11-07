@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pro\Models;
 
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Annuaire\Models\Practitioner;
@@ -149,7 +150,14 @@ class Consultation extends Model
     protected function casts(): array
     {
         return [
-            'vitals' => 'array',
+            'motif' => EncryptedMedical::class,
+            'anamnesis' => EncryptedMedical::class,
+            'examen_clinique' => EncryptedMedical::class,
+            'diagnostic' => EncryptedMedical::class,
+            'diagnostic_code' => EncryptedMedical::class,
+            'conduite_a_tenir' => EncryptedMedical::class,
+            'notes_internes' => EncryptedMedical::class,
+            'vitals' => EncryptedMedical::class.':json',
             'started_at' => 'immutable_datetime',
             'completed_at' => 'immutable_datetime',
         ];

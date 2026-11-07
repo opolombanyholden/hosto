@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pharma\Models;
 
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Modules\Referentiel\Models\Medication;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -39,6 +40,10 @@ class DispensationItem extends Model
     /** @return array<string, string> */
     protected function casts(): array
     {
-        return ['is_substituted' => 'boolean'];
+        return [
+            'medication_name' => EncryptedMedical::class,
+            'dosage' => EncryptedMedical::class,
+            'substitution_reason' => EncryptedMedical::class,
+            'is_substituted' => 'boolean'];
     }
 }

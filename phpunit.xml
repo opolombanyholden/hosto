@@ -38,6 +38,8 @@
         <env name="DB_USERNAME" value="hosto"/>
         <env name="DB_PASSWORD" value="hosto_secret_2025"/>
         <env name="MAIL_MAILER" value="array"/>
+        <env name="MEDICAL_ENCRYPTION_KEY" value="base64:aG9zdG8tdGVzdC1vbmx5LWtleS1ub3QtYS1zZWNyZXQ="/>
+        <env name="MEDICAL_ENCRYPTION_PREVIOUS_KEYS" value=""/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="REDIS_CLIENT" value="predis"/>

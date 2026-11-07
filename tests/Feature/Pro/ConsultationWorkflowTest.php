@@ -62,12 +62,11 @@ final class ConsultationWorkflowTest extends TestCase
             ])
             ->assertRedirect();
 
-        $this->assertDatabaseHas('consultations', [
-            'patient_id' => $this->patient->id,
-            'practitioner_id' => $this->practitioner->id,
-            'motif' => 'Douleur thoracique',
-            'diagnostic_code' => 'I20.9',
-        ]);
+        $consultation = Consultation::where('patient_id', $this->patient->id)
+            ->where('practitioner_id', $this->practitioner->id)
+            ->firstOrFail();
+        $this->assertSame('Douleur thoracique', $consultation->motif);
+        $this->assertSame('I20.9', $consultation->diagnostic_code);
     }
 
     public function test_doctor_can_add_exam_request(): void
@@ -85,10 +84,7 @@ final class ConsultationWorkflowTest extends TestCase
             ])
             ->assertRedirect();
 
-        $this->assertDatabaseHas('exam_requests', [
-            'consultation_id' => $consultation->id,
-            'exam_type' => 'Bilan sanguin complet',
-        ]);
+        $this->assertSame('Bilan sanguin complet', $consultation->examRequests()->firstOrFail()->exam_type);
     }
 
     public function test_doctor_can_add_care_act(): void
@@ -154,9 +150,7 @@ final class ConsultationWorkflowTest extends TestCase
             'consultation_id' => $consultation->id,
             'patient_id' => $this->patient->id,
         ]);
-        $this->assertDatabaseHas('prescription_items', [
-            'medication_name' => 'Paracetamol 500mg',
-        ]);
+        $this->assertSame('Paracetamol 500mg', $consultation->prescriptions()->firstOrFail()->items()->firstOrFail()->medication_name);
     }
 
     public function test_patient_can_view_own_consultation(): void

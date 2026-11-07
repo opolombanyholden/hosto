@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Modules\Core\Models\EmergencyContact;
 use App\Modules\Core\Models\Role;
 use App\Modules\Core\Traits\HasUuid;
@@ -225,6 +226,12 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'allergies' => EncryptedMedical::class,
+            'chronic_conditions' => EncryptedMedical::class,
+            'current_medications' => EncryptedMedical::class,
+            'surgical_history' => EncryptedMedical::class,
+            'family_history' => EncryptedMedical::class,
+            'disabilities' => EncryptedMedical::class,
             'email_verified_at' => 'immutable_datetime',
             'phone_verified_at' => 'immutable_datetime',
             'two_factor_confirmed_at' => 'immutable_datetime',

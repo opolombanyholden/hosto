@@ -8,6 +8,7 @@ use App\Modules\Core\Services\AuditLogger;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\RendezVous\Models\AppointmentDocument;
 use Illuminate\Http\UploadedFile;
+use App\Modules\Core\Services\MedicalCipher;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -60,7 +61,10 @@ final class DocumentUploadService
             $hash = hash('sha256', $apt->uuid.$file->getClientOriginalName().microtime(true));
             $relativePath = $apt->uuid.'/'.substr($hash, 0, 32).'.'.$ext;
 
-            Storage::disk(self::DISK)->putFileAs($apt->uuid, $file, substr($hash, 0, 32).'.'.$ext);
+            Storage::disk(self::DISK)->put(
+                $relativePath,
+                app(MedicalCipher::class)->encrypt((string) file_get_contents($file->getRealPath())),
+            );
 
             return AppointmentDocument::create([
                 'appointment_id' => $apt->id,
@@ -90,9 +94,11 @@ final class DocumentUploadService
             $doc->uuid,
             ['appointment_uuid' => $doc->appointment->uuid, 'accessor_id' => $accessor->id]
         );
-        return Storage::disk(self::DISK)->download($relativeOnDisk, $doc->original_name, [
-            'Content-Type' => $doc->mime_type,
-        ]);
+        $contents = app(MedicalCipher::class)->decrypt((string) Storage::disk(self::DISK)->get($relativeOnDisk));
+
+        return response()->streamDownload(function () use ($contents): void {
+            echo $contents;
+        }, $doc->original_name, ['Content-Type' => $doc->mime_type]);
     }
 
     public function delete(AppointmentDocument $doc, User $by): void

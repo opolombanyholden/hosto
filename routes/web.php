@@ -31,9 +31,13 @@ use App\Modules\Core\Http\Controllers\ProfileController;
 use App\Modules\Core\Http\Controllers\SocialAuthController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
 use App\Modules\Core\Http\Controllers\VerificationController;
+use App\Modules\Core\Support\AccentInsensitive;
 use App\Modules\Pro\Models\Consultation;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\Telecon\Models\Teleconsultation;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Route;
 
 // ---------------------------------------------------------------
@@ -112,15 +116,26 @@ Route::prefix('compte')->group(function (): void {
         })->name('compte.dossier');
 
         // API JSON pour les sections du dossier (AJAX + pagination)
-        Route::get('/api/rendez-vous', function (Request $request) {
-            $query = Appointment::where('patient_id', auth()->id())->with(['timeSlot', 'practitioner', 'structure'])->orderByDesc('created_at');
-            if ($request->filled('q')) {
-                $q = $request->input('q');
-                $query->where(fn ($w) => $w->whereHas('structure', fn ($s) => $s->where('name', 'ILIKE', "%{$q}%"))
-                    ->orWhereHas('practitioner', fn ($p) => $p->where('last_name', 'ILIKE', "%{$q}%")->orWhere('first_name', 'ILIKE', "%{$q}%"))
-                    ->orWhere('reason', 'ILIKE', "%{$q}%"));
+        $paginateMatches = function (Request $request, Builder $query, callable $matches): LengthAwarePaginator {
+            $perPage = $request->integer('per_page', 5);
+
+            if (! $request->filled('q')) {
+                return $query->paginate($perPage);
             }
-            $data = $query->paginate($request->integer('per_page', 5));
+
+            $term = (string) $request->input('q');
+            $found = $query->get()->filter(fn ($record) => $matches($record, $term))->values();
+            $page = LengthAwarePaginator::resolveCurrentPage();
+
+            return new LengthAwarePaginator($found->forPage($page, $perPage)->values(), $found->count(), $perPage, $page);
+        };
+
+        Route::get('/api/rendez-vous', function (Request $request) use ($paginateMatches) {
+            $query = Appointment::where('patient_id', auth()->id())->with(['timeSlot', 'practitioner', 'structure'])->orderByDesc('created_at');
+            // reason is encrypted: a patient has few appointments, so the search runs in PHP.
+            $data = $paginateMatches($request, $query, fn ($r, $q) => AccentInsensitive::matches($r->structure?->name, $q)
+                || AccentInsensitive::matches($r->practitioner?->full_name, $q)
+                || AccentInsensitive::matches($r->reason, $q));
 
             return response()->json(['data' => $data->map(fn ($r) => [
                 'uuid' => $r->uuid, 'status' => $r->status, 'reason' => $r->reason,
@@ -129,14 +144,12 @@ Route::prefix('compte')->group(function (): void {
                 'created_at' => $r->created_at->format('d/m/Y'),
             ]), 'meta' => ['total' => $data->total(), 'current_page' => $data->currentPage(), 'last_page' => $data->lastPage()]]);
         });
-        Route::get('/api/consultations', function (Request $request) {
+        Route::get('/api/consultations', function (Request $request) use ($paginateMatches) {
             $query = Consultation::where('patient_id', auth()->id())->with(['practitioner', 'structure'])->orderByDesc('created_at');
-            if ($request->filled('q')) {
-                $q = $request->input('q');
-                $query->where(fn ($w) => $w->whereHas('practitioner', fn ($p) => $p->where('last_name', 'ILIKE', "%{$q}%")->orWhere('first_name', 'ILIKE', "%{$q}%"))
-                    ->orWhere('motif', 'ILIKE', "%{$q}%")->orWhere('diagnostic', 'ILIKE', "%{$q}%"));
-            }
-            $data = $query->paginate($request->integer('per_page', 5));
+            // motif and diagnostic are encrypted: the search runs in PHP.
+            $data = $paginateMatches($request, $query, fn ($c, $q) => AccentInsensitive::matches($c->practitioner?->full_name, $q)
+                || AccentInsensitive::matches($c->motif, $q)
+                || AccentInsensitive::matches($c->diagnostic, $q));
 
             return response()->json(['data' => $data->map(fn ($c) => [
                 'uuid' => $c->uuid, 'status' => $c->status, 'motif' => $c->motif, 'diagnostic' => $c->diagnostic,

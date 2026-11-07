@@ -19,6 +19,14 @@ final class AccentInsensitive
 
     private const TO = 'aaaaaaceeeeiiiinooooouuuuyy';
 
+    /**
+     * Same comparison in PHP, for encrypted columns that SQL cannot read.
+     */
+    public static function matches(?string $text, string $term): bool
+    {
+        return $text !== null && str_contains(mb_strtolower(Str::ascii($text)), mb_strtolower(Str::ascii($term)));
+    }
+
     public static function contains(Builder $query, string $column, string $term, string $boolean = 'and'): Builder
     {
         $pattern = '%'.addcslashes(mb_strtolower(Str::ascii($term)), '\\%_').'%';

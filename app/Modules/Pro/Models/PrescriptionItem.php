@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pro\Models;
 
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Modules\Referentiel\Models\Medication;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,5 +46,19 @@ class PrescriptionItem extends Model
     public function medication(): BelongsTo
     {
         return $this->belongsTo(Medication::class);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'medication_name' => EncryptedMedical::class,
+            'dosage' => EncryptedMedical::class,
+            'posology' => EncryptedMedical::class,
+            'duration' => EncryptedMedical::class,
+            'instructions' => EncryptedMedical::class,
+        ];
     }
 }

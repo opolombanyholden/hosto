@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Lab\Models;
 
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Core\Traits\HasUuid;
@@ -96,6 +97,8 @@ class LabResult extends Model
     protected function casts(): array
     {
         return [
+            'conclusion' => EncryptedMedical::class,
+            'notes' => EncryptedMedical::class,
             'sample_collected_at' => 'immutable_datetime',
             'analysis_started_at' => 'immutable_datetime',
             'completed_at' => 'immutable_datetime',
