@@ -41,7 +41,7 @@
         <div style="font-size:1.1rem;font-weight:700;color:#1B2A1B;">{{ $consultation->patient?->name }}</div>
         <div style="font-size:.78rem;color:#757575;">{{ $consultation->structure?->name }} — {{ $consultation->created_at->format('d/m/Y H:i') }}</div>
     </div>
-    <span style="padding:4px 14px;border-radius:100px;font-size:.72rem;font-weight:600;background:#E8F5E9;color:#2E7D32;">{{ ucfirst($consultation->status) }}</span>
+    <span style="padding:4px 14px;border-radius:100px;font-size:.72rem;font-weight:600;background:#E8F5E9;color:#2E7D32;">{{ ['in_progress' => 'En cours', 'completed' => 'Terminée', 'signed' => 'Signée'][$consultation->status] ?? $consultation->status }}</span>
 </div>
 
 {{-- Tabs --}}

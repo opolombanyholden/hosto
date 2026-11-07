@@ -348,8 +348,11 @@ async function doSearch(e, page) {
     if (specialty) params.set('specialty',specialty);
     const assurance = getSelectedAssurance();
     if (assurance) params.set('assurance', assurance);
-    if (FORCE_GARDE || isGardeChecked()) params.set('garde','1');
-    if (FORCE_URGENCE || isUrgenceChecked()) params.set('urgence','1');
+    if (FORCE_GARDE && FORCE_URGENCE) params.set('urgences_any','1');
+    if (!FORCE_URGENCE && (FORCE_GARDE || isGardeChecked())) params.set('garde','1');
+    if (!FORCE_GARDE && (FORCE_URGENCE || isUrgenceChecked())) params.set('urgence','1');
+    if (FORCE_GARDE && FORCE_URGENCE && isGardeChecked()) params.set('garde','1');
+    if (FORCE_GARDE && FORCE_URGENCE && isUrgenceChecked()) params.set('urgence','1');
     if (isEvacuationChecked()) params.set('evacuation','1');
     if (FORCE_DOMICILE || isDomicileChecked()) params.set('domicile','1');
     if (proximiteActive && userLat && userLng) { params.set('lat',userLat); params.set('lng',userLng); params.set('rayon','20'); params.set('sort','distance'); }

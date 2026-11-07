@@ -186,7 +186,7 @@
         <div class="prac-info">
             <div class="prac-name">{{ $practitioner->full_name }}</div>
             <div class="prac-specs">{{ $practitioner->specialties->pluck('name_fr')->join(' · ') }}</div>
-            <div class="prac-meta">{{ ucfirst($practitioner->practitioner_type) }}@if($practitioner->registration_number) — N° {{ $practitioner->registration_number }}@endif</div>
+            <div class="prac-meta">{{ ['doctor' => 'Médecin', 'nurse' => 'Infirmier(e)', 'midwife' => 'Sage-femme'][$practitioner->practitioner_type] ?? ucfirst($practitioner->practitioner_type) }}@if($practitioner->registration_number) — N° {{ $practitioner->registration_number }}@endif</div>
             <div class="prac-badges">
                 @if($practitioner->does_teleconsultation)
                     <span class="prac-badge badge-telecon">Teleconsultation</span>

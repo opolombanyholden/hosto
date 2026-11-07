@@ -31,7 +31,7 @@
             <div style="font-size:.72rem;color:#757575;">{{ $c->created_at->format('d/m/Y H:i') }}</div>
         </div>
         @php $sColors = ['in_progress'=>'#FFF3E0;color:#E65100','completed'=>'#E8F5E9;color:#2E7D32','signed'=>'#E3F2FD;color:#1565C0']; @endphp
-        <span style="padding:4px 12px;border-radius:100px;font-size:.68rem;font-weight:600;background:{{ $sColors[$c->status] ?? '#F5F5F5' }};">{{ ucfirst($c->status) }}</span>
+        <span style="padding:4px 12px;border-radius:100px;font-size:.68rem;font-weight:600;background:{{ $sColors[$c->status] ?? '#F5F5F5' }};">{{ ['in_progress' => 'En cours', 'completed' => 'Terminée', 'signed' => 'Signée'][$c->status] ?? $c->status }}</span>
     </div>
 </a>
 @empty

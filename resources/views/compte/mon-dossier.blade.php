@@ -59,6 +59,11 @@
 @php
     $rdvCount = \App\Modules\RendezVous\Models\Appointment::where('patient_id', $user->id)->count();
     $consultCount = \App\Modules\Pro\Models\Consultation::where('patient_id', $user->id)->count();
+    $diagnosticCount = \App\Modules\Pro\Models\Consultation::where('patient_id', $user->id)->whereNotNull('diagnostic')->count();
+    $examCount = \App\Modules\Pro\Models\ExamRequest::where('patient_id', $user->id)->count();
+    $treatmentCount = \App\Modules\Pro\Models\Treatment::where('patient_id', $user->id)->where('status', 'active')->count();
+    $vaccineCount = \App\Modules\EVax\Models\VaccinationRecord::where('patient_id', $user->id)->count();
+    $careCount = \App\Modules\Pro\Models\CareAct::where('patient_id', $user->id)->count();
 @endphp
 
 {{-- Header patient --}}
@@ -103,58 +108,49 @@
             <div class="dossier-card-count">{{ $consultCount }} effectuee{{ $consultCount > 1 ? 's' : '' }}</div>
         </div>
     </a>
-    <a href="#" class="dossier-card">
+    <a href="#consultations" class="dossier-card">
         <div class="dossier-card-icon" style="background:#FFF3E0;">
             <svg viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
         </div>
         <div>
             <div class="dossier-card-label">Diagnostics</div>
-            <div class="dossier-card-count">0 enregistre</div>
+            <div class="dossier-card-count">{{ $diagnosticCount }} diagnostic{{ $diagnosticCount > 1 ? 's' : '' }}</div>
         </div>
     </a>
-    <a href="#" class="dossier-card">
+    <a href="#consultations" class="dossier-card">
         <div class="dossier-card-icon" style="background:#F3E5F5;">
             <svg viewBox="0 0 24 24" fill="none" stroke="#6A1B9A" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
         </div>
         <div>
             <div class="dossier-card-label">Examens</div>
-            <div class="dossier-card-count">0 resultat</div>
+            <div class="dossier-card-count">{{ $examCount }} examen{{ $examCount > 1 ? 's' : '' }}</div>
         </div>
     </a>
-    <a href="#" class="dossier-card">
+    <a href="#consultations" class="dossier-card">
         <div class="dossier-card-icon" style="background:#E8F5E9;">
             <svg viewBox="0 0 24 24" fill="none" stroke="#388E3C" stroke-width="2"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/><path d="M12 8v8M8 12h8"/></svg>
         </div>
         <div>
             <div class="dossier-card-label">Traitements</div>
-            <div class="dossier-card-count">0 en cours</div>
+            <div class="dossier-card-count">{{ $treatmentCount }} en cours</div>
         </div>
     </a>
-    <a href="#" class="dossier-card">
+    <a href="/compte/carnet-vaccination" class="dossier-card">
         <div class="dossier-card-icon" style="background:#E3F2FD;">
             <svg viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <div>
             <div class="dossier-card-label">Vaccins</div>
-            <div class="dossier-card-count">0 enregistre</div>
+            <div class="dossier-card-count">{{ $vaccineCount }} vaccin{{ $vaccineCount > 1 ? 's' : '' }}</div>
         </div>
     </a>
-    <a href="#" class="dossier-card">
-        <div class="dossier-card-icon" style="background:#FFEBEE;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
-        </div>
-        <div>
-            <div class="dossier-card-label">Hospitalisations</div>
-            <div class="dossier-card-count">0 enregistree</div>
-        </div>
-    </a>
-    <a href="#" class="dossier-card">
+    <a href="#consultations" class="dossier-card">
         <div class="dossier-card-icon" style="background:#FFF3E0;">
             <svg viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
         </div>
         <div>
             <div class="dossier-card-label">Soins</div>
-            <div class="dossier-card-count">0 enregistre</div>
+            <div class="dossier-card-count">{{ $careCount }} soin{{ $careCount > 1 ? 's' : '' }}</div>
         </div>
     </a>
     <a href="/compte/profil/completer" class="dossier-card">
@@ -183,7 +179,7 @@
 </div>
 
 {{-- Section Consultations --}}
-<div class="dossier-section">
+<div class="dossier-section" id="consultations">
     <div class="dossier-section-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         Consultations

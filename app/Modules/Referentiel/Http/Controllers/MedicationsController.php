@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Referentiel\Http\Controllers;
 
+use App\Modules\Core\Support\AccentInsensitive;
 use App\Modules\Referentiel\Http\Resources\MedicationResource;
 use App\Modules\Referentiel\Models\Medication;
 use Illuminate\Http\Request;
@@ -21,8 +22,8 @@ final class MedicationsController
         if ($request->filled('q')) {
             $search = (string) $request->input('q');
             $query->where(fn ($q) => $q
-                ->where('dci', 'ILIKE', "%{$search}%")
-                ->orWhereHas('brands', fn ($bq) => $bq->where('brand_name', 'ILIKE', "%{$search}%")));
+                ->where(fn ($dci) => AccentInsensitive::contains($dci, 'dci', $search))
+                ->orWhereHas('brands', fn ($bq) => AccentInsensitive::contains($bq, 'brand_name', $search)));
         }
 
         if ($request->filled('class')) {

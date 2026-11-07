@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pharma\Http\Controllers;
 
+use App\Modules\Core\Support\AccentInsensitive;
 use App\Modules\Pharma\Models\PharmacyStock;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,8 +26,9 @@ final class PharmacyController
 
         if ($request->filled('medication')) {
             $term = $request->input('medication');
-            $query->whereHas('medication', fn ($q) => $q->where('dci', 'ILIKE', '%'.$term.'%')
-                ->orWhereHas('brands', fn ($bq) => $bq->where('brand_name', 'ILIKE', '%'.$term.'%')));
+            $query->whereHas('medication', fn ($q) => $q
+                ->where(fn ($dci) => AccentInsensitive::contains($dci, 'dci', $term))
+                ->orWhereHas('brands', fn ($bq) => AccentInsensitive::contains($bq, 'brand_name', $term)));
         }
 
         if ($request->filled('city')) {

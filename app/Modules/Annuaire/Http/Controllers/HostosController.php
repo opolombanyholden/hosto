@@ -98,6 +98,13 @@ final class HostosController
             $query->where('hostos.is_emergency_service', true);
         }
 
+        // --- Any emergency-related service (urgences page) ---
+        if ($request->boolean('urgences_any')) {
+            $query->where(fn ($q) => $q->where('hostos.is_emergency_service', true)
+                ->orWhere('hostos.is_evacuation_service', true)
+                ->orWhere('hostos.is_guard_service', true));
+        }
+
         // --- Evacuation service ---
         if ($request->boolean('evacuation')) {
             $query->where('hostos.is_evacuation_service', true);

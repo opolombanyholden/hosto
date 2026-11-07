@@ -183,7 +183,7 @@
     <span style="font-size:.82rem;font-weight:600;color:#BDBDBD;text-transform:uppercase;letter-spacing:2px;">PUB</span>
 </div>
 
-{{-- Acces rapides 2x2 : Pharmacie, Hopitale, Soins a domicile, Evacuation/Ambulance --}}
+{{-- Acces rapides 2x2 : Pharmacie, Hôpitaux, Soins a domicile, Evacuation/Ambulance --}}
 <div class="dash-quick-grid">
     <a href="/compte/pharmacies" class="dash-quick-item">
         <div class="dash-quick-icon">
@@ -195,7 +195,7 @@
         <div class="dash-quick-icon">
             <img src="/images/icons/icon-hopitaux.png" alt="Hopital" style="width:50px;height:50px;">
         </div>
-        <div class="dash-quick-name">Hopitale</div>
+        <div class="dash-quick-name">Hôpitaux</div>
     </a>
     <a href="/compte/soins-domicile" class="dash-quick-item">
         <div class="dash-quick-icon">

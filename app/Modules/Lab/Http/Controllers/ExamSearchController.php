@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Lab\Http\Controllers;
 
 use App\Modules\Annuaire\Models\Hosto;
+use App\Modules\Core\Support\AccentInsensitive;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,9 +32,7 @@ final class ExamSearchController
             $term = $request->input('exam');
             $query->whereHas('services', fn ($q) => $q->where('category', 'examen')
                 ->where('hosto_service.is_available', true)
-                ->where(fn ($sq) => $sq->where('name_fr', 'ILIKE', '%'.$term.'%')
-                    ->orWhere('name_en', 'ILIKE', '%'.$term.'%')
-                    ->orWhere('code', 'ILIKE', '%'.$term.'%')));
+                ->where(fn ($sq) => AccentInsensitive::contains(AccentInsensitive::contains($sq->where('code', 'ILIKE', '%'.$term.'%'), 'name_fr', $term, 'or'), 'name_en', $term, 'or')));
         }
 
         if ($request->filled('city')) {
@@ -52,9 +51,7 @@ final class ExamSearchController
 
                 if ($request->filled('exam')) {
                     $term = $request->input('exam');
-                    $examQuery->where(fn ($q) => $q->where('name_fr', 'ILIKE', '%'.$term.'%')
-                        ->orWhere('name_en', 'ILIKE', '%'.$term.'%')
-                        ->orWhere('code', 'ILIKE', '%'.$term.'%'));
+                    $examQuery->where(fn ($q) => AccentInsensitive::contains(AccentInsensitive::contains($q->where('code', 'ILIKE', '%'.$term.'%'), 'name_fr', $term, 'or'), 'name_en', $term, 'or'));
                 }
 
                 $exams = $examQuery->get();

@@ -14,6 +14,7 @@ use App\Http\Controllers\PublicationInteractionController;
 use App\Http\Controllers\ProDashboardController;
 use App\Http\Controllers\TeleconWebController;
 use App\Modules\Annuaire\Models\Hosto;
+use App\Modules\Referentiel\Models\Specialty;
 use App\Modules\RendezVous\Http\Controllers\AppointmentDocumentsController;
 use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Http\Controllers\Admin\AdminPermissionsController;
@@ -37,7 +38,12 @@ use Illuminate\Support\Facades\Route;
 // ---------------------------------------------------------------
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome', ['portalStats' => [
+        'structures' => Hosto::where('is_active', true)->count(),
+        'practitioners' => Practitioner::where('is_active', true)->count(),
+        'specialties' => Specialty::count(),
+        'cities' => Hosto::where('is_active', true)->distinct()->count('city_id'),
+    ]]);
 });
 
 Route::get('/annuaire', [AnnuaireWebController::class, 'index'])->name('annuaire.index');

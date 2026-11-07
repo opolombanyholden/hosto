@@ -506,16 +506,16 @@
             </div>
             <div class="hero-stats">
                 <div>
-                    <div class="hero-stat-value">14</div>
-                    <div class="hero-stat-label">Modules integres</div>
+                    <div class="hero-stat-value">{{ $portalStats['structures'] }}</div>
+                    <div class="hero-stat-label">Structures référencées</div>
                 </div>
                 <div>
-                    <div class="hero-stat-value">3</div>
-                    <div class="hero-stat-label">Plateformes (Web, Mobile, Desktop)</div>
+                    <div class="hero-stat-value">{{ $portalStats['practitioners'] }}</div>
+                    <div class="hero-stat-label">Médecins référencés</div>
                 </div>
                 <div>
-                    <div class="hero-stat-value">100%</div>
-                    <div class="hero-stat-label">Mode offline disponible</div>
+                    <div class="hero-stat-value">{{ $portalStats['specialties'] }}</div>
+                    <div class="hero-stat-label">Spécialités médicales</div>
                 </div>
             </div>
         </div>
@@ -577,8 +577,8 @@
                     <div class="card-side-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
-                    <div class="card-side-value">1 247</div>
-                    <div class="card-side-label">Structures referencees</div>
+                    <div class="card-side-value">{{ $portalStats['structures'] }}</div>
+                    <div class="card-side-label">Structures référencées</div>
                 </div>
             </div>
             @endif
@@ -690,8 +690,8 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
                     </div>
                     <div>
-                        <div class="feature-title">Mode offline complet</div>
-                        <div class="feature-desc">Dossiers patients, ordonnances et agenda accessibles sans connexion Internet. Synchronisation automatique au retour du reseau.</div>
+                        <div class="feature-title">Pensé pour les réseaux instables</div>
+                        <div class="feature-desc">Des pages légères et une architecture conçue pour fonctionner dans les structures à connexion irrégulière.</div>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -700,7 +700,7 @@
                     </div>
                     <div>
                         <div class="feature-title">Securite et consentement</div>
-                        <div class="feature-desc">Chiffrement AES-256, authentification 2FA et controle total du patient sur l'acces a son dossier medical.</div>
+                        <div class="feature-desc">Double authentification, journal des accès et contrôle du patient sur le partage de son dossier médical.</div>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -894,10 +894,10 @@
 <section class="stats">
     <div class="container">
         <div class="stats-grid">
-            <div class="stat-item"><div class="stat-number">14</div><div class="stat-label">Modules specialises</div><div class="stat-divider"></div></div>
-            <div class="stat-item"><div class="stat-number">3</div><div class="stat-label">Plateformes (Web, Mobile, Desktop)</div><div class="stat-divider"></div></div>
-            <div class="stat-item"><div class="stat-number">HL7</div><div class="stat-label">Interoperabilite FHIR</div><div class="stat-divider"></div></div>
-            <div class="stat-item"><div class="stat-number">AES-256</div><div class="stat-label">Chiffrement des donnees</div><div class="stat-divider"></div></div>
+            <div class="stat-item"><div class="stat-number">{{ $portalStats['structures'] }}</div><div class="stat-label">Structures référencées</div><div class="stat-divider"></div></div>
+            <div class="stat-item"><div class="stat-number">{{ $portalStats['practitioners'] }}</div><div class="stat-label">Médecins référencés</div><div class="stat-divider"></div></div>
+            <div class="stat-item"><div class="stat-number">{{ $portalStats['specialties'] }}</div><div class="stat-label">Spécialités médicales</div><div class="stat-divider"></div></div>
+            <div class="stat-item"><div class="stat-number">{{ $portalStats['cities'] }}</div><div class="stat-label">Villes couvertes</div><div class="stat-divider"></div></div>
         </div>
     </div>
 </section>
