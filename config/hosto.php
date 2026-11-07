@@ -139,4 +139,17 @@ return [
         'verify_base_url' => env('CARNET_VERIFY_BASE_URL', env('APP_URL', 'http://localhost').'/c/v'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Teleconsultation
+    |--------------------------------------------------------------------------
+    |
+    | meet.jit.si is a shared public service, for development only. Production
+    | must point to a Jitsi server controlled by the operator.
+    |
+    */
+    'telecon' => [
+        'jitsi_domain' => env('JITSI_DOMAIN', 'meet.jit.si'),
+    ],
+
 ];

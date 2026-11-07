@@ -56,6 +56,9 @@
             </div>
             <div style="display:flex;flex-direction:column;gap:8px;align-items:end;">
                 <span style="padding:4px 12px;border-radius:100px;font-size:.68rem;font-weight:600;background:{{ $statusColors[$rdv->status] ?? '#F5F5F5' }};">{{ $statusLabels[$rdv->status] ?? $rdv->status }}</span>
+                @if($session = ($teleconsultations[$rdv->id] ?? null))
+                <a href="/teleconsultation/{{ $session->uuid }}" style="padding:6px 14px;border-radius:8px;background:#2E7D32;color:white;font-size:.72rem;font-weight:600;text-decoration:none;">Rejoindre la téléconsultation</a>
+                @endif
                 @if($canCancel)
                 <form method="POST" action="/web/rdv/{{ $rdv->uuid }}/cancel" style="margin:0;" onsubmit="return confirm('Annuler ce rendez-vous ?')">
                     @csrf

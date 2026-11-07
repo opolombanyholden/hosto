@@ -63,16 +63,16 @@
             <h2>Pret pour la teleconsultation</h2>
             <p>Votre session avec {{ $teleconsultation->practitioner->full_name }} est prete. Cliquez pour rejoindre la salle securisee.</p>
             <button class="tc-join-btn" onclick="joinRoom()">Rejoindre la consultation</button>
-            <div class="tc-back"><a href="/">Retour a l'accueil</a></div>
+            <div class="tc-back"><a href="{{ $homeUrl }}">Retour</a></div>
             <div class="tc-security">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Connexion securisee — Chiffrement de bout en bout
+                Session réservée au patient et au praticien
             </div>
         </div>
         <div id="jitsi-container"></div>
     </div>
 
-    <script src="https://meet.jit.si/external_api.js"></script>
+    <script src="https://{{ $teleconsultation->jitsi_domain }}/external_api.js"></script>
     <script>
     function joinRoom() {
         document.getElementById('waiting').style.display = 'none';
@@ -84,7 +84,6 @@
             height: '100%',
             userInfo: {
                 displayName: '{{ addslashes(auth()->user()?->name ?? "Invité") }}',
-                email: '{{ auth()->user()?->email ?? "" }}',
             },
             configOverwrite: {
                 startWithAudioMuted: false,
@@ -115,7 +114,7 @@
         });
 
         // Track participants
-        api.addListener('participantJoined', () => {
+        api.addListener('videoConferenceJoined', () => {
             fetch('/web/telecon/{{ $teleconsultation->uuid }}/join', {
                 method: 'POST',
                 headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest'},
@@ -126,7 +125,7 @@
             fetch('/web/telecon/{{ $teleconsultation->uuid }}/end', {
                 method: 'POST',
                 headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest'},
-            }).then(() => window.location.href = '/compte');
+            }).then(() => window.location.href = '{{ $homeUrl }}');
         });
     }
     </script>

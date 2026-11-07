@@ -29,6 +29,7 @@ use App\Modules\Core\Http\Controllers\TwoFactorController;
 use App\Modules\Core\Http\Controllers\VerificationController;
 use App\Modules\Pro\Models\Consultation;
 use App\Modules\RendezVous\Models\Appointment;
+use App\Modules\Telecon\Models\Teleconsultation;
 use Illuminate\Support\Facades\Route;
 
 // ---------------------------------------------------------------
@@ -84,7 +85,12 @@ Route::prefix('compte')->group(function (): void {
                 ->orderByDesc('created_at')
                 ->get();
 
-            return view('compte.rendez-vous', compact('appointments'));
+            $teleconsultations = Teleconsultation::whereIn('appointment_id', $appointments->pluck('id'))
+                ->whereIn('status', ['scheduled', 'in_progress'])
+                ->get()
+                ->keyBy('appointment_id');
+
+            return view('compte.rendez-vous', compact('appointments', 'teleconsultations'));
         })->name('compte.rdv');
         Route::get('/dossier-medical', function () {
             return view('compte.mon-dossier', ['user' => auth()->user()]);
@@ -236,6 +242,8 @@ Route::prefix('pro')->group(function (): void {
         Route::get('/patients', [ProDashboardController::class, 'patients'])->name('pro.patients');
         Route::get('/patients/{uuid}', [ProDashboardController::class, 'showPatient'])->name('pro.patient.show');
         Route::post('/rendez-vous/{uuid}/confirmer', [ProDashboardController::class, 'confirmAppointment'])->name('pro.rdv.confirm');
+        Route::post('/rendez-vous/{uuid}/teleconsultation', [TeleconWebController::class, 'start'])
+            ->middleware('phone.verified')->name('pro.rdv.telecon');
         Route::get('/consultations', [ProWebController::class, 'consultations'])->name('pro.consultations');
         Route::get('/consultations/nouvelle', [ProWebController::class, 'newConsultation'])->name('pro.consultation.create');
         Route::post('/consultations', [ProWebController::class, 'storeConsultation']);
