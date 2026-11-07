@@ -8,27 +8,7 @@
 @section('user-role', 'Professionnel de sante')
 
 @section('sidebar-nav')
-<a href="/pro" class="active">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-    Tableau de bord
-</a>
-<div class="sidebar-section">A venir</div>
-<a href="#">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-    Mes patients
-</a>
-<a href="#">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-    Rendez-vous
-</a>
-<a href="#">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-    Ma structure
-</a>
-<a href="#">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
-    Ordonnances
-</a>
+@include('pro.partials.sidebar', ['active' => 'dashboard'])
 @endsection
 
 @section('content')
@@ -72,8 +52,76 @@
 @endif
 @endif
 
-<div style="background:white;border-radius:14px;padding:32px;border:1px solid #EEE;text-align:center;color:#757575;">
-    <p style="font-size:.9rem;">Votre espace professionnel est en cours de construction.</p>
-    <p style="font-size:.82rem;margin-top:8px;">La gestion des patients, rendez-vous et ordonnances sera disponible dans les prochaines phases.</p>
+@if(session('success'))
+<div style="background:#E8F5E9;border:1px solid #81C784;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.85rem;color:#2E7D32;">{{ session('success') }}</div>
+@endif
+@if(session('error'))
+<div style="background:#FFEBEE;border:1px solid #EF9A9A;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.85rem;color:#C62828;">{{ session('error') }}</div>
+@endif
+
+@if(!$practitioner)
+<div style="background:#FFF3E0;border:1px solid #FFB74D;border-radius:12px;padding:20px;color:#E65100;font-size:.85rem;">
+    Aucun profil praticien n'est associé à votre compte. Contactez l'administration.
 </div>
+@else
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:22px;">
+    @foreach([
+        ['Rendez-vous aujourd\'hui', $stats['today']],
+        ['À confirmer', $stats['pending']],
+        ['Consultations ce mois-ci', $stats['consultations']],
+        ['Patients suivis', $stats['patients']],
+    ] as [$label, $value])
+    <div style="background:white;border:1px solid #EEE;border-radius:14px;padding:16px 18px;">
+        <div style="font-size:1.6rem;font-weight:700;color:#1565C0;line-height:1.1;">{{ $value }}</div>
+        <div style="font-size:.78rem;color:#757575;margin-top:4px;">{{ $label }}</div>
+    </div>
+    @endforeach
+</div>
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap;">
+    <h2 style="font-size:1rem;font-weight:600;color:#1B2A1B;margin:0;">Prochains rendez-vous</h2>
+    <a href="/pro/consultations/nouvelle" style="padding:8px 18px;background:#1565C0;color:white;border-radius:100px;font-size:.78rem;font-weight:600;text-decoration:none;">Nouvelle consultation</a>
+</div>
+
+@forelse($upcoming as $rdv)
+@php $slot = $rdv->timeSlot; @endphp
+<div style="background:white;border:1px solid #EEE;border-radius:14px;padding:14px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;">
+    <div style="display:flex;gap:16px;align-items:center;">
+        <div style="text-align:center;min-width:54px;">
+            <div style="font-size:1.25rem;font-weight:700;color:#1565C0;line-height:1.1;">{{ $slot?->date?->format('d') }}</div>
+            <div style="font-size:.68rem;color:#757575;text-transform:uppercase;">{{ $slot?->date?->translatedFormat('M') }}</div>
+        </div>
+        <div>
+            <div style="font-size:.9rem;font-weight:600;color:#1B2A1B;">
+                {{ $slot ? substr($slot->start_time, 0, 5) : '' }} — <a href="/pro/patients/{{ $rdv->patient?->uuid }}" style="color:inherit;">{{ $rdv->patient?->name }}</a>
+            </div>
+            <div style="font-size:.78rem;color:#757575;">
+                {{ $rdv->structure?->name }}@if($rdv->is_teleconsultation) (téléconsultation)@endif
+                @if($rdv->is_for_third_party && $rdv->third_party_name) — pour {{ $rdv->third_party_name }}@endif
+            </div>
+            @if($rdv->reason)<div style="font-size:.78rem;color:#757575;">Motif : {{ $rdv->reason }}</div>@endif
+        </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+        @if($rdv->status === 'pending')
+        <form method="POST" action="/pro/rendez-vous/{{ $rdv->uuid }}/confirmer" style="margin:0;">
+            @csrf
+            <button type="submit" style="padding:7px 16px;border:none;border-radius:8px;background:#1565C0;color:white;font-family:Poppins,sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;">Confirmer</button>
+        </form>
+        @elseif($rdv->is_teleconsultation)
+        <form method="POST" action="/pro/rendez-vous/{{ $rdv->uuid }}/teleconsultation" style="margin:0;">
+            @csrf
+            <button type="submit" style="padding:7px 16px;border:none;border-radius:8px;background:#2E7D32;color:white;font-family:Poppins,sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;">Démarrer la téléconsultation</button>
+        </form>
+        @else
+        <span style="padding:4px 12px;border-radius:100px;font-size:.68rem;font-weight:600;background:#E8F5E9;color:#2E7D32;">Confirmé</span>
+        @endif
+    </div>
+</div>
+@empty
+<div style="background:white;border:1px solid #EEE;border-radius:14px;padding:28px;text-align:center;color:#757575;font-size:.85rem;">
+    Aucun rendez-vous à venir. Vos créneaux réservés apparaîtront ici.
+</div>
+@endforelse
+@endif
 @endsection

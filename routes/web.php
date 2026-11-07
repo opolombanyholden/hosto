@@ -11,6 +11,7 @@ use App\Http\Controllers\ClaimsWebController;
 use App\Http\Controllers\PractitionerProfileController;
 use App\Http\Controllers\ProWebController;
 use App\Http\Controllers\PublicationInteractionController;
+use App\Http\Controllers\ProDashboardController;
 use App\Http\Controllers\TeleconWebController;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\RendezVous\Http\Controllers\AppointmentDocumentsController;
@@ -231,9 +232,10 @@ Route::prefix('pro')->group(function (): void {
     });
 
     Route::middleware(['auth', 'env:pro'])->group(function (): void {
-        Route::get('/', function () {
-            return view('pro.dashboard');
-        })->name('pro.dashboard');
+        Route::get('/', [ProDashboardController::class, 'dashboard'])->name('pro.dashboard');
+        Route::get('/patients', [ProDashboardController::class, 'patients'])->name('pro.patients');
+        Route::get('/patients/{uuid}', [ProDashboardController::class, 'showPatient'])->name('pro.patient.show');
+        Route::post('/rendez-vous/{uuid}/confirmer', [ProDashboardController::class, 'confirmAppointment'])->name('pro.rdv.confirm');
         Route::get('/consultations', [ProWebController::class, 'consultations'])->name('pro.consultations');
         Route::get('/consultations/nouvelle', [ProWebController::class, 'newConsultation'])->name('pro.consultation.create');
         Route::post('/consultations', [ProWebController::class, 'storeConsultation']);

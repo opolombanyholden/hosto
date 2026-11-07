@@ -8,9 +8,7 @@
 @section('user-role', 'Professionnel')
 
 @section('sidebar-nav')
-<a href="/pro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> Tableau de bord</a>
-<a href="/pro/consultations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Consultations</a>
-<a href="/pro/consultations/nouvelle" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Nouvelle consultation</a>
+@include('pro.partials.sidebar', ['active' => 'nouvelle'])
 @endsection
 
 @section('content')

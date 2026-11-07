@@ -8,10 +8,7 @@
 @section('user-role', 'Professionnel')
 
 @section('sidebar-nav')
-<a href="/pro">Tableau de bord</a>
-<a href="/pro/visibility">Visibilite profil</a>
-<a href="/pro/publications" class="active">Mes publications</a>
-<a href="/pro/consultations">Consultations</a>
+@include('pro.partials.sidebar', ['active' => 'publications'])
 @endsection
 
 @section('content')
