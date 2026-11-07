@@ -13,6 +13,7 @@ use App\Modules\Referentiel\Models\City;
 use App\Modules\Referentiel\Models\Country;
 use App\Modules\Referentiel\Models\Region;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 final class ConsultationWorkflowTest extends TestCase
@@ -167,7 +168,10 @@ final class ConsultationWorkflowTest extends TestCase
             'motif' => 'Test visibility',
         ]);
 
+        $this->patient->forceFill(['medical_pin' => Hash::make('1234'), 'medical_pin_set_at' => now()])->save();
+
         $this->actingAs($this->patient)
+            ->withSession(['medical_pin_verified_at' => now()->timestamp])
             ->get("/compte/dossier-medical/{$consultation->uuid}")
             ->assertOk()
             ->assertSee('Test visibility');
@@ -182,7 +186,10 @@ final class ConsultationWorkflowTest extends TestCase
             'hosto_id' => $this->structure->id,
         ]);
 
+        $this->patient->forceFill(['medical_pin' => Hash::make('1234'), 'medical_pin_set_at' => now()])->save();
+
         $this->actingAs($this->patient)
+            ->withSession(['medical_pin_verified_at' => now()->timestamp])
             ->get("/compte/dossier-medical/{$consultation->uuid}")
             ->assertStatus(404);
     }

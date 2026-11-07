@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
@@ -268,6 +269,40 @@ final class ProfileController
     /**
      * Verify medical PIN (used before accessing DPE).
      */
+    /**
+     * Screen asking for the medical PIN before opening medical data.
+     */
+    public function showMedicalPin(): View
+    {
+        return view('compte.medical-pin');
+    }
+
+    /**
+     * Check the medical PIN, then return to the page the patient asked for.
+     */
+    public function unlockMedicalPin(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $request->validate(['pin' => 'required|digits_between:4,6']);
+
+        $limiterKey = "medical-pin:{$user->id}";
+
+        if (RateLimiter::tooManyAttempts($limiterKey, 5)) {
+            return back()->withErrors(['pin' => 'Trop de tentatives. Réessayez dans 15 minutes.']);
+        }
+
+        if (! $user->hasMedicalPin() || ! Hash::check($request->input('pin'), $user->medical_pin)) {
+            RateLimiter::hit($limiterKey, 900);
+
+            return back()->withErrors(['pin' => 'PIN incorrect.']);
+        }
+
+        RateLimiter::clear($limiterKey);
+        session(['medical_pin_verified_at' => now()->timestamp]);
+
+        return redirect()->intended('/compte/dossier-medical');
+    }
+
     public function verifyMedicalPin(Request $request): JsonResponse
     {
         $user = $request->user();

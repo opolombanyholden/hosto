@@ -50,7 +50,7 @@ final class EnsureMedicalPin
 
             return $request->expectsJson()
                 ? response()->json(['error' => ['code' => 'PIN_REQUIRED', 'message' => 'Veuillez saisir votre PIN medical.']], 403)
-                : redirect()->route('compte.dossier')->with('pin_required', true);
+                : redirect()->guest(route('compte.medical-pin'));
         }
 
         return $next($request);

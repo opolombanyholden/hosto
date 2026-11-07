@@ -205,6 +205,8 @@ Route::prefix('compte')->group(function (): void {
         Route::put('/profil/password', [ProfileController::class, 'updatePassword']);
 
         // PIN verification before profile access
+        Route::get('/pin-medical', [ProfileController::class, 'showMedicalPin'])->name('compte.medical-pin');
+        Route::post('/pin-medical', [ProfileController::class, 'unlockMedicalPin']);
         Route::get('/profil/pin', [ProfileController::class, 'showProfilePin'])->name('compte.profile-pin');
         Route::post('/profil/pin-verification', [ProfileController::class, 'verifyProfilePin']);
 
