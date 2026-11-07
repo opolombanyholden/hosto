@@ -189,6 +189,9 @@ final class TeleconsultationFlowTest extends TestCase
             ->assertSee("/teleconsultation/{$tc->uuid}", false);
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function appointment(array $attributes = []): Appointment
     {
         $slot = TimeSlot::create([
@@ -204,6 +207,9 @@ final class TeleconsultationFlowTest extends TestCase
         ], $attributes));
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function videoSession(?Appointment $apt = null, array $attributes = []): Teleconsultation
     {
         $apt ??= $this->appointment();

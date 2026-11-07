@@ -6,7 +6,6 @@ namespace App\Modules\RendezVous\Models;
 
 use App\Models\User;
 use App\Modules\Core\Traits\HasUuid;
-use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -38,11 +37,13 @@ class AppointmentDocument extends Model
         return 'uuid';
     }
 
+    /** @return BelongsTo<Appointment, $this> */
     public function appointment(): BelongsTo
     {
         return $this->belongsTo(Appointment::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function uploadedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploaded_by_id');

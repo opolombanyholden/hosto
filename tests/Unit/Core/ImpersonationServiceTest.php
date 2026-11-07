@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Core;
@@ -8,6 +9,7 @@ use App\Modules\Core\Models\ImpersonationSession;
 use App\Modules\Core\Models\Role;
 use App\Modules\Core\Models\UserRoleAssignment;
 use App\Modules\Core\Services\ImpersonationService;
+use DomainException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Tests\TestCase;
@@ -21,7 +23,7 @@ final class ImpersonationServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->svc = new ImpersonationService();
+        $this->svc = new ImpersonationService;
     }
 
     public function test_start_persists_session(): void
@@ -44,14 +46,14 @@ final class ImpersonationServiceTest extends TestCase
         $role = Role::create(['slug' => 'super_admin', 'name_fr' => 'SA', 'name_en' => 'SA', 'environment' => 'admin', 'is_system' => true]);
         UserRoleAssignment::create(['user_id' => $target->id, 'role_id' => $role->id]);
 
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->svc->start($admin, $target, 'X', Request::create('/x'));
     }
 
     public function test_start_refuses_self(): void
     {
         $u = User::factory()->create();
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->svc->start($u, $u, 'X', Request::create('/x'));
     }
 

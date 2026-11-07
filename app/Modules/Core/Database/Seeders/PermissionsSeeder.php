@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Core\Database\Seeders;
@@ -32,15 +33,15 @@ class PermissionsSeeder extends Seeder
             ['slug' => 'structures.edit',       'scope' => 'structures',    'name_fr' => 'Éditer une structure'],
             ['slug' => 'structures.validate',   'scope' => 'structures',    'name_fr' => 'Valider une revendication (claim) de structure'],
             ['slug' => 'structures.delete',     'scope' => 'structures',    'name_fr' => 'Supprimer une structure'],
-            ['slug' => 'pro_categories.view',   'scope' => 'pro_categories','name_fr' => 'Voir les catégories de professionnels'],
-            ['slug' => 'pro_categories.manage', 'scope' => 'pro_categories','name_fr' => 'CRUD complet sur les catégories pro'],
+            ['slug' => 'pro_categories.view',   'scope' => 'pro_categories', 'name_fr' => 'Voir les catégories de professionnels'],
+            ['slug' => 'pro_categories.manage', 'scope' => 'pro_categories', 'name_fr' => 'CRUD complet sur les catégories pro'],
             ['slug' => 'claims.review',         'scope' => 'claims',        'name_fr' => 'Examiner et trancher les claims de structure'],
             ['slug' => 'consultations.view',    'scope' => 'consultations', 'name_fr' => 'Voir les consultations (lecture globale)'],
             ['slug' => 'consultations.manage',  'scope' => 'consultations', 'name_fr' => 'Gérer ses propres consultations (médecin)'],
             ['slug' => 'prescriptions.create',  'scope' => 'prescriptions', 'name_fr' => 'Créer une ordonnance'],
             ['slug' => 'prescriptions.view',    'scope' => 'prescriptions', 'name_fr' => 'Voir les ordonnances'],
             ['slug' => 'appointments.manage',   'scope' => 'appointments',  'name_fr' => 'Gérer les rendez-vous (secrétariat)'],
-            ['slug' => 'appointments.book.self','scope' => 'appointments',  'name_fr' => 'Prendre rendez-vous pour soi (patient)'],
+            ['slug' => 'appointments.book.self', 'scope' => 'appointments',  'name_fr' => 'Prendre rendez-vous pour soi (patient)'],
             ['slug' => 'payments.view',         'scope' => 'payments',      'name_fr' => 'Voir les paiements'],
             ['slug' => 'payments.refund',       'scope' => 'payments',      'name_fr' => 'Émettre un remboursement'],
             ['slug' => 'invoices.manage',       'scope' => 'invoices',      'name_fr' => 'Créer / valider des factures (compta)'],
@@ -52,13 +53,13 @@ class PermissionsSeeder extends Seeder
             ['slug' => 'exports.stats',         'scope' => 'exports',       'name_fr' => 'Exporter les rapports stats'],
             ['slug' => 'self.profile',           'scope' => 'self', 'name_fr' => 'Gérer son propre profil (tous comptes)'],
             ['slug' => 'self.medical_record',    'scope' => 'self', 'name_fr' => 'Accéder à son dossier médical (patient)'],
-            ['slug' => 'self.carnet_vaccination','scope' => 'self', 'name_fr' => 'Voir/imprimer son carnet de vaccination'],
+            ['slug' => 'self.carnet_vaccination', 'scope' => 'self', 'name_fr' => 'Voir/imprimer son carnet de vaccination'],
         ];
 
         foreach ($perms as $i => $p) {
             Permission::updateOrCreate(
                 ['slug' => $p['slug']],
-                array_merge($p, ['display_order' => $i + 1, 'is_active' => true])
+                array_merge($p, ['display_order' => $i + 1, 'is_active' => true]),
             );
         }
     }

@@ -52,21 +52,25 @@ class MedicalRecordGrant extends Model
         return $this->revoked_at === null;
     }
 
+    /** @return BelongsTo<User, $this> */
     public function patient(): BelongsTo
     {
         return $this->belongsTo(User::class, 'patient_id');
     }
 
+    /** @return BelongsTo<Practitioner, $this> */
     public function practitioner(): BelongsTo
     {
         return $this->belongsTo(Practitioner::class);
     }
 
+    /** @return BelongsTo<Appointment, $this> */
     public function sourceAppointment(): BelongsTo
     {
         return $this->belongsTo(Appointment::class, 'source_appointment_id');
     }
 
+    /** @return HasMany<MedicalRecordAccessLog, $this> */
     public function accessLogs(): HasMany
     {
         return $this->hasMany(MedicalRecordAccessLog::class, 'grant_id')

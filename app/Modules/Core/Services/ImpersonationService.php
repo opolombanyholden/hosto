@@ -1,24 +1,27 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Core\Services;
 
 use App\Models\User;
 use App\Modules\Core\Models\ImpersonationSession;
+use DomainException;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 final class ImpersonationService
 {
     public function start(User $admin, User $target, string $reason, Request $request): ImpersonationSession
     {
         if ($admin->id === $target->id) {
-            throw new \DomainException('Cannot impersonate yourself');
+            throw new DomainException('Cannot impersonate yourself');
         }
         if ($this->isSuperAdmin($target)) {
-            throw new \DomainException('Cannot impersonate a super_admin');
+            throw new DomainException('Cannot impersonate a super_admin');
         }
         if (empty(trim($reason))) {
-            throw new \InvalidArgumentException('reason is required');
+            throw new InvalidArgumentException('reason is required');
         }
 
         return ImpersonationSession::create([

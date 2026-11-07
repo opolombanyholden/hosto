@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\RendezVous;
 
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 final class PhoneNormalizationBackfillTest extends TestCase
@@ -18,7 +20,7 @@ final class PhoneNormalizationBackfillTest extends TestCase
         $u = User::factory()->create();
         DB::table('users')->where('id', $u->id)->update(['phone_normalized' => '+241060000001']);
 
-        $cols = \Illuminate\Support\Facades\Schema::getColumnListing('users');
+        $cols = Schema::getColumnListing('users');
         $this->assertContains('phone_normalized', $cols);
         $this->assertSame('+241060000001', $u->fresh()->phone_normalized);
     }
@@ -29,7 +31,7 @@ final class PhoneNormalizationBackfillTest extends TestCase
         $u2 = User::factory()->create();
         DB::table('users')->where('id', $u1->id)->update(['phone_normalized' => '+241060000002']);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(QueryException::class);
         DB::table('users')->where('id', $u2->id)->update(['phone_normalized' => '+241060000002']);
     }
 }

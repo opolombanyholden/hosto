@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\RendezVous;
@@ -7,12 +8,13 @@ use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\RendezVous\Models\Appointment;
-use App\Modules\RendezVous\Models\AppointmentDocument;
 use App\Modules\RendezVous\Models\TimeSlot;
 use App\Modules\RendezVous\Services\DocumentUploadService;
+use DomainException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 use Tests\TestCase;
 
 final class DocumentUploadServiceTest extends TestCase
@@ -20,8 +22,11 @@ final class DocumentUploadServiceTest extends TestCase
     use RefreshDatabase;
 
     private DocumentUploadService $svc;
+
     private Appointment $apt;
+
     private User $patient;
+
     private Practitioner $practitioner;
 
     protected function setUp(): void
@@ -55,21 +60,21 @@ final class DocumentUploadServiceTest extends TestCase
         $this->assertSame('ordonnance.pdf', $doc->original_name);
         $this->assertSame('ordonnance', $doc->category);
         Storage::disk('private_appointments')->assertExists(
-            str_replace('appointments/', '', $doc->stored_path)
+            str_replace('appointments/', '', $doc->stored_path),
         );
     }
 
     public function test_store_refuses_mime_not_allowed(): void
     {
         $file = UploadedFile::fake()->create('malware.exe', 100, 'application/x-msdownload');
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->svc->store($this->apt, $file, $this->patient, null);
     }
 
     public function test_store_refuses_above_10mb(): void
     {
         $file = UploadedFile::fake()->create('big.pdf', 11 * 1024, 'application/pdf'); // 11 MB
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->svc->store($this->apt, $file, $this->patient, null);
     }
 
@@ -80,7 +85,7 @@ final class DocumentUploadServiceTest extends TestCase
             $this->svc->store($this->apt, $f, $this->patient, null);
         }
         $extra = UploadedFile::fake()->create('6.pdf', 100, 'application/pdf');
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->svc->store($this->apt, $extra, $this->patient, null);
     }
 
@@ -91,18 +96,18 @@ final class DocumentUploadServiceTest extends TestCase
             $this->svc->store($this->apt, $f, $this->patient, null);
         }
         $extra = UploadedFile::fake()->create('big.pdf', 9 * 1024, 'application/pdf');
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->svc->store($this->apt, $extra, $this->patient, null);
     }
 
-    public function test_canAccess_allows_patient_owner(): void
+    public function test_can_access_allows_patient_owner(): void
     {
         $file = UploadedFile::fake()->create('o.pdf', 50, 'application/pdf');
         $doc = $this->svc->store($this->apt, $file, $this->patient, null);
         $this->assertTrue($this->svc->canAccess($doc, $this->patient));
     }
 
-    public function test_canAccess_denies_random_user(): void
+    public function test_can_access_denies_random_user(): void
     {
         $file = UploadedFile::fake()->create('o.pdf', 50, 'application/pdf');
         $doc = $this->svc->store($this->apt, $file, $this->patient, null);
@@ -110,7 +115,7 @@ final class DocumentUploadServiceTest extends TestCase
         $this->assertFalse($this->svc->canAccess($doc, $other));
     }
 
-    public function test_canAccess_allows_practitioner_user(): void
+    public function test_can_access_allows_practitioner_user(): void
     {
         $procUser = User::factory()->create();
         $this->practitioner->update(['user_id' => $procUser->id]);
@@ -127,7 +132,7 @@ final class DocumentUploadServiceTest extends TestCase
         $this->assertSoftDeleted($doc);
     }
 
-    public function test_promoteToDpe_marks_keep_in_dpe_true(): void
+    public function test_promote_to_dpe_marks_keep_in_dpe_true(): void
     {
         $file = UploadedFile::fake()->create('o.pdf', 50, 'application/pdf');
         $doc = $this->svc->store($this->apt, $file, $this->patient, null);

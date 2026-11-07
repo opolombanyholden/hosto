@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Annuaire\Http\Controllers\Admin;
@@ -15,13 +16,14 @@ final class AdminPractitionerCategoriesController
         $categories = PractitionerCategory::withCount('practitioners')
             ->orderBy('display_order')
             ->get();
+
         return view('admin.practitioner-categories.index', compact('categories'));
     }
 
     public function create(): View
     {
         return view('admin.practitioner-categories.form', [
-            'category' => new PractitionerCategory(),
+            'category' => new PractitionerCategory,
             'parents' => PractitionerCategory::whereNull('parent_category_id')->orderBy('name_fr')->get(),
         ]);
     }
@@ -41,12 +43,14 @@ final class AdminPractitionerCategoriesController
         ]);
         $data['is_medical'] = (bool) ($data['is_medical'] ?? true);
         PractitionerCategory::create($data);
+
         return redirect()->route('admin.pro-cats.index')->with('success', 'Catégorie créée');
     }
 
     public function edit(string $uuid): View
     {
         $cat = PractitionerCategory::where('uuid', $uuid)->firstOrFail();
+
         return view('admin.practitioner-categories.form', [
             'category' => $cat,
             'parents' => PractitionerCategory::whereNull('parent_category_id')->where('id', '!=', $cat->id)->orderBy('name_fr')->get(),
@@ -69,6 +73,7 @@ final class AdminPractitionerCategoriesController
         ]);
         $data['is_medical'] = (bool) ($data['is_medical'] ?? true);
         $cat->update($data);
+
         return redirect()->route('admin.pro-cats.index')->with('success', 'Catégorie mise à jour');
     }
 
@@ -79,6 +84,7 @@ final class AdminPractitionerCategoriesController
             return back()->withErrors(['delete' => 'Des praticiens sont rattachés à cette catégorie.']);
         }
         $cat->delete();
+
         return redirect()->route('admin.pro-cats.index')->with('success', 'Catégorie supprimée');
     }
 
@@ -92,6 +98,7 @@ final class AdminPractitionerCategoriesController
         foreach ($data['items'] as $item) {
             PractitionerCategory::where('uuid', $item['uuid'])->update(['display_order' => $item['display_order']]);
         }
+
         return back()->with('success', 'Ordre mis à jour');
     }
 }

@@ -24,7 +24,7 @@ final class PermissionResolver
 
         // Récupère les assignations actives du user (expirées ignorées).
         $assignments = UserRoleAssignment::where('user_id', $user->id)
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
             ->with('role.permissions')
@@ -64,7 +64,7 @@ final class PermissionResolver
         }
 
         $assignments = UserRoleAssignment::where('user_id', $user->id)
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
             ->with('role.permissions')
@@ -85,7 +85,7 @@ final class PermissionResolver
         return UserRoleAssignment::where('user_id', $user->id)
             ->whereNull('scope_type')
             ->whereHas('role', fn ($q) => $q->where('slug', $slug))
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
             ->exists();
@@ -97,7 +97,7 @@ final class PermissionResolver
             ->where('scope_type', $scope::class)
             ->where('scope_id', $scope->getKey())
             ->whereHas('role', fn ($q) => $q->where('slug', $slug))
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q->whereNull('expires_at')->orWhere('expires_at', '>', now());
             })
             ->exists();

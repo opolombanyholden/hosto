@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\RendezVous;
@@ -19,8 +20,11 @@ final class BookingFlowTest extends TestCase
     use RefreshDatabase;
 
     private User $patient;
+
     private Hosto $hosto;
+
     private Practitioner $practitioner;
+
     private TimeSlot $slot;
 
     protected function setUp(): void

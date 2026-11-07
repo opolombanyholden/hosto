@@ -3,22 +3,20 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AdminReferenceController;
-use App\Modules\Annuaire\Http\Controllers\Admin\AdminPractitionerCategoriesController;
 use App\Http\Controllers\AdminWebController;
 use App\Http\Controllers\AnnuaireWebController;
 use App\Http\Controllers\BookingWebController;
 use App\Http\Controllers\ClaimsWebController;
-use App\Http\Controllers\PractitionerProfileController;
-use App\Http\Controllers\ProWebController;
-use App\Http\Controllers\PublicationInteractionController;
 use App\Http\Controllers\LabWebController;
 use App\Http\Controllers\PatientCareController;
 use App\Http\Controllers\PharmacyWebController;
+use App\Http\Controllers\PractitionerProfileController;
 use App\Http\Controllers\ProDashboardController;
+use App\Http\Controllers\ProWebController;
+use App\Http\Controllers\PublicationInteractionController;
 use App\Http\Controllers\TeleconWebController;
+use App\Modules\Annuaire\Http\Controllers\Admin\AdminPractitionerCategoriesController;
 use App\Modules\Annuaire\Models\Hosto;
-use App\Modules\Referentiel\Models\Specialty;
-use App\Modules\RendezVous\Http\Controllers\AppointmentDocumentsController;
 use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Http\Controllers\Admin\AdminPermissionsController;
 use App\Modules\Core\Http\Controllers\Admin\AdminRolesController;
@@ -32,12 +30,14 @@ use App\Modules\Core\Http\Controllers\SocialAuthController;
 use App\Modules\Core\Http\Controllers\TwoFactorController;
 use App\Modules\Core\Http\Controllers\VerificationController;
 use App\Modules\Core\Support\AccentInsensitive;
+use App\Modules\Core\Support\SearchablePaginator;
+use App\Modules\Lab\Http\Controllers\ExamOrdersController;
 use App\Modules\Pro\Models\Consultation;
+use App\Modules\Referentiel\Models\Specialty;
+use App\Modules\RendezVous\Http\Controllers\AppointmentDocumentsController;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\Telecon\Models\Teleconsultation;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Route;
 
 // ---------------------------------------------------------------
@@ -116,42 +116,28 @@ Route::prefix('compte')->group(function (): void {
         })->name('compte.dossier');
 
         // API JSON pour les sections du dossier (AJAX + pagination)
-        $paginateMatches = function (Request $request, Builder $query, callable $matches): LengthAwarePaginator {
-            $perPage = $request->integer('per_page', 5);
-
-            if (! $request->filled('q')) {
-                return $query->paginate($perPage);
-            }
-
-            $term = (string) $request->input('q');
-            $found = $query->get()->filter(fn ($record) => $matches($record, $term))->values();
-            $page = LengthAwarePaginator::resolveCurrentPage();
-
-            return new LengthAwarePaginator($found->forPage($page, $perPage)->values(), $found->count(), $perPage, $page);
-        };
-
-        Route::get('/api/rendez-vous', function (Request $request) use ($paginateMatches) {
+        Route::get('/api/rendez-vous', function (Request $request) {
             $query = Appointment::where('patient_id', auth()->id())->with(['timeSlot', 'practitioner', 'structure'])->orderByDesc('created_at');
             // reason is encrypted: a patient has few appointments, so the search runs in PHP.
-            $data = $paginateMatches($request, $query, fn ($r, $q) => AccentInsensitive::matches($r->structure?->name, $q)
-                || AccentInsensitive::matches($r->practitioner?->full_name, $q)
+            $data = SearchablePaginator::paginate($request, $query, fn (Appointment $r, string $q): bool => AccentInsensitive::matches($r->structure->name, $q)
+                || AccentInsensitive::matches($r->practitioner->full_name, $q)
                 || AccentInsensitive::matches($r->reason, $q));
 
-            return response()->json(['data' => $data->map(fn ($r) => [
+            return response()->json(['data' => $data->getCollection()->map(fn (Appointment $r) => [
                 'uuid' => $r->uuid, 'status' => $r->status, 'reason' => $r->reason,
                 'date' => $r->timeSlot->date->format('d/m/Y'), 'time' => substr($r->timeSlot->start_time, 0, 5),
                 'structure' => $r->structure->name, 'practitioner' => $r->practitioner->full_name,
                 'created_at' => $r->created_at->format('d/m/Y'),
             ]), 'meta' => ['total' => $data->total(), 'current_page' => $data->currentPage(), 'last_page' => $data->lastPage()]]);
         });
-        Route::get('/api/consultations', function (Request $request) use ($paginateMatches) {
+        Route::get('/api/consultations', function (Request $request) {
             $query = Consultation::where('patient_id', auth()->id())->with(['practitioner', 'structure'])->orderByDesc('created_at');
             // motif and diagnostic are encrypted: the search runs in PHP.
-            $data = $paginateMatches($request, $query, fn ($c, $q) => AccentInsensitive::matches($c->practitioner?->full_name, $q)
+            $data = SearchablePaginator::paginate($request, $query, fn (Consultation $c, string $q): bool => AccentInsensitive::matches($c->practitioner->full_name, $q)
                 || AccentInsensitive::matches($c->motif, $q)
                 || AccentInsensitive::matches($c->diagnostic, $q));
 
-            return response()->json(['data' => $data->map(fn ($c) => [
+            return response()->json(['data' => $data->getCollection()->map(fn (Consultation $c) => [
                 'uuid' => $c->uuid, 'status' => $c->status, 'motif' => $c->motif, 'diagnostic' => $c->diagnostic,
                 'structure' => $c->structure->name, 'practitioner' => $c->practitioner->full_name,
                 'created_at' => $c->created_at->format('d/m/Y'),
@@ -452,12 +438,12 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/web/evaluate/{uuid}', [ClaimsWebController::class, 'submitEvaluation'])->name('web.evaluate');
 
     // Exam orders (lab module)
-    Route::post('/web/exam-orders', [\App\Modules\Lab\Http\Controllers\ExamOrdersController::class, 'store'])->name('web.exam-order.store');
-    Route::get('/web/exam-orders/{uuid}', [\App\Modules\Lab\Http\Controllers\ExamOrdersController::class, 'show'])->name('web.exam-order.show');
+    Route::post('/web/exam-orders', [ExamOrdersController::class, 'store'])->name('web.exam-order.store');
+    Route::get('/web/exam-orders/{uuid}', [ExamOrdersController::class, 'show'])->name('web.exam-order.show');
 });
 
 // Exam orders : the POST endpoint also accepts guests (returns 401 with login_url for the JS to redirect)
-Route::post('/web/public/exam-orders', [\App\Modules\Lab\Http\Controllers\ExamOrdersController::class, 'store'])->name('web.exam-order.store-public');
+Route::post('/web/public/exam-orders', [ExamOrdersController::class, 'store'])->name('web.exam-order.store-public');
 
 // ---------------------------------------------------------------
 // Verification (email + phone)

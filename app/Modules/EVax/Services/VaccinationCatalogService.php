@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Services;
 
 use App\Modules\EVax\Models\Vaccine;
 use Carbon\CarbonImmutable;
+use DateTimeInterface;
 use Illuminate\Support\Collection;
 
 final class VaccinationCatalogService
@@ -30,7 +32,7 @@ final class VaccinationCatalogService
      *
      * @return array<int, array{vaccine: Vaccine, due_at: CarbonImmutable, status: string}>
      */
-    public function pevSchedule(\DateTimeInterface $dateOfBirth): array
+    public function pevSchedule(DateTimeInterface $dateOfBirth): array
     {
         $dob = CarbonImmutable::instance($dateOfBirth);
         $today = CarbonImmutable::today();
@@ -54,6 +56,7 @@ final class VaccinationCatalogService
 
             $out[] = ['vaccine' => $vaccine, 'due_at' => $dueAt, 'status' => $status];
         }
+
         return $out;
     }
 }

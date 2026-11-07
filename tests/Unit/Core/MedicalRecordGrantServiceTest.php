@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Core;
@@ -20,7 +21,7 @@ final class MedicalRecordGrantServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->svc = new MedicalRecordGrantService();
+        $this->svc = new MedicalRecordGrantService;
     }
 
     public function test_grant_creates_active_record(): void

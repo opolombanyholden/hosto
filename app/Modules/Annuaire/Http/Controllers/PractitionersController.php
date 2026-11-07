@@ -33,7 +33,7 @@ final class PractitionersController
 
         if ($request->filled('city')) {
             $cityValue = (string) $request->input('city');
-            $query->whereHas('structures.city', function ($q) use ($cityValue) {
+            $query->whereHas('structures.city', function ($q) use ($cityValue): void {
                 $q->where('cities.uuid', $cityValue)
                     ->orWhere('cities.name_fr', 'ILIKE', $cityValue);
             });

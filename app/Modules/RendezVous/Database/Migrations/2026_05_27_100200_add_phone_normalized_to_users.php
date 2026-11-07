@@ -20,7 +20,7 @@ return new class extends Migration
             ->whereNotNull('phone')
             ->whereNull('phone_normalized')
             ->orderBy('id')
-            ->chunk(500, function ($users) {
+            ->chunk(500, function ($users): void {
                 foreach ($users as $u) {
                     $raw = preg_replace('/[^0-9+]/', '', $u->phone);
                     if (! str_starts_with($raw, '+')) {
@@ -30,7 +30,7 @@ return new class extends Migration
                         try {
                             DB::table('users')->where('id', $u->id)
                                 ->update(['phone_normalized' => $raw]);
-                        } catch (\Throwable $e) {
+                        } catch (Throwable $e) {
                             // Duplicate or invalid format — skip silently
                         }
                     }

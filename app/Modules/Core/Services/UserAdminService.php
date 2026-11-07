@@ -7,8 +7,11 @@ namespace App\Modules\Core\Services;
 use App\Models\User;
 use App\Modules\Core\Models\Role;
 use App\Modules\Core\Models\UserRoleAssignment;
+use DomainException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
+use InvalidArgumentException;
+use Throwable;
 
 final class UserAdminService
 {
@@ -78,7 +81,7 @@ final class UserAdminService
     public function validatePro(User $user, bool $approve, ?string $rejectionReason): void
     {
         if (! $approve && empty($rejectionReason)) {
-            throw new \InvalidArgumentException('rejection_reason est requis pour un rejet');
+            throw new InvalidArgumentException('rejection_reason est requis pour un rejet');
         }
 
         if ($approve) {
@@ -98,12 +101,12 @@ final class UserAdminService
 
     /**
      * @param  Collection<int, User>  $users
-     * @param  array<string, mixed>   $params
+     * @param  array<string, mixed>  $params
      */
     public function bulkAction(Collection $users, string $action, array $params = []): int
     {
         if ($users->count() > self::BULK_LIMIT) {
-            throw new \DomainException('Bulk action limited to '.self::BULK_LIMIT.' targets');
+            throw new DomainException('Bulk action limited to '.self::BULK_LIMIT.' targets');
         }
 
         $count = 0;
@@ -114,10 +117,10 @@ final class UserAdminService
                     'reactivate' => $this->reactivate($u),
                     'delete' => $this->softDelete($u),
                     'restore' => $this->restore($u),
-                    default => throw new \InvalidArgumentException("Unknown bulk action: {$action}"),
+                    default => throw new InvalidArgumentException("Unknown bulk action: {$action}"),
                 };
                 $count++;
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 continue;
             }
         }
@@ -145,7 +148,7 @@ final class UserAdminService
             ->count();
 
         if ($count <= 1) {
-            throw new \DomainException('Cannot delete the last super_admin');
+            throw new DomainException('Cannot delete the last super_admin');
         }
     }
 

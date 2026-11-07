@@ -1,23 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\EVax;
 
 use App\Models\User;
 use App\Modules\EVax\Models\Dependent;
-use App\Modules\EVax\Models\Vaccine;
 use App\Modules\EVax\Models\VaccinationRecord;
+use App\Modules\EVax\Models\Vaccine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 final class EVaxProControllerTest extends TestCase
 {
     use RefreshDatabase;
-
-    private function pro(): User
-    {
-        return User::factory()->create(['pro_validated_at' => now()]);
-    }
 
     // ===== T10.t11 searchPatient =====
 
@@ -159,5 +155,10 @@ final class EVaxProControllerTest extends TestCase
         $pro = $this->pro();
         $this->actingAs($pro)->postJson('/pro/evax/resolve-qr', ['qr' => 'unknownsecretxxxxxxxxxxxxxxxxxxx'])
             ->assertNotFound();
+    }
+
+    private function pro(): User
+    {
+        return User::factory()->create(['pro_validated_at' => now()]);
     }
 }

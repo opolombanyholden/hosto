@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Console\Commands;
@@ -20,6 +21,7 @@ final class GenerateCarnetKeypair extends Command
 
         if (! is_dir($outDir) && ! mkdir($outDir, 0700, true) && ! is_dir($outDir)) {
             $this->error("Cannot create directory: {$outDir}");
+
             return self::FAILURE;
         }
 
@@ -27,6 +29,7 @@ final class GenerateCarnetKeypair extends Command
         $res = openssl_pkey_new($config);
         if ($res === false) {
             $this->error('Failed to generate keypair: '.openssl_error_string());
+
             return self::FAILURE;
         }
 

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\RendezVous\Models;
 
-use App\Modules\Core\Casts\EncryptedMedical;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Annuaire\Models\Practitioner;
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Modules\Core\Traits\HasUuid;
 use App\Modules\Core\Traits\TracksActor;
 use Carbon\CarbonImmutable;
@@ -41,6 +41,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $appointment_type
  * @property string $consultation_mode
  * @property bool $share_medical_record
+ * @property bool $is_for_third_party
+ * @property string|null $third_party_name
  * @property int|null $third_party_user_id
  * @property string|null $visit_address
  * @property string|null $visit_lat

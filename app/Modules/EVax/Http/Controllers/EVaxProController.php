@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Http\Controllers;
@@ -6,13 +7,13 @@ namespace App\Modules\EVax\Http\Controllers;
 use App\Models\User;
 use App\Modules\Core\Services\AuditLogger;
 use App\Modules\EVax\Models\Dependent;
-use App\Modules\EVax\Models\Vaccine;
 use App\Modules\EVax\Models\VaccinationRecord;
+use App\Modules\EVax\Models\Vaccine;
+use App\Modules\EVax\Services\VaccinationCatalogService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Modules\EVax\Services\VaccinationCatalogService;
 
 final class EVaxProController
 {
@@ -26,10 +27,10 @@ final class EVaxProController
         }
 
         $users = User::query()
-            ->where(function ($w) use ($q) {
+            ->where(function ($w) use ($q): void {
                 $w->where('name', 'ILIKE', '%'.$q.'%')
-                  ->orWhere('nip', 'ILIKE', '%'.$q.'%')
-                  ->orWhere('phone', 'ILIKE', '%'.$q.'%');
+                    ->orWhere('nip', 'ILIKE', '%'.$q.'%')
+                    ->orWhere('phone', 'ILIKE', '%'.$q.'%');
             })
             ->limit(20)
             ->with(['dependents:id,uuid,user_id,first_name,last_name,date_of_birth'])
@@ -106,7 +107,7 @@ final class EVaxProController
                 'dependent_id' => $dependent?->id,
                 'vaccine_id' => $vaccine?->id,
                 'vaccine_code' => $vaccine?->code,
-                'vaccine_name' => $vaccine?->name_fr ?? $data['vaccine_name'],
+                'vaccine_name' => $vaccine->name_fr ?? $data['vaccine_name'],
                 'is_standardized' => (bool) $vaccine,
                 'dose_number' => $data['dose_number'],
                 'administered_at' => $data['administered_at'],
@@ -116,7 +117,7 @@ final class EVaxProController
                 'next_dose_date' => $data['next_dose_date'] ?? null,
                 'notes' => $data['notes'] ?? null,
                 'signed_at' => now(),
-                'signed_by_signature' => hash('sha256', $request->user()->id.'|'.now()->timestamp.'|'.($patient?->uuid ?? $dependent?->uuid)),
+                'signed_by_signature' => hash('sha256', $request->user()->id.'|'.now()->timestamp.'|'.($patient->uuid ?? $dependent?->uuid)),
                 'carnet_revision' => ((int) $previousMaxRev) + 1,
             ]);
         });
@@ -168,7 +169,7 @@ final class EVaxProController
             'dependents' => $u->dependents->map(fn (Dependent $d) => [
                 'uuid' => $d->uuid,
                 'full_name' => $d->first_name.' '.$d->last_name,
-                'date_of_birth' => $d->date_of_birth?->toDateString(),
+                'date_of_birth' => $d->date_of_birth->toDateString(),
             ])->all(),
         ];
     }

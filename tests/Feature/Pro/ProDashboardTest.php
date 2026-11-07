@@ -196,6 +196,9 @@ final class ProDashboardTest extends TestCase
             ->assertDontSee('Suivi confrere');
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function appointment(Practitioner $practitioner, User $patient, array $attributes = [], ?string $date = null): Appointment
     {
         $slot = TimeSlot::create([
@@ -211,6 +214,9 @@ final class ProDashboardTest extends TestCase
         ], $attributes));
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function consultation(Practitioner $practitioner, User $patient, array $attributes = []): Consultation
     {
         return Consultation::create(array_merge([

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Modules\Lab\Http\Controllers\ExamOrdersController;
 use App\Modules\Lab\Http\Controllers\ExamSearchController;
 use App\Modules\Lab\Http\Controllers\LabController;
 use Illuminate\Support\Facades\Route;

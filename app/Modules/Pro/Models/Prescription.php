@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Pro\Models;
 
-use App\Modules\Core\Casts\EncryptedMedical;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Practitioner;
+use App\Modules\Core\Casts\EncryptedMedical;
 use App\Modules\Core\Traits\HasUuid;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;

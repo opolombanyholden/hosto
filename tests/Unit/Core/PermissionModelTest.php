@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Core;
 
 use App\Modules\Core\Models\Permission;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -32,7 +33,7 @@ final class PermissionModelTest extends TestCase
     public function test_slug_is_unique(): void
     {
         Permission::create(['slug' => 'users.view', 'scope' => 'users', 'name_fr' => 'Voir users']);
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(QueryException::class);
         Permission::create(['slug' => 'users.view', 'scope' => 'users', 'name_fr' => 'Doublon']);
     }
 }

@@ -11,7 +11,7 @@ Artisan::command('inspire', function (): void {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::job(new PurgeOldVisitLocationsJob())->dailyAt('03:00')->name('purge_visit_locations');
+Schedule::job(new PurgeOldVisitLocationsJob)->dailyAt('03:00')->name('purge_visit_locations');
 
 // Rolls audit_logs monthly partitions forward. Runs daily as a safety net
 // so a missing partition never blocks synchronous audit inserts (login,

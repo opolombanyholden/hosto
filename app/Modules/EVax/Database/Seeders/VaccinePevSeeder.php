@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Database\Seeders;
@@ -17,15 +18,15 @@ class VaccinePevSeeder extends Seeder
             ['code' => 'BCG',     'name_fr' => 'BCG',                          'diseases' => ['tuberculose'],          'schedule_age_days' => 0,    'doses_total' => 1, 'order' => 1,  'oms' => 'XM1NL1'],
             ['code' => 'HEPB0',   'name_fr' => 'Hepatite B (naissance)',       'diseases' => ['hepatite_b'],           'schedule_age_days' => 0,    'doses_total' => 1, 'order' => 2,  'oms' => 'XM9QW8'],
             ['code' => 'OPV0',    'name_fr' => 'Polio oral (naissance)',       'diseases' => ['poliomyelite'],         'schedule_age_days' => 0,    'doses_total' => 1, 'order' => 3,  'oms' => 'XM7EE8'],
-            ['code' => 'PENTA1',  'name_fr' => 'Pentavalent (DTC-HepB-Hib) 1', 'diseases' => ['dtc', 'hepatite_b', 'hib'], 'schedule_age_days' => 42,'doses_total' => 3, 'order' => 4, 'oms' => 'XM6AT1'],
+            ['code' => 'PENTA1',  'name_fr' => 'Pentavalent (DTC-HepB-Hib) 1', 'diseases' => ['dtc', 'hepatite_b', 'hib'], 'schedule_age_days' => 42, 'doses_total' => 3, 'order' => 4, 'oms' => 'XM6AT1'],
             ['code' => 'OPV1',    'name_fr' => 'Polio oral 1',                 'diseases' => ['poliomyelite'],         'schedule_age_days' => 42,   'doses_total' => 1, 'order' => 5,  'oms' => 'XM7EE8'],
             ['code' => 'PCV1',    'name_fr' => 'Pneumocoque 1',                'diseases' => ['pneumocoque'],          'schedule_age_days' => 42,   'doses_total' => 3, 'order' => 6,  'oms' => 'XM5DF1'],
             ['code' => 'ROTA1',   'name_fr' => 'Rotavirus 1',                  'diseases' => ['rotavirus'],            'schedule_age_days' => 42,   'doses_total' => 2, 'order' => 7,  'oms' => 'XM6BV3'],
-            ['code' => 'PENTA2',  'name_fr' => 'Pentavalent 2',                'diseases' => ['dtc', 'hepatite_b', 'hib'], 'schedule_age_days' => 70,'doses_total' => 3, 'order' => 8, 'oms' => 'XM6AT1'],
+            ['code' => 'PENTA2',  'name_fr' => 'Pentavalent 2',                'diseases' => ['dtc', 'hepatite_b', 'hib'], 'schedule_age_days' => 70, 'doses_total' => 3, 'order' => 8, 'oms' => 'XM6AT1'],
             ['code' => 'OPV2',    'name_fr' => 'Polio oral 2',                 'diseases' => ['poliomyelite'],         'schedule_age_days' => 70,   'doses_total' => 1, 'order' => 9,  'oms' => 'XM7EE8'],
             ['code' => 'PCV2',    'name_fr' => 'Pneumocoque 2',                'diseases' => ['pneumocoque'],          'schedule_age_days' => 70,   'doses_total' => 3, 'order' => 10, 'oms' => 'XM5DF1'],
             ['code' => 'ROTA2',   'name_fr' => 'Rotavirus 2',                  'diseases' => ['rotavirus'],            'schedule_age_days' => 70,   'doses_total' => 2, 'order' => 11, 'oms' => 'XM6BV3'],
-            ['code' => 'PENTA3',  'name_fr' => 'Pentavalent 3',                'diseases' => ['dtc', 'hepatite_b', 'hib'], 'schedule_age_days' => 98,'doses_total' => 3, 'order' => 12, 'oms' => 'XM6AT1'],
+            ['code' => 'PENTA3',  'name_fr' => 'Pentavalent 3',                'diseases' => ['dtc', 'hepatite_b', 'hib'], 'schedule_age_days' => 98, 'doses_total' => 3, 'order' => 12, 'oms' => 'XM6AT1'],
             ['code' => 'OPV3',    'name_fr' => 'Polio oral 3',                 'diseases' => ['poliomyelite'],         'schedule_age_days' => 98,   'doses_total' => 1, 'order' => 13, 'oms' => 'XM7EE8'],
             ['code' => 'PCV3',    'name_fr' => 'Pneumocoque 3',                'diseases' => ['pneumocoque'],          'schedule_age_days' => 98,   'doses_total' => 3, 'order' => 14, 'oms' => 'XM5DF1'],
             ['code' => 'VPI',     'name_fr' => 'Polio inactive (IPV)',         'diseases' => ['poliomyelite'],         'schedule_age_days' => 98,   'doses_total' => 1, 'order' => 15, 'oms' => 'XM7L23'],
@@ -54,7 +55,7 @@ class VaccinePevSeeder extends Seeder
                     'is_standardized' => true,
                     'display_order' => $v['order'],
                     'is_active' => true,
-                ]
+                ],
             );
         }
     }

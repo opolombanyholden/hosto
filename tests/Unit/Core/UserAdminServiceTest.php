@@ -8,8 +8,10 @@ use App\Models\User;
 use App\Modules\Core\Models\Role;
 use App\Modules\Core\Models\UserRoleAssignment;
 use App\Modules\Core\Services\UserAdminService;
+use DomainException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use InvalidArgumentException;
 use Tests\TestCase;
 
 final class UserAdminServiceTest extends TestCase
@@ -21,7 +23,7 @@ final class UserAdminServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->svc = new UserAdminService();
+        $this->svc = new UserAdminService;
     }
 
     public function test_create_user_with_explicit_password(): void
@@ -59,7 +61,7 @@ final class UserAdminServiceTest extends TestCase
     {
         $u = User::factory()->create();
         $plain = $this->svc->resetPassword($u);
-        $this->assertIsString($plain);
+        $this->assertNotSame('', $plain);
         $this->assertSame(16, strlen($plain));
         $this->assertTrue((bool) $u->fresh()->must_change_password);
         $this->assertTrue(Hash::check($plain, $u->fresh()->password));
@@ -86,7 +88,7 @@ final class UserAdminServiceTest extends TestCase
         $role = Role::create(['slug' => 'super_admin', 'name_fr' => 'SA', 'name_en' => 'SA', 'environment' => 'admin', 'is_system' => true]);
         UserRoleAssignment::create(['user_id' => $u->id, 'role_id' => $role->id]);
 
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->svc->softDelete($u);
     }
 
@@ -101,7 +103,7 @@ final class UserAdminServiceTest extends TestCase
     public function test_validate_pro_reject_requires_reason(): void
     {
         $u = User::factory()->create();
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->svc->validatePro($u, false, null);
     }
 
@@ -130,7 +132,7 @@ final class UserAdminServiceTest extends TestCase
     public function test_bulk_action_refuses_above_100(): void
     {
         $users = User::factory()->count(101)->create();
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->svc->bulkAction($users, 'suspend', ['reason' => 'Too many']);
     }
 }

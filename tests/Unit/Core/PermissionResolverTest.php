@@ -22,7 +22,7 @@ final class PermissionResolverTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->resolver = new PermissionResolver();
+        $this->resolver = new PermissionResolver;
     }
 
     public function test_super_admin_has_any_permission(): void

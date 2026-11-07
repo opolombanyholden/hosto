@@ -20,16 +20,8 @@ final class MedicalRecordGrantsControllerTest extends TestCase
         parent::setUp();
         Role::firstOrCreate(
             ['slug' => 'patient'],
-            ['name_fr' => 'Patient', 'name_en' => 'Patient', 'environment' => 'usager']
+            ['name_fr' => 'Patient', 'name_en' => 'Patient', 'environment' => 'usager'],
         );
-    }
-
-    private function makePatient(): User
-    {
-        $u = User::factory()->create(['phone_verified_at' => now()]);
-        $u->roles()->attach(Role::where('slug', 'patient')->first());
-
-        return $u;
     }
 
     public function test_patient_can_list_their_active_grants(): void
@@ -81,5 +73,13 @@ final class MedicalRecordGrantsControllerTest extends TestCase
         ]);
         $resp = $this->actingAs($p)->get('/compte/dossier/partages/'.$g->uuid.'/historique');
         $resp->assertOk();
+    }
+
+    private function makePatient(): User
+    {
+        $u = User::factory()->create(['phone_verified_at' => now()]);
+        $u->roles()->attach(Role::where('slug', 'patient')->first());
+
+        return $u;
     }
 }

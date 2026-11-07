@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Core\Services;
@@ -6,6 +7,7 @@ namespace App\Modules\Core\Services;
 use App\Models\User;
 use App\Modules\Core\Models\Role;
 use App\Modules\Core\Models\UserRoleAssignment;
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +19,7 @@ final class RoleAssignmentService
         Role $role,
         ?Model $scope = null,
         ?User $assignedBy = null,
-        ?\DateTimeInterface $expiresAt = null,
+        ?DateTimeInterface $expiresAt = null,
     ): void {
         $scopeType = $scope ? $scope::class : null;
         $scopeId = $scope?->getKey();
@@ -33,7 +35,7 @@ final class RoleAssignmentService
                 'assigned_by' => $assignedBy?->id,
                 'assigned_at' => now(),
                 'expires_at' => $expiresAt,
-            ]
+            ],
         );
     }
 
@@ -64,10 +66,10 @@ final class RoleAssignmentService
         $scopeId = $scope?->getKey();
         $roleIds = collect($roles)->pluck('id')->all();
 
-        DB::transaction(function () use ($user, $roles, $scope, $scopeType, $scopeId, $roleIds, $assignedBy) {
+        DB::transaction(function () use ($user, $roles, $scope, $scopeType, $scopeId, $roleIds, $assignedBy): void {
             // Delete existing assignments on this scope not in the new set
             UserRoleAssignment::where('user_id', $user->id)
-                ->where(function ($q) use ($scopeType, $scopeId) {
+                ->where(function ($q) use ($scopeType, $scopeId): void {
                     if ($scopeType === null) {
                         $q->whereNull('scope_type')->whereNull('scope_id');
                     } else {
@@ -87,7 +89,7 @@ final class RoleAssignmentService
     /** @return Builder<User> */
     public function usersHavingRole(Role $role, ?Model $scope = null): Builder
     {
-        $q = User::query()->whereExists(function ($sub) use ($role, $scope) {
+        $q = User::query()->whereExists(function ($sub) use ($role, $scope): void {
             $sub->from('user_roles')
                 ->whereColumn('user_roles.user_id', 'users.id')
                 ->where('user_roles.role_id', $role->id);
@@ -96,6 +98,7 @@ final class RoleAssignmentService
                     ->where('scope_id', $scope->getKey());
             }
         });
+
         return $q;
     }
 }

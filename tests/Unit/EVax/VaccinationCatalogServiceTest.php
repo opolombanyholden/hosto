@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\EVax;
@@ -15,7 +16,7 @@ final class VaccinationCatalogServiceTest extends TestCase
     public function test_find_by_code_is_case_insensitive(): void
     {
         Vaccine::create(['code' => 'BCG', 'name_fr' => 'BCG', 'doses_total' => 1]);
-        $svc = new VaccinationCatalogService();
+        $svc = new VaccinationCatalogService;
         $this->assertNotNull($svc->findByCode('BCG'));
         $this->assertNotNull($svc->findByCode('bcg'));
         $this->assertNull($svc->findByCode('unknown'));
@@ -27,7 +28,7 @@ final class VaccinationCatalogServiceTest extends TestCase
         Vaccine::create(['code' => 'PENTA1', 'name_fr' => 'Penta 1', 'schedule_age_days' => 42, 'doses_total' => 1, 'display_order' => 2]);
         Vaccine::create(['code' => 'COVID', 'name_fr' => 'COVID', 'schedule_age_days' => null, 'doses_total' => 1, 'display_order' => 99]);
 
-        $svc = new VaccinationCatalogService();
+        $svc = new VaccinationCatalogService;
         // Date de naissance = il y a 10 jours.
         $dob = now()->subDays(10)->toImmutable();
         $schedule = $svc->pevSchedule($dob);
@@ -44,7 +45,7 @@ final class VaccinationCatalogServiceTest extends TestCase
     public function test_pev_schedule_marks_overdue_dose(): void
     {
         Vaccine::create(['code' => 'BCG', 'name_fr' => 'BCG', 'schedule_age_days' => 0, 'doses_total' => 1, 'display_order' => 1]);
-        $svc = new VaccinationCatalogService();
+        $svc = new VaccinationCatalogService;
         $dob = now()->subDays(60)->toImmutable();
         $schedule = $svc->pevSchedule($dob);
         $bcg = collect($schedule)->first(fn ($e) => $e['vaccine']->code === 'BCG');

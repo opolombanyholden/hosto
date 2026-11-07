@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Core\Services;
@@ -16,14 +17,14 @@ final class UserExportService
     {
         $filename = 'users-export-'.now()->format('Y-m-d-His').'.csv';
 
-        return new StreamedResponse(function () use ($query) {
+        return new StreamedResponse(function () use ($query): void {
             $out = fopen('php://output', 'w');
             // BOM UTF-8 for Excel compatibility
             fwrite($out, "\xEF\xBB\xBF");
             // Header row
             fputcsv($out, ['uuid', 'name', 'email', 'phone', 'nip', 'roles', 'created_at', 'status'], ',');
 
-            $query->with('roles')->chunk(500, function ($users) use ($out) {
+            $query->with('roles')->chunk(500, function ($users) use ($out): void {
                 foreach ($users as $u) {
                     fputcsv($out, [
                         $u->uuid,

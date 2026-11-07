@@ -21,6 +21,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 final class PharmacyWorkflowTest extends TestCase
@@ -346,6 +347,9 @@ final class PharmacyWorkflowTest extends TestCase
         return Dispensation::where('prescription_id', $this->prescription->id)->firstOrFail();
     }
 
+    /**
+     * @return TestResponse<Response>
+     */
     private function prepare(Dispensation $order, int $quantity = 2): TestResponse
     {
         $item = $order->items()->firstOrFail();

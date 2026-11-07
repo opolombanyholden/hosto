@@ -1,22 +1,29 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\RendezVous\Services;
 
 use App\Models\User;
 use App\Modules\Core\Services\AuditLogger;
+use App\Modules\Core\Services\MedicalCipher;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\RendezVous\Models\AppointmentDocument;
+use DomainException;
 use Illuminate\Http\UploadedFile;
-use App\Modules\Core\Services\MedicalCipher;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class DocumentUploadService
 {
     public const MAX_PER_FILE_BYTES = 10 * 1024 * 1024;
+
     public const MAX_FILES_PER_APPOINTMENT = 5;
+
     public const MAX_TOTAL_BYTES = 30 * 1024 * 1024;
+
     public const DISK = 'private_appointments';
 
     private const ALLOWED_MIMES = [
@@ -35,14 +42,14 @@ final class DocumentUploadService
     ): AppointmentDocument {
         $mime = $file->getMimeType();
         if (! in_array($mime, self::ALLOWED_MIMES, true)) {
-            throw new \InvalidArgumentException("Mime type not allowed: {$mime}");
+            throw new InvalidArgumentException("Mime type not allowed: {$mime}");
         }
         $size = $file->getSize();
         if ($size > self::MAX_PER_FILE_BYTES) {
-            throw new \DomainException('File exceeds 10 MB limit');
+            throw new DomainException('File exceeds 10 MB limit');
         }
 
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($apt, $file, $uploader, $category, $mime, $size) {
+        return DB::transaction(function () use ($apt, $file, $uploader, $category, $mime, $size) {
             // Lock the appointment row so parallel uploads queue up.
             Appointment::whereKey($apt->id)->lockForUpdate()->firstOrFail();
 
@@ -50,11 +57,11 @@ final class DocumentUploadService
                 ->lockForUpdate()
                 ->get();
             if ($existing->count() >= self::MAX_FILES_PER_APPOINTMENT) {
-                throw new \DomainException('Max 5 documents per appointment');
+                throw new DomainException('Max 5 documents per appointment');
             }
             $total = $existing->sum('size_bytes') + $size;
             if ($total > self::MAX_TOTAL_BYTES) {
-                throw new \DomainException('Total size exceeds 30 MB limit');
+                throw new DomainException('Total size exceeds 30 MB limit');
             }
 
             $ext = $file->getClientOriginalExtension() ?: $this->extensionForMime($mime);
@@ -92,7 +99,7 @@ final class DocumentUploadService
             AuditLogger::ACTION_READ,
             'appointment_document',
             $doc->uuid,
-            ['appointment_uuid' => $doc->appointment->uuid, 'accessor_id' => $accessor->id]
+            ['appointment_uuid' => $doc->appointment->uuid, 'accessor_id' => $accessor->id],
         );
         $contents = app(MedicalCipher::class)->decrypt((string) Storage::disk(self::DISK)->get($relativeOnDisk));
 
@@ -114,10 +121,19 @@ final class DocumentUploadService
     public function canAccess(AppointmentDocument $doc, User $user): bool
     {
         $apt = $doc->appointment;
-        if ($apt->patient_id === $user->id) return true;
-        if ($apt->third_party_user_id === $user->id) return true;
-        if ($apt->practitioner && $apt->practitioner->user_id === $user->id) return true;
-        if ($user->can('appointments.manage')) return true;
+        if ($apt->patient_id === $user->id) {
+            return true;
+        }
+        if ($apt->third_party_user_id === $user->id) {
+            return true;
+        }
+        if ($apt->practitioner && $apt->practitioner->user_id === $user->id) {
+            return true;
+        }
+        if ($user->can('appointments.manage')) {
+            return true;
+        }
+
         return false;
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\RendezVous\Services;
@@ -7,22 +8,18 @@ use App\Modules\RendezVous\Jobs\GeocodeAppointmentAddressJob;
 use App\Modules\RendezVous\Models\Appointment;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
+use Throwable;
 
 final class GeocodingService
 {
     private const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org';
-    private const USER_AGENT = 'HOSTO/1.0 (contact@hosto.ga)';
-    private const CONTACT_EMAIL = 'contact@hosto.ga';
-    private const RATE_LIMIT_KEY = 'nominatim';
 
-    private function throttle(): void
-    {
-        // Nominatim policy: max 1 req/s. Wait if we're over budget.
-        while (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts(self::RATE_LIMIT_KEY, 1)) {
-            usleep(100_000); // 100 ms
-        }
-        \Illuminate\Support\Facades\RateLimiter::hit(self::RATE_LIMIT_KEY, 1);
-    }
+    private const USER_AGENT = 'HOSTO/1.0 (contact@hosto.ga)';
+
+    private const CONTACT_EMAIL = 'contact@hosto.ga';
+
+    private const RATE_LIMIT_KEY = 'nominatim';
 
     /** @return array{lat: float, lng: float, accuracy_m: int|null}|null */
     public function geocode(string $address): ?array
@@ -30,9 +27,9 @@ final class GeocodingService
         $this->throttle();
         try {
             $resp = Http::withHeaders([
-                    'User-Agent' => self::USER_AGENT,
-                    'Accept-Language' => 'fr',
-                ])
+                'User-Agent' => self::USER_AGENT,
+                'Accept-Language' => 'fr',
+            ])
                 ->timeout(10)
                 ->get(self::NOMINATIM_BASE.'/search', [
                     'q' => $address,
@@ -40,16 +37,22 @@ final class GeocodingService
                     'limit' => 1,
                     'email' => self::CONTACT_EMAIL,
                 ]);
-            if (! $resp->ok()) return null;
+            if (! $resp->ok()) {
+                return null;
+            }
             $data = $resp->json();
-            if (! is_array($data) || count($data) === 0) return null;
+            if (! is_array($data) || count($data) === 0) {
+                return null;
+            }
+
             return [
                 'lat' => (float) ($data[0]['lat'] ?? 0),
                 'lng' => (float) ($data[0]['lon'] ?? 0),
                 'accuracy_m' => null,
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::warning('geocoding.search.failed', ['error' => $e->getMessage()]);
+
             return null;
         }
     }
@@ -59,20 +62,24 @@ final class GeocodingService
         $this->throttle();
         try {
             $resp = Http::withHeaders([
-                    'User-Agent' => self::USER_AGENT,
-                    'Accept-Language' => 'fr',
-                ])
+                'User-Agent' => self::USER_AGENT,
+                'Accept-Language' => 'fr',
+            ])
                 ->timeout(10)
                 ->get(self::NOMINATIM_BASE.'/reverse', [
                     'lat' => $lat, 'lon' => $lng,
                     'format' => 'json',
                     'email' => self::CONTACT_EMAIL,
                 ]);
-            if (! $resp->ok()) return null;
+            if (! $resp->ok()) {
+                return null;
+            }
             $data = $resp->json();
+
             return is_array($data) ? ($data['display_name'] ?? null) : null;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::warning('geocoding.reverse.failed', ['error' => $e->getMessage()]);
+
             return null;
         }
     }
@@ -80,5 +87,14 @@ final class GeocodingService
     public function dispatchGeocodeJob(Appointment $apt): void
     {
         GeocodeAppointmentAddressJob::dispatch($apt->id);
+    }
+
+    private function throttle(): void
+    {
+        // Nominatim policy: max 1 req/s. Wait if we're over budget.
+        while (RateLimiter::tooManyAttempts(self::RATE_LIMIT_KEY, 1)) {
+            usleep(100_000); // 100 ms
+        }
+        RateLimiter::hit(self::RATE_LIMIT_KEY, 1);
     }
 }

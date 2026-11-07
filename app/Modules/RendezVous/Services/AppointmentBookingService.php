@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\RendezVous\Services;
@@ -9,8 +10,10 @@ use App\Modules\Core\Services\AuditLogger;
 use App\Modules\Core\Services\MedicalRecordGrantService;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\RendezVous\Models\TimeSlot;
+use DomainException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use InvalidArgumentException;
 
 final class AppointmentBookingService
 {
@@ -46,7 +49,7 @@ final class AppointmentBookingService
             $pin = $data['medical_pin'] ?? null;
             $stored = $patient->medical_pin;
             if (! $stored || ! Hash::check((string) $pin, $stored)) {
-                throw new \DomainException('PIN médical invalide ou non défini');
+                throw new DomainException('PIN médical invalide ou non défini');
             }
         }
 
@@ -57,7 +60,7 @@ final class AppointmentBookingService
             $rawPhone = $data['third_party_phone'] ?? '';
             $normalized = $this->thirdParty->normalizePhone($rawPhone, 'GA');
             if ($normalized === null) {
-                throw new \InvalidArgumentException('Phone tiers invalide');
+                throw new InvalidArgumentException('Phone tiers invalide');
             }
             $thirdPartyPhoneNormalized = $normalized;
             $match = $this->thirdParty->findUserByPhone($normalized);
@@ -74,8 +77,9 @@ final class AppointmentBookingService
                 ->lockForUpdate()
                 ->exists();
             if ($existing) {
-                throw new \DomainException('Ce créneau n\'est plus disponible.');
+                throw new DomainException('Ce créneau n\'est plus disponible.');
             }
+
             return Appointment::create([
                 'time_slot_id' => $slot->id,
                 'patient_id' => $patient->id,
@@ -146,22 +150,25 @@ final class AppointmentBookingService
     private function validateConsultationMode(string $mode, Practitioner $prac): void
     {
         if ($mode === 'telecon' && ! $prac->does_teleconsultation) {
-            throw new \DomainException('Ce praticien ne fait pas de téléconsultation.');
+            throw new DomainException('Ce praticien ne fait pas de téléconsultation.');
         }
         if ($mode === 'home' && ! $prac->does_home_care) {
-            throw new \DomainException('Ce praticien ne fait pas de visite à domicile.');
+            throw new DomainException('Ce praticien ne fait pas de visite à domicile.');
         }
         if (! in_array($mode, ['in_hospital', 'home', 'telecon'], true)) {
-            throw new \InvalidArgumentException("Mode invalide: {$mode}");
+            throw new InvalidArgumentException("Mode invalide: {$mode}");
         }
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private function validateHomeAddress(array $data): void
     {
         $hasAddress = ! empty($data['visit_address']);
         $hasCoords = isset($data['visit_lat'], $data['visit_lng']);
         if (! $hasAddress && ! $hasCoords) {
-            throw new \InvalidArgumentException('Adresse ou coordonnées requises pour une visite à domicile');
+            throw new InvalidArgumentException('Adresse ou coordonnées requises pour une visite à domicile');
         }
     }
 }

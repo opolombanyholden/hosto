@@ -1,9 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\RendezVous;
 
 use App\Models\User;
+use App\Modules\Annuaire\Models\Hosto;
+use App\Modules\Annuaire\Models\Practitioner;
+use App\Modules\RendezVous\Models\Appointment;
+use App\Modules\RendezVous\Models\TimeSlot;
 use App\Modules\RendezVous\Services\ThirdPartyResolverService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -17,7 +22,7 @@ final class ThirdPartyResolverServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->svc = new ThirdPartyResolverService();
+        $this->svc = new ThirdPartyResolverService;
     }
 
     public function test_normalize_phone_local_gabon_format(): void
@@ -64,18 +69,19 @@ final class ThirdPartyResolverServiceTest extends TestCase
         $this->assertTrue($link->expires_at->isFuture());
     }
 
-    private function createDummyAppointment(): \App\Modules\RendezVous\Models\Appointment
+    private function createDummyAppointment(): Appointment
     {
-        $hosto = \App\Modules\Annuaire\Models\Hosto::factory()->create();
-        $prac = \App\Modules\Annuaire\Models\Practitioner::factory()->create();
+        $hosto = Hosto::factory()->create();
+        $prac = Practitioner::factory()->create();
         $patient = User::factory()->create();
-        $slot = \App\Modules\RendezVous\Models\TimeSlot::create([
+        $slot = TimeSlot::create([
             'practitioner_id' => $prac->id, 'hosto_id' => $hosto->id,
             'date' => now()->addDay()->toDateString(),
             'start_time' => '09:00', 'end_time' => '09:30',
             'duration_minutes' => 30,
         ]);
-        return \App\Modules\RendezVous\Models\Appointment::create([
+
+        return Appointment::create([
             'time_slot_id' => $slot->id, 'patient_id' => $patient->id,
             'practitioner_id' => $prac->id, 'hosto_id' => $hosto->id,
         ]);

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Services;
@@ -54,7 +55,7 @@ final class CarnetQrService
             $recordsQuery = VaccinationRecord::where('dependent_id', $carnet->id);
             $firstName = $carnet->first_name;
             $lastName = $carnet->last_name;
-            $dob = $carnet->date_of_birth?->toDateString() ?? '';
+            $dob = $carnet->date_of_birth->toDateString();
             $nip = $carnet->nip;
         }
 
@@ -62,7 +63,7 @@ final class CarnetQrService
 
         $vacc = $records->map(fn (VaccinationRecord $r) => [
             'c' => $r->vaccine_code ?: $r->vaccine_name,
-            'd' => $r->administered_at?->toDateString(),
+            'd' => $r->administered_at->toDateString(),
             'n' => $r->dose_number,
             'std' => (bool) $r->is_standardized,
         ])->values()->all();
@@ -99,7 +100,8 @@ final class CarnetQrService
 
     private function renderSvg(string $data): string
     {
-        $renderer = new ImageRenderer(new RendererStyle(220, 1), new SvgImageBackEnd());
+        $renderer = new ImageRenderer(new RendererStyle(220, 1), new SvgImageBackEnd);
+
         return (new Writer($renderer))->writeString($data);
     }
 }

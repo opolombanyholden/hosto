@@ -6,8 +6,8 @@ namespace App\Modules\Core\Providers;
 
 use App\Modules\Core\Console\Commands\CheckMedicalKey;
 use App\Modules\Core\Console\Commands\EncryptMedicalData;
-use App\Modules\Core\Console\Commands\EscrowMedicalKey;
 use App\Modules\Core\Console\Commands\EnsureAuditPartitions;
+use App\Modules\Core\Console\Commands\EscrowMedicalKey;
 use App\Modules\Core\Console\Commands\GenerateMedicalKey;
 use App\Modules\Core\Console\Commands\RecoverMedicalKey;
 use App\Modules\Core\Http\Middleware\EnsurePermission;

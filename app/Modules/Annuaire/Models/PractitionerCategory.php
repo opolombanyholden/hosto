@@ -1,10 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Annuaire\Models;
 
 use App\Modules\Core\Traits\HasUuid;
-use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

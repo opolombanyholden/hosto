@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\RendezVous\Http\Controllers;
@@ -28,6 +29,7 @@ final class ThirdPartyLookupController
         if (! $user) {
             return response()->json(['matched' => false]);
         }
+
         return response()->json([
             'matched' => true,
         ]);

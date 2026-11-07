@@ -31,11 +31,13 @@ class MedicalRecordAccessLog extends Model
         'ip_address', 'user_agent', 'sections_accessed',
     ];
 
+    /** @return BelongsTo<MedicalRecordGrant, $this> */
     public function grant(): BelongsTo
     {
         return $this->belongsTo(MedicalRecordGrant::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function practitionerUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'practitioner_user_id');

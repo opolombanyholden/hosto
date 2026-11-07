@@ -218,6 +218,9 @@ final class MedicalEncryptionTest extends TestCase
         $this->getJson('/compte/api/rendez-vous?q=inexistant')->assertOk()->assertJsonPath('meta.total', 0);
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function consultation(array $attributes = []): Consultation
     {
         return Consultation::create($attributes + [
@@ -226,6 +229,9 @@ final class MedicalEncryptionTest extends TestCase
         ]);
     }
 
+    /**
+     * @param  list<string>  $columns
+     */
     private function assertColumnsAreCiphertext(string $table, int $id, array $columns): void
     {
         $row = (array) DB::table($table)->where('id', $id)->first();

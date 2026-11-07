@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\RendezVous;
@@ -9,6 +10,7 @@ use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\RendezVous\Models\AppointmentDocument;
 use App\Modules\RendezVous\Models\TimeSlot;
+use App\Modules\RendezVous\Services\DocumentUploadService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -19,6 +21,7 @@ final class AppointmentDocumentsControllerTest extends TestCase
     use RefreshDatabase;
 
     private User $patient;
+
     private Appointment $apt;
 
     protected function setUp(): void
@@ -65,7 +68,7 @@ final class AppointmentDocumentsControllerTest extends TestCase
     public function test_patient_can_download_own_document(): void
     {
         $file = UploadedFile::fake()->create('o.pdf', 100, 'application/pdf');
-        app(\App\Modules\RendezVous\Services\DocumentUploadService::class)
+        app(DocumentUploadService::class)
             ->store($this->apt, $file, $this->patient, null);
         $doc = AppointmentDocument::first();
         $resp = $this->actingAs($this->patient)
@@ -77,7 +80,7 @@ final class AppointmentDocumentsControllerTest extends TestCase
     public function test_random_user_cannot_download(): void
     {
         $file = UploadedFile::fake()->create('o.pdf', 100, 'application/pdf');
-        $doc = app(\App\Modules\RendezVous\Services\DocumentUploadService::class)
+        $doc = app(DocumentUploadService::class)
             ->store($this->apt, $file, $this->patient, null);
         $other = User::factory()->create();
         $resp = $this->actingAs($other)
@@ -88,7 +91,7 @@ final class AppointmentDocumentsControllerTest extends TestCase
     public function test_owner_can_delete_document(): void
     {
         $file = UploadedFile::fake()->create('o.pdf', 100, 'application/pdf');
-        $doc = app(\App\Modules\RendezVous\Services\DocumentUploadService::class)
+        $doc = app(DocumentUploadService::class)
             ->store($this->apt, $file, $this->patient, null);
         $resp = $this->actingAs($this->patient)
             ->delete('/web/rdv/documents/'.$doc->uuid);

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\RendezVous;
@@ -7,11 +8,14 @@ use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\Core\Models\MedicalRecordGrant;
-use App\Modules\RendezVous\Models\Appointment;
+use App\Modules\RendezVous\Jobs\GeocodeAppointmentAddressJob;
 use App\Modules\RendezVous\Models\TimeSlot;
 use App\Modules\RendezVous\Services\AppointmentBookingService;
+use DomainException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Queue;
+use InvalidArgumentException;
 use Tests\TestCase;
 
 final class AppointmentBookingServiceTest extends TestCase
@@ -19,9 +23,13 @@ final class AppointmentBookingServiceTest extends TestCase
     use RefreshDatabase;
 
     private AppointmentBookingService $svc;
+
     private User $patient;
+
     private Hosto $hosto;
+
     private Practitioner $practitioner;
+
     private TimeSlot $slot;
 
     protected function setUp(): void
@@ -70,7 +78,7 @@ final class AppointmentBookingServiceTest extends TestCase
     public function test_book_telecon_refuses_when_practitioner_doesnt_offer(): void
     {
         $this->practitioner->update(['does_teleconsultation' => false]);
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->svc->book([
             'patient' => $this->patient,
             'time_slot_id' => $this->slot->id,
@@ -83,7 +91,7 @@ final class AppointmentBookingServiceTest extends TestCase
     public function test_book_home_refuses_when_practitioner_doesnt_offer(): void
     {
         $this->practitioner->update(['does_home_care' => false]);
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->svc->book([
             'patient' => $this->patient,
             'time_slot_id' => $this->slot->id,
@@ -96,7 +104,7 @@ final class AppointmentBookingServiceTest extends TestCase
 
     public function test_book_home_requires_address_or_coords(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->svc->book([
             'patient' => $this->patient,
             'time_slot_id' => $this->slot->id,
@@ -160,7 +168,7 @@ final class AppointmentBookingServiceTest extends TestCase
     public function test_book_with_share_medical_record_and_invalid_pin_aborts(): void
     {
         $this->patient->update(['medical_pin' => Hash::make('1234')]);
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->svc->book([
             'patient' => $this->patient,
             'time_slot_id' => $this->slot->id,
@@ -173,7 +181,7 @@ final class AppointmentBookingServiceTest extends TestCase
 
     public function test_book_home_address_dispatches_geocode_job(): void
     {
-        \Illuminate\Support\Facades\Queue::fake();
+        Queue::fake();
         $this->svc->book([
             'patient' => $this->patient,
             'time_slot_id' => $this->slot->id,
@@ -182,6 +190,6 @@ final class AppointmentBookingServiceTest extends TestCase
             'consultation_mode' => 'home',
             'visit_address' => 'Libreville',
         ]);
-        \Illuminate\Support\Facades\Queue::assertPushed(\App\Modules\RendezVous\Jobs\GeocodeAppointmentAddressJob::class);
+        Queue::assertPushed(GeocodeAppointmentAddressJob::class);
     }
 }

@@ -11,7 +11,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $svc = new ThirdPartyResolverService();
+        $svc = new ThirdPartyResolverService;
         $updated = 0;
         $skipped = 0;
         $collisions = 0;
@@ -25,6 +25,7 @@ return new class extends Migration
                     if ($normalized === null) {
                         $skipped++;
                         Log::info('phone.backfill.skipped', ['user_id' => $u->id, 'raw' => $u->phone]);
+
                         continue;
                     }
                     try {
@@ -32,7 +33,7 @@ return new class extends Migration
                             ->where('id', $u->id)
                             ->update(['phone_normalized' => $normalized]);
                         $updated++;
-                    } catch (\Throwable $e) {
+                    } catch (Throwable $e) {
                         $collisions++;
                         Log::warning('phone.backfill.collision', [
                             'user_id' => $u->id, 'normalized' => $normalized, 'err' => $e->getMessage(),

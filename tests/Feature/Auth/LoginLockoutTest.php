@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Modules\Core\Models\Role;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
 final class LoginLockoutTest extends TestCase
@@ -65,6 +66,9 @@ final class LoginLockoutTest extends TestCase
         $this->assertAuthenticated();
     }
 
+    /**
+     * @return TestResponse<Response>
+     */
     private function login(string $password): TestResponse
     {
         return $this->post('/compte/connexion', ['login_mode' => 'email', 'email' => 'lock@example.org', 'password' => $password]);

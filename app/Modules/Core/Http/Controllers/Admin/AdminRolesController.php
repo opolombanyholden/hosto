@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Core\Http\Controllers\Admin;
@@ -17,6 +18,7 @@ final class AdminRolesController
             ->orderBy('environment')
             ->orderBy('display_order')
             ->get();
+
         return view('admin.roles.index', compact('roles'));
     }
 
@@ -26,6 +28,7 @@ final class AdminRolesController
         $permissions = Permission::orderBy('scope')->orderBy('display_order')->get()
             ->groupBy('scope');
         $assigned = $role->permissions->pluck('id')->all();
+
         return view('admin.roles.permissions', compact('role', 'permissions', 'assigned'));
     }
 
@@ -40,6 +43,7 @@ final class AdminRolesController
             'permission_ids.*' => 'integer|exists:permissions,id',
         ]);
         $role->permissions()->sync($data['permission_ids'] ?? []);
+
         return back()->with('success', 'Permissions mises à jour');
     }
 
@@ -53,6 +57,7 @@ final class AdminRolesController
             return back()->withErrors(['delete' => 'Détachez tous les utilisateurs avant de supprimer']);
         }
         $role->delete();
+
         return redirect()->route('admin.roles.index')->with('success', 'Rôle supprimé');
     }
 }

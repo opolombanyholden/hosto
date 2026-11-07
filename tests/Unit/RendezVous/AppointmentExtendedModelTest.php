@@ -16,20 +16,6 @@ final class AppointmentExtendedModelTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function buildContext(): array
-    {
-        $patient = User::factory()->create();
-        $hosto = Hosto::factory()->create();
-        $practitioner = Practitioner::factory()->create();
-        $slot = TimeSlot::create([
-            'practitioner_id' => $practitioner->id, 'hosto_id' => $hosto->id,
-            'date' => now()->addDay()->toDateString(),
-            'start_time' => '09:00', 'end_time' => '09:30',
-            'duration_minutes' => 30, 'is_available' => true,
-        ]);
-        return compact('patient', 'hosto', 'practitioner', 'slot');
-    }
-
     public function test_is_teleconsultation_accessor_true_when_mode_telecon(): void
     {
         ['patient' => $p, 'hosto' => $h, 'practitioner' => $pr, 'slot' => $s] = $this->buildContext();
@@ -75,5 +61,23 @@ final class AppointmentExtendedModelTest extends TestCase
         ]);
         $this->assertTrue($apt->isHomeVisit());
         $this->assertFalse($apt->is_teleconsultation);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildContext(): array
+    {
+        $patient = User::factory()->create();
+        $hosto = Hosto::factory()->create();
+        $practitioner = Practitioner::factory()->create();
+        $slot = TimeSlot::create([
+            'practitioner_id' => $practitioner->id, 'hosto_id' => $hosto->id,
+            'date' => now()->addDay()->toDateString(),
+            'start_time' => '09:00', 'end_time' => '09:30',
+            'duration_minutes' => 30, 'is_available' => true,
+        ]);
+
+        return compact('patient', 'hosto', 'practitioner', 'slot');
     }
 }

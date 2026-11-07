@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Core\Models\Role;
 use App\Modules\Core\Models\UserRoleAssignment;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -58,7 +59,7 @@ final class UserRolePivotTest extends TestCase
             'user_id' => $user->id, 'role_id' => $role->id,
             'scope_type' => null, 'scope_id' => null,
         ]);
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(QueryException::class);
         UserRoleAssignment::create([
             'user_id' => $user->id, 'role_id' => $role->id,
             'scope_type' => null, 'scope_id' => null,

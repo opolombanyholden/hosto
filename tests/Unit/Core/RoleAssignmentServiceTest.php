@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Core;
@@ -20,7 +21,7 @@ final class RoleAssignmentServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->svc = new RoleAssignmentService();
+        $this->svc = new RoleAssignmentService;
     }
 
     public function test_assign_global_role(): void
@@ -69,7 +70,7 @@ final class RoleAssignmentServiceTest extends TestCase
         $this->assertSame(1, UserRoleAssignment::where('user_id', $u->id)->count());
         $this->assertTrue(
             UserRoleAssignment::where('user_id', $u->id)
-                ->where('scope_id', $h2->id)->exists()
+                ->where('scope_id', $h2->id)->exists(),
         );
     }
 

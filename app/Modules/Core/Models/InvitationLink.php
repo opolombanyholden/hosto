@@ -34,11 +34,13 @@ class InvitationLink extends Model
         'sent_at', 'accepted_at', 'accepted_user_id', 'expires_at',
     ];
 
+    /** @return BelongsTo<User, $this> */
     public function inviter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'inviter_user_id');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function acceptedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'accepted_user_id');

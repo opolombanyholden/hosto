@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Models;
@@ -34,15 +35,6 @@ class Dependent extends Model
         'gender', 'nip', 'notes', 'carnet_qr_secret',
     ];
 
-    protected static function booted(): void
-    {
-        static::creating(function (self $d): void {
-            if (empty($d->carnet_qr_secret)) {
-                $d->carnet_qr_secret = self::generateSecret();
-            }
-        });
-    }
-
     public static function generateSecret(): string
     {
         return Str::random(32);
@@ -69,6 +61,15 @@ class Dependent extends Model
     {
         return $this->hasMany(VaccinationRecord::class, 'dependent_id')
             ->orderBy('administered_at');
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $d): void {
+            if (empty($d->carnet_qr_secret)) {
+                $d->carnet_qr_secret = self::generateSecret();
+            }
+        });
     }
 
     /** @return array<string, string> */

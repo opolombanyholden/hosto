@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\RendezVous\Http\Requests;
@@ -10,14 +11,6 @@ final class BookAppointmentRequest extends FormRequest
     public function authorize(): bool
     {
         return $this->user() !== null;
-    }
-
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'is_for_third_party' => $this->boolean('is_for_third_party'),
-            'share_medical_record' => $this->boolean('share_medical_record'),
-        ]);
     }
 
     /** @return array<string, mixed> */
@@ -60,5 +53,13 @@ final class BookAppointmentRequest extends FormRequest
             'documents.*.max' => 'Chaque document doit faire moins de 10 MB.',
             'medical_pin.required_if' => 'PIN médical requis pour partager le dossier.',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'is_for_third_party' => $this->boolean('is_for_third_party'),
+            'share_medical_record' => $this->boolean('share_medical_record'),
+        ]);
     }
 }

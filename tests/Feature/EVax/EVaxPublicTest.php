@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\EVax;
 
 use App\Models\User;
 use App\Modules\EVax\Models\Dependent;
-use App\Modules\EVax\Models\Vaccine;
 use App\Modules\EVax\Models\VaccinationRecord;
+use App\Modules\EVax\Models\Vaccine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

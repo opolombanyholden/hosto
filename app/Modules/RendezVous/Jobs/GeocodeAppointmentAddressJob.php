@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\RendezVous\Jobs;
@@ -19,6 +20,7 @@ final class GeocodeAppointmentAddressJob implements ShouldQueue
     use SerializesModels;
 
     public int $tries = 3;
+
     public int $backoff = 60;
 
     public function __construct(public readonly int $appointmentId) {}
@@ -31,7 +33,9 @@ final class GeocodeAppointmentAddressJob implements ShouldQueue
         }
 
         $result = $svc->geocode($apt->visit_address);
-        if (! $result) return;
+        if (! $result) {
+            return;
+        }
 
         $apt->update([
             'visit_lat' => $result['lat'],

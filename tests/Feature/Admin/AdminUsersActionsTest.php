@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
@@ -13,20 +14,6 @@ use Tests\TestCase;
 final class AdminUsersActionsTest extends TestCase
 {
     use RefreshDatabase;
-
-    private function adminWith(array $perms): User
-    {
-        $u = User::factory()->create();
-        $role = Role::firstOrCreate(['slug' => 'admin_test_'.uniqid()], ['name_fr' => 'AT', 'name_en' => 'AT', 'environment' => 'admin']);
-        foreach ($perms as $slug) {
-            $p = Permission::firstOrCreate(['slug' => $slug], ['scope' => explode('.', $slug)[0], 'name_fr' => $slug]);
-            $role->permissions()->attach($p->id);
-        }
-        UserRoleAssignment::firstOrCreate([
-            'user_id' => $u->id, 'role_id' => $role->id, 'scope_type' => null, 'scope_id' => null,
-        ], ['assigned_at' => now()]);
-        return $u;
-    }
 
     public function test_create_user_via_post(): void
     {
@@ -119,5 +106,23 @@ final class AdminUsersActionsTest extends TestCase
         $resp->assertRedirect();
         $this->assertNotNull($u1->fresh()->locked_until);
         $this->assertNotNull($u2->fresh()->locked_until);
+    }
+
+    /**
+     * @param  list<string>  $perms
+     */
+    private function adminWith(array $perms): User
+    {
+        $u = User::factory()->create();
+        $role = Role::firstOrCreate(['slug' => 'admin_test_'.uniqid()], ['name_fr' => 'AT', 'name_en' => 'AT', 'environment' => 'admin']);
+        foreach ($perms as $slug) {
+            $p = Permission::firstOrCreate(['slug' => $slug], ['scope' => explode('.', $slug)[0], 'name_fr' => $slug]);
+            $role->permissions()->attach($p->id);
+        }
+        UserRoleAssignment::firstOrCreate([
+            'user_id' => $u->id, 'role_id' => $role->id, 'scope_type' => null, 'scope_id' => null,
+        ], ['assigned_at' => now()]);
+
+        return $u;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
@@ -14,18 +15,6 @@ use Tests\TestCase;
 final class AdminRoleAssignmentEndpointTest extends TestCase
 {
     use RefreshDatabase;
-
-    private function adminWith(array $perms): User
-    {
-        $u = User::factory()->create();
-        $role = Role::create(['slug' => 'admin_tt_'.uniqid(), 'name_fr' => 'AT', 'name_en' => 'AT', 'environment' => 'admin']);
-        foreach ($perms as $slug) {
-            $p = Permission::firstOrCreate(['slug' => $slug], ['scope' => explode('.', $slug)[0], 'name_fr' => $slug]);
-            $role->permissions()->attach($p->id);
-        }
-        UserRoleAssignment::create(['user_id' => $u->id, 'role_id' => $role->id]);
-        return $u;
-    }
 
     public function test_assign_global_roles_to_user(): void
     {
@@ -58,5 +47,21 @@ final class AdminRoleAssignmentEndpointTest extends TestCase
             'user_id' => $target->id, 'role_id' => $r->id,
             'scope_type' => Hosto::class, 'scope_id' => $hosto->id,
         ]);
+    }
+
+    /**
+     * @param  list<string>  $perms
+     */
+    private function adminWith(array $perms): User
+    {
+        $u = User::factory()->create();
+        $role = Role::create(['slug' => 'admin_tt_'.uniqid(), 'name_fr' => 'AT', 'name_en' => 'AT', 'environment' => 'admin']);
+        foreach ($perms as $slug) {
+            $p = Permission::firstOrCreate(['slug' => $slug], ['scope' => explode('.', $slug)[0], 'name_fr' => $slug]);
+            $role->permissions()->attach($p->id);
+        }
+        UserRoleAssignment::create(['user_id' => $u->id, 'role_id' => $role->id]);
+
+        return $u;
     }
 }

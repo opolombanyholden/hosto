@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Services;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -16,13 +18,16 @@ use Throwable;
  */
 final class CarnetSignerService
 {
+    /**
+     * @param  array<string, mixed>  $payload
+     */
     public function sign(array $payload): string
     {
         $kid = config('hosto.carnet.kid');
         $privateKeyPath = config('hosto.carnet.private_key_path');
 
         if (! is_readable($privateKeyPath)) {
-            throw new \RuntimeException("Carnet private key not readable at {$privateKeyPath}");
+            throw new RuntimeException("Carnet private key not readable at {$privateKeyPath}");
         }
         $privateKey = file_get_contents($privateKeyPath);
 
@@ -30,7 +35,7 @@ final class CarnetSignerService
     }
 
     /**
-     * @return array<string, mixed>|null  The verified payload, or null on any failure.
+     * @return array<string, mixed>|null The verified payload, or null on any failure.
      */
     public function verify(string $jws): ?array
     {
@@ -46,6 +51,7 @@ final class CarnetSignerService
             if (empty($keys)) {
                 return null;
             }
+
             return (array) JWT::decode($jws, $keys);
         } catch (Throwable $e) {
             return null;
@@ -83,6 +89,7 @@ final class CarnetSignerService
                 'y' => rtrim(strtr(base64_encode($keyDetails['ec']['y']), '+/', '-_'), '='),
             ];
         }
+
         return ['keys' => $keys];
     }
 }

@@ -19,7 +19,7 @@ final class EmergencySearchTest extends TestCase
         $evacuation = Hosto::factory()->create(['is_emergency_service' => false, 'is_guard_service' => false, 'is_evacuation_service' => true]);
         $other = Hosto::factory()->create(['is_emergency_service' => false, 'is_guard_service' => false, 'is_evacuation_service' => false]);
 
-        $uuids = collect($this->getJson('/api/v1/annuaire/hostos?urgences_any=1&per_page=100')->assertOk()->json('data'))->pluck('uuid');
+        $uuids = collect(array_column((array) $this->getJson('/api/v1/annuaire/hostos?urgences_any=1&per_page=100')->assertOk()->json('data'), 'uuid'));
 
         $this->assertTrue($uuids->contains($emergency->uuid));
         $this->assertTrue($uuids->contains($guard->uuid));

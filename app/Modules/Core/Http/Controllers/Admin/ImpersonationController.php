@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Core\Http\Controllers\Admin;
@@ -16,6 +17,7 @@ final class ImpersonationController
         if ($adminId) {
             Auth::loginUsingId($adminId);
         }
+
         return redirect('/admin');
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
@@ -14,18 +15,6 @@ use Tests\TestCase;
 final class ImpersonationTest extends TestCase
 {
     use RefreshDatabase;
-
-    private function adminWith(array $perms): User
-    {
-        $u = User::factory()->create();
-        $role = Role::create(['slug' => 'ad_'.uniqid(), 'name_fr' => 'A', 'name_en' => 'A', 'environment' => 'admin']);
-        foreach ($perms as $slug) {
-            $p = Permission::firstOrCreate(['slug' => $slug], ['scope' => explode('.', $slug)[0], 'name_fr' => $slug]);
-            $role->permissions()->attach($p->id);
-        }
-        UserRoleAssignment::create(['user_id' => $u->id, 'role_id' => $role->id]);
-        return $u;
-    }
 
     public function test_impersonate_creates_session(): void
     {
@@ -73,5 +62,21 @@ final class ImpersonationTest extends TestCase
 
         $session = ImpersonationSession::where('admin_user_id', $admin->id)->first();
         $this->assertNotNull($session->ended_at);
+    }
+
+    /**
+     * @param  list<string>  $perms
+     */
+    private function adminWith(array $perms): User
+    {
+        $u = User::factory()->create();
+        $role = Role::create(['slug' => 'ad_'.uniqid(), 'name_fr' => 'A', 'name_en' => 'A', 'environment' => 'admin']);
+        foreach ($perms as $slug) {
+            $p = Permission::firstOrCreate(['slug' => $slug], ['scope' => explode('.', $slug)[0], 'name_fr' => $slug]);
+            $role->permissions()->attach($p->id);
+        }
+        UserRoleAssignment::create(['user_id' => $u->id, 'role_id' => $role->id]);
+
+        return $u;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Http\Controllers;
@@ -42,6 +43,7 @@ final class EVaxPatientController
     {
         $user = $request->user();
         $dependents = Dependent::where('user_id', $user->id)->orderBy('first_name')->get();
+
         return view('evax::patient.dependents', ['dependents' => $dependents]);
     }
 
@@ -58,6 +60,7 @@ final class EVaxPatientController
         ]);
         $data['user_id'] = $user->id;
         Dependent::create($data);
+
         return redirect()->route('evax.patient.dependents.index')->with('success', 'Dependant cree.');
     }
 
@@ -74,6 +77,7 @@ final class EVaxPatientController
             'notes' => 'nullable|string|max:500',
         ]);
         $dep->update($data);
+
         return redirect()->route('evax.patient.dependents.index')->with('success', 'Dependant mis a jour.');
     }
 
@@ -82,6 +86,7 @@ final class EVaxPatientController
         $dep = Dependent::where('uuid', $uuid)->firstOrFail();
         abort_unless($dep->user_id === $request->user()->id, 403);
         $dep->delete();
+
         return redirect()->route('evax.patient.dependents.index')->with('success', 'Dependant supprime.');
     }
 
@@ -124,6 +129,7 @@ final class EVaxPatientController
 
         $bytes = $pdf->render($carnet);
         $filename = Str::slug($name).'.pdf';
+
         return response($bytes, 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',

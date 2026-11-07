@@ -36,17 +36,25 @@ class ExamOrder extends Model
     use HasUuid;
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_ACCEPTED = 'accepted';
+
     public const STATUS_REJECTED = 'rejected';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     public const PAYMENT_ONLINE = 'online';
+
     public const PAYMENT_ON_SITE = 'on_site';
 
     public const PAYMENT_PENDING = 'pending';
+
     public const PAYMENT_PAID = 'paid';
+
     public const PAYMENT_FAILED = 'failed';
+
     public const PAYMENT_REFUNDED = 'refunded';
 
     /** @var list<string> */

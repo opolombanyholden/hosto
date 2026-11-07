@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Core\Http\Middleware;
@@ -18,6 +19,7 @@ final class EnsurePermission
         if (! $user->can($permission)) {
             abort(403, "Permission requise : {$permission}");
         }
+
         return $next($request);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
@@ -13,18 +14,6 @@ use Tests\TestCase;
 final class AdminUsersIndexTest extends TestCase
 {
     use RefreshDatabase;
-
-    private function adminWithPermissions(array $permSlugs): User
-    {
-        $u = User::factory()->create();
-        $role = Role::create(['slug' => 'admin_test_'.uniqid(), 'name_fr' => 'AT', 'name_en' => 'AT', 'environment' => 'admin']);
-        foreach ($permSlugs as $slug) {
-            $p = Permission::firstOrCreate(['slug' => $slug], ['scope' => explode('.', $slug)[0], 'name_fr' => $slug]);
-            $role->permissions()->attach($p->id);
-        }
-        UserRoleAssignment::create(['user_id' => $u->id, 'role_id' => $role->id]);
-        return $u;
-    }
 
     public function test_guest_redirects_to_login(): void
     {
@@ -64,5 +53,21 @@ final class AdminUsersIndexTest extends TestCase
         $resp = $this->actingAs($admin)->get('/admin/utilisateurs/'.$target->uuid);
         $resp->assertOk();
         $resp->assertSeeText('Cible Test');
+    }
+
+    /**
+     * @param  list<string>  $permSlugs
+     */
+    private function adminWithPermissions(array $permSlugs): User
+    {
+        $u = User::factory()->create();
+        $role = Role::create(['slug' => 'admin_test_'.uniqid(), 'name_fr' => 'AT', 'name_en' => 'AT', 'environment' => 'admin']);
+        foreach ($permSlugs as $slug) {
+            $p = Permission::firstOrCreate(['slug' => $slug], ['scope' => explode('.', $slug)[0], 'name_fr' => $slug]);
+            $role->permissions()->attach($p->id);
+        }
+        UserRoleAssignment::create(['user_id' => $u->id, 'role_id' => $role->id]);
+
+        return $u;
     }
 }

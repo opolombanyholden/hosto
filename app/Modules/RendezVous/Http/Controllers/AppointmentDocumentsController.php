@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\RendezVous\Http\Controllers;
@@ -6,8 +7,10 @@ namespace App\Modules\RendezVous\Http\Controllers;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\RendezVous\Models\AppointmentDocument;
 use App\Modules\RendezVous\Services\DocumentUploadService;
+use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class AppointmentDocumentsController
@@ -27,17 +30,19 @@ final class AppointmentDocumentsController
         ]);
         try {
             $this->svc->store($apt, $validated['file'], $user, $validated['category'] ?? null);
-        } catch (\DomainException $e) {
+        } catch (DomainException $e) {
             return back()->withErrors(['file' => $e->getMessage()]);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return back()->withErrors(['file' => $e->getMessage()]);
         }
+
         return back()->with('success', 'Document attaché.');
     }
 
     public function download(Request $request, string $uuid): StreamedResponse
     {
         $doc = AppointmentDocument::where('uuid', $uuid)->firstOrFail();
+
         return $this->svc->download($doc, $request->user());
     }
 
@@ -48,6 +53,7 @@ final class AppointmentDocumentsController
             abort(403, 'Seul l\'uploader peut supprimer.');
         }
         $this->svc->delete($doc, $request->user());
+
         return back()->with('success', 'Document supprimé.');
     }
 }

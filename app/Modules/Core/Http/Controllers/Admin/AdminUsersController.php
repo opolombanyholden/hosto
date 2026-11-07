@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Core\Http\Controllers\Admin;
@@ -10,9 +11,12 @@ use App\Modules\Core\Services\ImpersonationService;
 use App\Modules\Core\Services\RoleAssignmentService;
 use App\Modules\Core\Services\UserAdminService;
 use App\Modules\Core\Services\UserExportService;
+use DomainException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class AdminUsersController
@@ -31,17 +35,17 @@ final class AdminUsersController
         } elseif ($status === 'locked') {
             $query->where('locked_until', '>', now());
         } elseif ($status === 'active') {
-            $query->where(function ($w) {
+            $query->where(function ($w): void {
                 $w->whereNull('locked_until')->orWhere('locked_until', '<=', now());
             });
         }
 
         if ($q) {
-            $query->where(function ($w) use ($q) {
+            $query->where(function ($w) use ($q): void {
                 $w->where('name', 'ILIKE', "%{$q}%")
-                  ->orWhere('email', 'ILIKE', "%{$q}%")
-                  ->orWhere('nip', 'ILIKE', "%{$q}%")
-                  ->orWhere('phone', 'ILIKE', "%{$q}%");
+                    ->orWhere('email', 'ILIKE', "%{$q}%")
+                    ->orWhere('nip', 'ILIKE', "%{$q}%")
+                    ->orWhere('phone', 'ILIKE', "%{$q}%");
             });
         }
 
@@ -62,6 +66,7 @@ final class AdminUsersController
     public function show(string $uuid): View
     {
         $user = User::withTrashed()->where('uuid', $uuid)->with('roles')->firstOrFail();
+
         return view('admin.users.show', compact('user'));
     }
 
@@ -73,9 +78,9 @@ final class AdminUsersController
     public function store(Request $request, UserAdminService $svc): RedirectResponse
     {
         $data = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
-            'phone'    => 'nullable|string|max:30',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:30',
             'password' => 'nullable|string|min:8',
         ]);
         $user = $svc->createUser($data);
@@ -83,12 +88,14 @@ final class AdminUsersController
         if ($user->must_change_password) {
             $msg .= " (mot de passe temporaire transmis à l'admin)";
         }
+
         return redirect()->route('admin.users.show', $user->uuid)->with('success', $msg);
     }
 
     public function edit(string $uuid): View
     {
         $user = User::where('uuid', $uuid)->firstOrFail();
+
         return view('admin.users.edit', compact('user'));
     }
 
@@ -96,12 +103,13 @@ final class AdminUsersController
     {
         $user = User::where('uuid', $uuid)->firstOrFail();
         $data = $request->validate([
-            'name'  => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:30',
-            'nip'   => 'nullable|string|max:30',
+            'nip' => 'nullable|string|max:30',
         ]);
         $svc->updateUser($user, $data);
+
         return redirect()->route('admin.users.show', $user->uuid)->with('success', 'Utilisateur mis à jour');
     }
 
@@ -113,8 +121,9 @@ final class AdminUsersController
         }
         try {
             $svc->softDelete($user);
+
             return redirect()->route('admin.users.index')->with('success', 'Utilisateur supprimé');
-        } catch (\DomainException $e) {
+        } catch (DomainException $e) {
             return back()->withErrors(['delete' => $e->getMessage()]);
         }
     }
@@ -123,6 +132,7 @@ final class AdminUsersController
     {
         $user = User::withTrashed()->where('uuid', $uuid)->firstOrFail();
         $svc->restore($user);
+
         return redirect()->route('admin.users.show', $user->uuid)->with('success', 'Utilisateur restauré');
     }
 
@@ -134,6 +144,7 @@ final class AdminUsersController
         }
         $data = $request->validate(['reason' => 'required|string|max:500']);
         $svc->suspend($user, $data['reason']);
+
         return back()->with('success', 'Compte suspendu');
     }
 
@@ -141,6 +152,7 @@ final class AdminUsersController
     {
         $user = User::where('uuid', $uuid)->firstOrFail();
         $svc->reactivate($user);
+
         return back()->with('success', 'Compte réactivé');
     }
 
@@ -148,6 +160,7 @@ final class AdminUsersController
     {
         $user = User::where('uuid', $uuid)->firstOrFail();
         $plain = $svc->resetPassword($user);
+
         return back()->with('success', 'Mot de passe réinitialisé')->with('temp_password', $plain);
     }
 
@@ -158,7 +171,7 @@ final class AdminUsersController
 
         try {
             $session = $svc->start($request->user(), $target, $data['reason'], $request);
-        } catch (\DomainException $e) {
+        } catch (DomainException $e) {
             if (str_contains($e->getMessage(), 'super_admin')) {
                 abort(403, $e->getMessage());
             }
@@ -166,10 +179,10 @@ final class AdminUsersController
         }
 
         session([
-            'impersonator_id'          => $request->user()->id,
+            'impersonator_id' => $request->user()->id,
             'impersonation_session_id' => $session->uuid,
         ]);
-        \Illuminate\Support\Facades\Auth::loginUsingId($target->id);
+        Auth::loginUsingId($target->id);
 
         return redirect('/compte');
     }
@@ -178,13 +191,14 @@ final class AdminUsersController
     {
         $user = User::where('uuid', $uuid)->firstOrFail();
         $data = $request->validate([
-            'action'           => 'required|in:approve,reject',
+            'action' => 'required|in:approve,reject',
             'rejection_reason' => 'required_if:action,reject|nullable|string|max:500',
         ]);
         try {
             $svc->validatePro($user, $data['action'] === 'approve', $data['rejection_reason'] ?? null);
+
             return back()->with('success', 'Statut pro mis à jour');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return back()->withErrors(['action' => $e->getMessage()]);
         }
     }
@@ -195,22 +209,24 @@ final class AdminUsersController
         if ($q = $request->query('q')) {
             $query->where('name', 'ILIKE', "%{$q}%");
         }
+
         return $svc->exportCsv($query);
     }
 
     public function bulk(Request $request, UserAdminService $svc): RedirectResponse
     {
         $data = $request->validate([
-            'user_uuids'   => 'required|array|min:1|max:100',
+            'user_uuids' => 'required|array|min:1|max:100',
             'user_uuids.*' => 'string|exists:users,uuid',
-            'action'       => 'required|in:suspend,reactivate,delete,restore',
-            'params'       => 'nullable|array',
+            'action' => 'required|in:suspend,reactivate,delete,restore',
+            'params' => 'nullable|array',
         ]);
         $users = User::whereIn('uuid', $data['user_uuids'])->get();
         try {
             $count = $svc->bulkAction($users, $data['action'], $data['params'] ?? []);
+
             return back()->with('success', "{$count} utilisateur(s) traité(s)");
-        } catch (\DomainException $e) {
+        } catch (DomainException $e) {
             return back()->withErrors(['bulk' => $e->getMessage()]);
         }
     }
@@ -219,13 +235,13 @@ final class AdminUsersController
     {
         $user = User::where('uuid', $uuid)->firstOrFail();
         $data = $request->validate([
-            'global_role_ids'              => 'nullable|array',
-            'global_role_ids.*'            => 'integer|exists:roles,id',
-            'scoped'                       => 'nullable|array',
-            'scoped.*.structure_uuid'      => 'required|string|exists:hostos,uuid',
-            'scoped.*.role_ids'            => 'required|array',
-            'scoped.*.role_ids.*'          => 'integer|exists:roles,id',
-            'scoped.*.expires_at'          => 'nullable|date|after:now',
+            'global_role_ids' => 'nullable|array',
+            'global_role_ids.*' => 'integer|exists:roles,id',
+            'scoped' => 'nullable|array',
+            'scoped.*.structure_uuid' => 'required|string|exists:hostos,uuid',
+            'scoped.*.role_ids' => 'required|array',
+            'scoped.*.role_ids.*' => 'integer|exists:roles,id',
+            'scoped.*.expires_at' => 'nullable|date|after:now',
         ]);
 
         $globalRoles = Role::whereIn('id', $data['global_role_ids'] ?? [])->get()->all();
@@ -244,6 +260,7 @@ final class AdminUsersController
     {
         $user = User::where('uuid', $uuid)->firstOrFail();
         $tokens = $user->tokens()->orderByDesc('last_used_at')->get();
+
         return view('admin.users.sessions', compact('user', 'tokens'));
     }
 
@@ -251,6 +268,7 @@ final class AdminUsersController
     {
         $user = User::where('uuid', $uuid)->firstOrFail();
         $user->tokens()->where('id', $tokenId)->delete();
+
         return back()->with('success', 'Session révoquée');
     }
 }

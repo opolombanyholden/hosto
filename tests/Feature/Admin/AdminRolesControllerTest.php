@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
@@ -13,18 +14,6 @@ use Tests\TestCase;
 final class AdminRolesControllerTest extends TestCase
 {
     use RefreshDatabase;
-
-    private function adminWith(array $perms): User
-    {
-        $u = User::factory()->create();
-        $role = Role::create(['slug' => 'ad_'.uniqid(), 'name_fr' => 'A', 'name_en' => 'A', 'environment' => 'admin']);
-        foreach ($perms as $slug) {
-            $p = Permission::firstOrCreate(['slug' => $slug], ['scope' => explode('.', $slug)[0], 'name_fr' => $slug]);
-            $role->permissions()->attach($p->id);
-        }
-        UserRoleAssignment::create(['user_id' => $u->id, 'role_id' => $role->id]);
-        return $u;
-    }
 
     public function test_list_roles(): void
     {
@@ -68,5 +57,21 @@ final class AdminRolesControllerTest extends TestCase
         Permission::firstOrCreate(['slug' => 'users.view'], ['scope' => 'users', 'name_fr' => 'V']);
         $resp = $this->actingAs($admin)->get('/admin/permissions');
         $resp->assertOk();
+    }
+
+    /**
+     * @param  list<string>  $perms
+     */
+    private function adminWith(array $perms): User
+    {
+        $u = User::factory()->create();
+        $role = Role::create(['slug' => 'ad_'.uniqid(), 'name_fr' => 'A', 'name_en' => 'A', 'environment' => 'admin']);
+        foreach ($perms as $slug) {
+            $p = Permission::firstOrCreate(['slug' => $slug], ['scope' => explode('.', $slug)[0], 'name_fr' => $slug]);
+            $role->permissions()->attach($p->id);
+        }
+        UserRoleAssignment::create(['user_id' => $u->id, 'role_id' => $role->id]);
+
+        return $u;
     }
 }

@@ -8,6 +8,7 @@ use App\Modules\Core\Casts\EncryptedMedical;
 use App\Modules\Core\Models\EmergencyContact;
 use App\Modules\Core\Models\Role;
 use App\Modules\Core\Traits\HasUuid;
+use App\Modules\EVax\Models\Dependent;
 use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -53,7 +55,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $oauth_provider
  * @property string|null $oauth_provider_id
  * @property string|null $avatar_url
- * @property CarbonImmutable $created_at
+ * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable $updated_at
  * @property CarbonImmutable|null $deleted_at
  * @property string|null $nip
@@ -75,6 +77,15 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $carnet_qr_secret
  * @property string|null $created_by
  * @property string|null $updated_by
+ * @property int|null $height_cm
+ * @property string|null $weight_kg
+ * @property string|null $allergies
+ * @property string|null $chronic_conditions
+ * @property string|null $current_medications
+ * @property string|null $surgical_history
+ * @property string|null $family_history
+ * @property string|null $disabilities
+ * @property bool $must_change_password
  * @property-read Collection<int, Role> $roles
  * @property-read Collection<int, EmergencyContact> $emergencyContacts
  */
@@ -106,15 +117,6 @@ class User extends Authenticatable
     use HasUuid;
     use Notifiable;
     use SoftDeletes;
-
-    protected static function booted(): void
-    {
-        static::creating(function (self $u): void {
-            if (empty($u->carnet_qr_secret)) {
-                $u->carnet_qr_secret = \Illuminate\Support\Str::random(32);
-            }
-        });
-    }
 
     public function getRouteKeyName(): string
     {
@@ -167,10 +169,10 @@ class User extends Authenticatable
     // EVax dependents
     // ---------------------------------------------------------------
 
-    /** @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Modules\EVax\Models\Dependent, $this> */
-    public function dependents(): \Illuminate\Database\Eloquent\Relations\HasMany
+    /** @return HasMany<Dependent, $this> */
+    public function dependents(): HasMany
     {
-        return $this->hasMany(\App\Modules\EVax\Models\Dependent::class);
+        return $this->hasMany(Dependent::class);
     }
 
     // ---------------------------------------------------------------
@@ -218,6 +220,15 @@ class User extends Authenticatable
     public function hasMedicalPin(): bool
     {
         return $this->medical_pin !== null;
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $u): void {
+            if (empty($u->carnet_qr_secret)) {
+                $u->carnet_qr_secret = Str::random(32);
+            }
+        });
     }
 
     /**

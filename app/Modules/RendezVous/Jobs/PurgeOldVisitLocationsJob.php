@@ -22,9 +22,9 @@ final class PurgeOldVisitLocationsJob implements ShouldQueue
     public function handle(): void
     {
         $cutoff = now()->subDays(30);
-        $count = Appointment::whereHas('timeSlot', function ($q) use ($cutoff) {
-                $q->where('date', '<', $cutoff->toDateString());
-            })
+        $count = Appointment::whereHas('timeSlot', function ($q) use ($cutoff): void {
+            $q->where('date', '<', $cutoff->toDateString());
+        })
             ->whereNotNull('visit_lat')
             ->update([
                 'visit_lat' => null,

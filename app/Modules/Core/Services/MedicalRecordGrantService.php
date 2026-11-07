@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Core\Services;
@@ -12,6 +13,9 @@ use Illuminate\Http\Request;
 
 final class MedicalRecordGrantService
 {
+    /**
+     * @param  array<string, mixed>|null  $scope
+     */
     public function grant(
         User $patient,
         Practitioner $practitioner,
@@ -25,6 +29,7 @@ final class MedicalRecordGrantService
         if ($existing) {
             return $existing;
         }
+
         return MedicalRecordGrant::create([
             'patient_id' => $patient->id,
             'practitioner_id' => $practitioner->id,
@@ -49,6 +54,9 @@ final class MedicalRecordGrantService
             ->exists();
     }
 
+    /**
+     * @param  list<string>  $sections
+     */
     public function logAccess(
         MedicalRecordGrant $grant,
         User $practitionerUser,
@@ -65,6 +73,7 @@ final class MedicalRecordGrantService
         ]);
         $grant->increment('access_count');
         $grant->update(['last_accessed_at' => now()]);
+
         return $log;
     }
 }

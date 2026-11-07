@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\EVax;
 
 use App\Models\User;
 use App\Modules\EVax\Models\Dependent;
-use App\Modules\EVax\Models\Vaccine;
 use App\Modules\EVax\Models\VaccinationRecord;
+use App\Modules\EVax\Models\Vaccine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -76,7 +77,7 @@ final class EVaxPatientControllerTest extends TestCase
             'date_of_birth' => '2025-01-15',
         ]);
         $this->actingAs($u2)->get('/compte/carnet-vaccination/dependent/'.$dep->uuid)
-             ->assertForbidden();
+            ->assertForbidden();
     }
 
     public function test_user_can_delete_their_dependent(): void
@@ -87,7 +88,7 @@ final class EVaxPatientControllerTest extends TestCase
             'date_of_birth' => '2025-01-15',
         ]);
         $this->actingAs($u)->delete('/compte/carnet-vaccination/dependents/'.$dep->uuid)
-             ->assertRedirect();
+            ->assertRedirect();
         $this->assertSoftDeleted($dep);
     }
 }

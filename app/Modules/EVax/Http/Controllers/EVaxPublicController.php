@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Http\Controllers;
@@ -48,6 +49,7 @@ final class EVaxPublicController
         if (! $u) {
             abort(404, 'Carnet introuvable.');
         }
+
         return view('evax::public.identity', ['user' => $u]);
     }
 
@@ -62,6 +64,7 @@ final class EVaxPublicController
         if ($u) {
             return $u;
         }
+
         return Dependent::where('carnet_qr_secret', $secret)->first();
     }
 }

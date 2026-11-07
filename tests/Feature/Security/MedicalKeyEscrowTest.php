@@ -253,12 +253,18 @@ final class MedicalKeyEscrowTest extends TestCase
         return 'base64:'.base64_encode(hash('sha256', $seed, true));
     }
 
+    /**
+     * @param  list<string>  $previous
+     */
     private function useKey(string $key, array $previous = []): void
     {
         config(['hosto.medical_encryption.key' => $key, 'hosto.medical_encryption.previous_keys' => $previous]);
         $this->app->instance(MedicalCipher::class, new MedicalCipher($key, $previous));
     }
 
+    /**
+     * @return list<string>
+     */
     private function escrow(int $shares = 5, int $threshold = 3): array
     {
         $this->artisan('hosto:medical-key-escrow', ['--shares' => $shares, '--threshold' => $threshold, '--output' => $this->dir])

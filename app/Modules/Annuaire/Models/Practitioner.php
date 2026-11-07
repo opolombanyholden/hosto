@@ -97,8 +97,8 @@ class Practitioner extends Model
         return $this->belongsTo(User::class);
     }
 
-    /** @return \Illuminate\Database\Eloquent\Relations\BelongsTo<PractitionerCategory, $this> */
-    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    /** @return BelongsTo<PractitionerCategory, $this> */
+    public function category(): BelongsTo
     {
         return $this->belongsTo(PractitionerCategory::class, 'practitioner_category_id');
     }

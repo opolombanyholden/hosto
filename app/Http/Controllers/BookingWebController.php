@@ -12,9 +12,11 @@ use App\Modules\RendezVous\Http\Requests\BookAppointmentRequest;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\RendezVous\Models\TimeSlot;
 use App\Modules\RendezVous\Services\AppointmentBookingService;
+use DomainException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use InvalidArgumentException;
 
 /**
  * Web-based actions that require authentication (session cookies).
@@ -107,9 +109,9 @@ final class BookingWebController
         $data['patient'] = $request->user();
         try {
             $apt = $svc->book($data);
-        } catch (\DomainException $e) {
+        } catch (DomainException $e) {
             return back()->withErrors(['booking' => $e->getMessage()])->withInput();
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return back()->withErrors(['booking' => $e->getMessage()])->withInput();
         }
 

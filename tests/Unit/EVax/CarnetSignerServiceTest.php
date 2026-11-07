@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\EVax;
@@ -9,8 +10,11 @@ use Tests\TestCase;
 final class CarnetSignerServiceTest extends TestCase
 {
     private CarnetSignerService $svc;
+
     private string $tmpPrivate;
+
     private string $tmpPublic;
+
     private string $kid = 'test-kid';
 
     protected function setUp(): void
@@ -34,7 +38,7 @@ final class CarnetSignerServiceTest extends TestCase
             'hosto.carnet.public_keys' => [$this->kid => $pub],
         ]);
 
-        $this->svc = new CarnetSignerService();
+        $this->svc = new CarnetSignerService;
     }
 
     protected function tearDown(): void
@@ -49,7 +53,7 @@ final class CarnetSignerServiceTest extends TestCase
     {
         $payload = ['sub' => 'abcd1234', 'rev' => 3, 'vacc' => []];
         $jws = $this->svc->sign($payload);
-        $this->assertIsString($jws);
+        $this->assertNotSame('', $jws);
         $verified = $this->svc->verify($jws);
         $this->assertSame('abcd1234', $verified['sub']);
         $this->assertSame(3, $verified['rev']);

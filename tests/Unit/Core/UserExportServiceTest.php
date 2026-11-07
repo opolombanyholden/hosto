@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\Core;
@@ -16,7 +17,7 @@ final class UserExportServiceTest extends TestCase
     public function test_export_returns_streamed_response(): void
     {
         User::factory()->count(3)->create();
-        $svc = new UserExportService();
+        $svc = new UserExportService;
         $resp = $svc->exportCsv(User::query());
         $this->assertInstanceOf(StreamedResponse::class, $resp);
         $this->assertSame('text/csv; charset=UTF-8', $resp->headers->get('Content-Type'));
@@ -25,7 +26,7 @@ final class UserExportServiceTest extends TestCase
     public function test_export_contains_expected_columns(): void
     {
         User::factory()->create(['name' => 'Marie NDONG', 'email' => 'marie@h.com']);
-        $svc = new UserExportService();
+        $svc = new UserExportService;
         $resp = $svc->exportCsv(User::query());
         ob_start();
         $resp->sendContent();

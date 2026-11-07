@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\Annuaire\Database\Seeders;
@@ -38,7 +39,7 @@ class PractitionerCategoriesSeeder extends Seeder
                     'is_medical' => $c['medical'],
                     'display_order' => $i + 1,
                     'is_active' => true,
-                ]
+                ],
             );
         }
     }

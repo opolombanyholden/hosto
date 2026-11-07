@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Feature\RendezVous;
@@ -9,6 +10,7 @@ use App\Modules\Annuaire\Models\Practitioner;
 use App\Modules\RendezVous\Jobs\GeocodeAppointmentAddressJob;
 use App\Modules\RendezVous\Models\Appointment;
 use App\Modules\RendezVous\Models\TimeSlot;
+use App\Modules\RendezVous\Services\GeocodingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -41,7 +43,7 @@ final class GeocodingJobTest extends TestCase
             'visit_address' => 'Libreville, Gabon',
         ]);
 
-        (new GeocodeAppointmentAddressJob($apt->id))->handle(app(\App\Modules\RendezVous\Services\GeocodingService::class));
+        (new GeocodeAppointmentAddressJob($apt->id))->handle(app(GeocodingService::class));
 
         $apt->refresh();
         $this->assertEqualsWithDelta(0.41, (float) $apt->visit_lat, 0.01);

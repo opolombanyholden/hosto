@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Modules\EVax\Services;
@@ -33,7 +34,7 @@ final class CarnetPdfService
             'generatedAt' => now(),
         ])->render();
 
-        $options = new Options();
+        $options = new Options;
         $options->set('isRemoteEnabled', false);
         $options->set('isHtml5ParserEnabled', true);
         $options->set('defaultFont', 'DejaVu Sans');

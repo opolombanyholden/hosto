@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\EVax;
@@ -14,6 +15,7 @@ final class CarnetQrServiceTest extends TestCase
     use RefreshDatabase;
 
     private CarnetQrService $qr;
+
     private string $tmpPrivate;
 
     protected function setUp(): void
@@ -33,7 +35,7 @@ final class CarnetQrServiceTest extends TestCase
             'hosto.carnet.public_keys' => ['test' => $pub],
             'hosto.carnet.verify_base_url' => 'https://hosto.ga/c/v',
         ]);
-        $this->qr = new CarnetQrService(new CarnetSignerService());
+        $this->qr = new CarnetQrService(new CarnetSignerService);
     }
 
     public function test_identity_qr_contains_short_url_with_secret(): void

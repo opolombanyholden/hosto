@@ -82,6 +82,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read City $city
  * @property-read Collection<int, StructureType> $structureTypes
  * @property-read Collection<int, Specialty> $specialties
+ * @property bool $accepts_online_payment
+ * @property bool $accepts_on_site_payment
  * @property-read Collection<int, Service> $services
  * @property-read Collection<int, HostoMedia> $media
  * @property-read Collection<int, HostoLike> $likes

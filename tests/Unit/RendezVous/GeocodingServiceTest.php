@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Unit\RendezVous;
@@ -17,7 +18,7 @@ final class GeocodingServiceTest extends TestCase
             ], 200),
         ]);
 
-        $svc = new GeocodingService();
+        $svc = new GeocodingService;
         $out = $svc->geocode('Libreville');
         $this->assertNotNull($out);
         $this->assertEqualsWithDelta(0.4162, $out['lat'], 0.001);
@@ -29,7 +30,7 @@ final class GeocodingServiceTest extends TestCase
         Http::fake([
             'nominatim.openstreetmap.org/search*' => Http::response([], 200),
         ]);
-        $svc = new GeocodingService();
+        $svc = new GeocodingService;
         $this->assertNull($svc->geocode('XYZ_invalid_address'));
     }
 
@@ -41,7 +42,7 @@ final class GeocodingServiceTest extends TestCase
             ], 200),
         ]);
 
-        $svc = new GeocodingService();
+        $svc = new GeocodingService;
         $address = $svc->reverseGeocode(0.4162, 9.4673);
         $this->assertSame('Quartier Glass, Libreville, Estuaire, Gabon', $address);
     }
@@ -51,7 +52,7 @@ final class GeocodingServiceTest extends TestCase
         Http::fake([
             'nominatim.openstreetmap.org/reverse*' => Http::response('', 500),
         ]);
-        $svc = new GeocodingService();
+        $svc = new GeocodingService;
         $this->assertNull($svc->reverseGeocode(0.0, 0.0));
     }
 }
