@@ -36,18 +36,18 @@ final class MedicalCipher
      */
     public function __construct(?string $key, array $previousKeys = [])
     {
-        $raw = $this->rawKey($key);
+        $raw = self::decodeKey($key);
 
         if ($raw !== null) {
-            $this->currentId = $this->keyId($raw);
+            $this->currentId = self::keyIdOf($raw);
             $this->encrypters[$this->currentId] = new Encrypter($raw, 'aes-256-gcm');
         }
 
         foreach ($previousKeys as $previous) {
-            $rawPrevious = $this->rawKey($previous);
+            $rawPrevious = self::decodeKey($previous);
 
             if ($rawPrevious !== null) {
-                $this->encrypters[$this->keyId($rawPrevious)] ??= new Encrypter($rawPrevious, 'aes-256-gcm');
+                $this->encrypters[self::keyIdOf($rawPrevious)] ??= new Encrypter($rawPrevious, 'aes-256-gcm');
             }
         }
     }
@@ -98,7 +98,31 @@ final class MedicalCipher
         return $this->currentId !== null;
     }
 
-    private function rawKey(?string $key): ?string
+    public function currentKeyId(): ?string
+    {
+        return $this->currentId;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function availableKeyIds(): array
+    {
+        return array_keys($this->encrypters);
+    }
+
+    /**
+     * Key id written in the stored value, or null for a value not encrypted.
+     */
+    public function keyIdOfValue(string $stored): ?string
+    {
+        return $this->isEncrypted($stored) ? explode(':', $stored, 3)[1] : null;
+    }
+
+    /**
+     * Raw 32-byte key from the "base64:..." form, or null if missing or invalid.
+     */
+    public static function decodeKey(?string $key): ?string
     {
         if ($key === null || $key === '') {
             return null;
@@ -109,7 +133,7 @@ final class MedicalCipher
         return is_string($raw) && strlen($raw) === self::KEY_BYTES ? $raw : null;
     }
 
-    private function keyId(string $raw): string
+    public static function keyIdOf(string $raw): string
     {
         return substr(hash('sha256', $raw), 0, 8);
     }

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Core\Providers;
 
+use App\Modules\Core\Console\Commands\CheckMedicalKey;
 use App\Modules\Core\Console\Commands\EncryptMedicalData;
+use App\Modules\Core\Console\Commands\EscrowMedicalKey;
 use App\Modules\Core\Console\Commands\EnsureAuditPartitions;
 use App\Modules\Core\Console\Commands\GenerateMedicalKey;
+use App\Modules\Core\Console\Commands\RecoverMedicalKey;
 use App\Modules\Core\Http\Middleware\EnsurePermission;
 use App\Modules\Core\Services\AuditLogger;
 use App\Modules\Core\Services\MedicalCipher;
@@ -48,6 +51,9 @@ final class CoreServiceProvider extends ServiceProvider
             $this->commands([
                 EnsureAuditPartitions::class,
                 EncryptMedicalData::class,
+                EscrowMedicalKey::class,
+                RecoverMedicalKey::class,
+                CheckMedicalKey::class,
                 GenerateMedicalKey::class,
             ]);
         }

@@ -20,3 +20,10 @@ Schedule::command('audit:ensure-partitions', ['--months' => 3])
     ->dailyAt('02:30')
     ->name('audit_ensure_partitions')
     ->onOneServer();
+
+// Medical encryption key: data must stay decryptable and the key under escrow.
+// A failure is logged as critical. See docs/adr/0017-sequestre-cle-chiffrement.md.
+Schedule::command('hosto:medical-key-check')
+    ->dailyAt('04:00')
+    ->name('medical_key_check')
+    ->onOneServer();

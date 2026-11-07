@@ -4,16 +4,29 @@ declare(strict_types=1);
 
 namespace App\Modules\Core\Console\Commands;
 
+use App\Modules\Core\Services\KeyEscrow\MedicalKeyEscrow;
 use Illuminate\Console\Command;
 
 final class GenerateMedicalKey extends Command
 {
-    protected $signature = 'hosto:medical-key {--write : Ajoute la cle au fichier .env si elle n\'y est pas}';
+    protected $signature = 'hosto:medical-key
+        {--write : Ajoute la cle au fichier .env si elle n\'y est pas}
+        {--rotate : Genere la cle suivante pour une rotation, alors que des donnees sont deja chiffrees}';
 
     protected $description = 'Genere une cle de chiffrement des donnees medicales.';
 
-    public function handle(): int
+    public function handle(MedicalKeyEscrow $escrow): int
     {
+        // Generating a fresh key over encrypted data is how data gets lost:
+        // the right move is to recover the existing key from its custodians.
+        if (! $this->option('rotate') && $escrow->keyIdsInData() !== []) {
+            $this->error('Des donnees medicales sont deja chiffrees : ne creez pas de nouvelle cle.');
+            $this->line('Cle perdue sur ce serveur : php artisan hosto:medical-key-recover');
+            $this->line('Rotation volontaire : php artisan hosto:medical-key --rotate (voir ADR 0016).');
+
+            return self::FAILURE;
+        }
+
         $key = 'base64:'.base64_encode(random_bytes(32));
 
         if (! $this->option('write')) {
@@ -31,10 +44,16 @@ final class GenerateMedicalKey extends Command
             return self::FAILURE;
         }
 
+        if ($this->option('rotate')) {
+            $this->error('En rotation, placez vous-meme la nouvelle cle et l\'ancienne dans MEDICAL_ENCRYPTION_PREVIOUS_KEYS (ADR 0016).');
+
+            return self::FAILURE;
+        }
+
         file_put_contents($path, rtrim($env)."\n\nMEDICAL_ENCRYPTION_KEY={$key}\n");
 
         $this->info('Cle ajoutee a .env.');
-        $this->warn('Sauvegardez-la hors du serveur : sans elle, les donnees medicales sont irrecuperables.');
+        $this->warn('Mettez-la sous sequestre maintenant : php artisan hosto:medical-key-escrow');
 
         return self::SUCCESS;
     }
