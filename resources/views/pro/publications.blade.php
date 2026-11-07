@@ -24,7 +24,7 @@
             <select id="pubType" style="width:100%;padding:10px 14px;border:2px solid #EEE;border-radius:8px;font-family:Poppins,sans-serif;font-size:.85rem;">
                 <option value="activity">Activite</option>
                 <option value="research">Travaux / Recherche</option>
-                <option value="tip">Conseil sante</option>
+                <option value="tip">Conseil santé</option>
                 <option value="video">Video</option>
             </select>
         </div>

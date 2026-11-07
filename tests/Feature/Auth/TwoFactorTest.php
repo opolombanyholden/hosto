@@ -29,7 +29,7 @@ final class TwoFactorTest extends TestCase
         $this->actingAs($user)
             ->get('/2fa/setup')
             ->assertOk()
-            ->assertSee('Activer la verification');
+            ->assertSee('Activer la vérification');
     }
 
     public function test_2fa_setup_generates_qr_code(): void

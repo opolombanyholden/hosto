@@ -5,7 +5,7 @@
 
 @section('breadcrumb')
 <span style="color:#BDBDBD;margin:0 6px;">/</span>
-<span style="color:#424242;">Medicaments</span>
+<span style="color:#424242;">Médicaments</span>
 @endsection
 
 @section('styles')
@@ -79,15 +79,15 @@
 
 @section('content')
 <div class="explorer-header">
-    <h2>Trouver un medicament</h2>
-    <p>Recherchez un medicament et trouvez les pharmacies qui le proposent pres de chez vous.</p>
+    <h2>Trouver un médicament</h2>
+    <p>Recherchez un médicament et trouvez les pharmacies qui le proposent pres de chez vous.</p>
 </div>
 
 <div class="search-wrapper">
     <form class="search-bar" onsubmit="searchMed(event)">
         <div class="search-field">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            <input type="text" id="medQ" placeholder="Nom du medicament (Paracetamol, Doliprane...)" autofocus>
+            <input type="text" id="medQ" placeholder="Nom du médicament (Paracetamol, Doliprane...)" autofocus>
         </div>
         <div class="search-field" id="cityFieldWrap">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -104,9 +104,9 @@
 <div id="medEmpty" class="empty-state" style="display:none;">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 11h6"/></svg>
     <p>Aucun resultat.</p>
-    <p style="font-size:.78rem;margin-top:4px;">Essayez un autre nom de medicament ou une autre ville.</p>
+    <p style="font-size:.78rem;margin-top:4px;">Essayez un autre nom de médicament ou une autre ville.</p>
 </div>
-<button id="loadMoreBtn" class="load-more" style="display:none;" onclick="loadMore()">Voir plus de resultats</button>
+<button id="loadMoreBtn" class="load-more" style="display:none;" onclick="loadMore()">Voir plus de résultats</button>
 @endsection
 
 @section('scripts')

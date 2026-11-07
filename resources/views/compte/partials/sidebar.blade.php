@@ -21,11 +21,11 @@
 </a>
 <a href="/compte/medecins" class="{{ ($active ?? '') === 'medecins' ? 'active' : '' }}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-    <span>Medecins</span>
+    <span>Médecins</span>
 </a>
 <a href="/compte/medicaments" class="{{ ($active ?? '') === 'medicaments' ? 'active' : '' }}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
-    <span>Medicaments</span>
+    <span>Médicaments</span>
 </a>
 <a href="/compte/examens" class="{{ ($active ?? '') === 'examens' ? 'active' : '' }}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>

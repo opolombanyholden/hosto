@@ -41,10 +41,10 @@
 
     {{-- Step 1: Specialty --}}
     <div class="rdv-step">
-        <div class="rdv-step-title"><span class="rdv-step-num">1</span> Specialite</div>
+        <div class="rdv-step-title"><span class="rdv-step-num">1</span> Spécialité</div>
         <div class="field">
             <select id="rdvSpecialty" onchange="loadSlots()">
-                <option value="">Choisissez une specialite</option>
+                <option value="">Choisissez une spécialité</option>
                 @foreach($specialties as $spec)
                     <option value="{{ $spec->code }}">{{ $spec->name_fr }}</option>
                 @endforeach
@@ -56,7 +56,7 @@
     <div class="rdv-step">
         <div class="rdv-step-title"><span class="rdv-step-num">2</span> Date et heure</div>
         <div id="slotsContainer">
-            <p style="font-size:.82rem;color:#757575;">Selectionnez d'abord une specialite.</p>
+            <p style="font-size:.82rem;color:#757575;">Sélectionnez d'abord une specialite.</p>
         </div>
         <div id="slotsLoading" style="display:none;font-size:.82rem;color:#757575;">Chargement des creneaux...</div>
     </div>
@@ -71,7 +71,7 @@
 
     {{-- Step 4: Beneficiary --}}
     <div class="rdv-step">
-        <div class="rdv-step-title"><span class="rdv-step-num">4</span> Beneficiaire</div>
+        <div class="rdv-step-title"><span class="rdv-step-num">4</span> Bénéficiaire</div>
         <div class="field">
             <label><input type="radio" name="beneficiary" value="self" checked onchange="toggleThirdParty(false)"> Pour moi-meme</label>
             <label style="margin-left:20px;"><input type="radio" name="beneficiary" value="third" onchange="toggleThirdParty(true)"> Pour un tiers</label>
@@ -83,7 +83,7 @@
                 <div class="field"><label>Sexe *</label><select id="tpGender"><option value="">—</option><option value="male">Masculin</option><option value="female">Feminin</option></select></div>
                 <div class="field"><label>Lien</label><select id="tpRelation"><option value="">—</option><option value="enfant">Enfant</option><option value="parent">Parent</option><option value="conjoint">Conjoint(e)</option><option value="autre">Autre</option></select></div>
                 <div class="field"><label>Ville</label><input type="text" id="tpCity"></div>
-                <div class="field"><label>Telephone</label><input type="tel" id="tpPhone" placeholder="+241..."></div>
+                <div class="field"><label>Téléphone</label><input type="tel" id="tpPhone" placeholder="+241..."></div>
             </div>
             <div class="field"><label>Adresse</label><input type="text" id="tpAddress"></div>
             <div class="field"><label>Notes medicales</label><textarea id="tpNotes" rows="2" placeholder="Allergies, traitements en cours..."></textarea></div>

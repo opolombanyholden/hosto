@@ -18,8 +18,8 @@
 <div style="background:#FFF3E0;border:1px solid #FFB74D;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
     <span style="font-size:1.2rem;">&#9888;</span>
     <div>
-        <div style="font-size:.85rem;font-weight:600;color:#E65100;">Verification requise</div>
-        <div style="font-size:.78rem;color:#BF360C;">Verifiez votre email et telephone pour soumettre votre dossier professionnel.</div>
+        <div style="font-size:.85rem;font-weight:600;color:#E65100;">Vérification requise</div>
+        <div style="font-size:.78rem;color:#BF360C;">Vérifiez votre email et téléphone pour soumettre votre dossier professionnel.</div>
     </div>
 </div>
 @elseif($user->pro_validation_status === null || $user->pro_validation_status === 'pending')

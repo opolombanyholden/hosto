@@ -28,13 +28,13 @@
         <input type="email" id="email" name="email" value="{{ old('email') }}" required>
     </div>
     <div class="field">
-        <label for="phone">Telephone professionnel</label>
+        <label for="phone">Téléphone professionnel</label>
         <input type="tel" id="phone" name="phone" value="{{ old('phone') }}" placeholder="+241..." required>
     </div>
     <div class="field">
         <label for="role">Votre profession</label>
         <select id="role" name="role" required>
-            <option value="">Selectionnez votre profession</option>
+            <option value="">Sélectionnez votre profession</option>
             @foreach($roles as $role)
                 <option value="{{ $role->slug }}" {{ old('role') === $role->slug ? 'selected' : '' }}>{{ $role->name_fr }}</option>
             @endforeach
@@ -71,7 +71,7 @@
         </div>
         <div id="matchMsg" style="font-size:.72rem;margin-top:4px;display:none;"></div>
     </div>
-    <button type="submit" class="auth-btn">Creer mon compte professionnel</button>
+    <button type="submit" class="auth-btn">Créer mon compte professionnel</button>
 </form>
 
 <p class="auth-link">Deja inscrit ? <a href="/pro/connexion">Se connecter</a></p>

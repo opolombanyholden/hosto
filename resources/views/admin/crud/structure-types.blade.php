@@ -9,8 +9,8 @@
 <div style="background:white;border:1px solid #EEE;border-radius:14px;padding:20px;margin-bottom:20px;">
     <h3 style="font-size:.88rem;font-weight:600;color:#B71C1C;margin-bottom:12px;">Ajouter un type</h3>
     <div style="display:grid;grid-template-columns:1fr 2fr 2fr 1fr 80px 100px;gap:10px;align-items:end;">
-        <div><label class="crud-label">Slug *</label><input type="text" id="newSlug" class="crud-input" placeholder="hopital"></div>
-        <div><label class="crud-label">Nom FR *</label><input type="text" id="newNameFr" class="crud-input" placeholder="Hopital"></div>
+        <div><label class="crud-label">Slug *</label><input type="text" id="newSlug" class="crud-input" placeholder="hôpital"></div>
+        <div><label class="crud-label">Nom FR *</label><input type="text" id="newNameFr" class="crud-input" placeholder="Hôpital"></div>
         <div><label class="crud-label">Nom EN</label><input type="text" id="newNameEn" class="crud-input" placeholder="Hospital"></div>
         <div><label class="crud-label">Icone</label><input type="text" id="newIcon" class="crud-input" placeholder="icon-hopital"></div>
         <div><label class="crud-label">Ordre</label><input type="number" id="newOrder" class="crud-input" value="0" min="0"></div>

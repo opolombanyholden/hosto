@@ -7,7 +7,7 @@
 @section('side-description', 'Votre compte est protege par la verification en deux etapes. Entrez le code de votre application d\'authentification ou un code de recuperation.')
 
 @section('form')
-<h1>Verification requise</h1>
+<h1>Vérification requise</h1>
 <p class="subtitle">Entrez le code a 6 chiffres de votre application d'authentification</p>
 
 @if($errors->any())
@@ -17,7 +17,7 @@
 <form method="POST" action="{{ route('2fa.verify') }}">
     @csrf
     <div class="field">
-        <label for="code">Code de verification</label>
+        <label for="code">Code de vérification</label>
         <input type="text" id="code" name="code" maxlength="10" required autofocus
                placeholder="123456 ou ABCD-EFGH"
                style="text-align:center;font-size:1.3rem;letter-spacing:4px;font-weight:600;">

@@ -7,7 +7,7 @@
 @section('side-description', 'Pas de panique. Entrez votre adresse email et nous vous enverrons un lien pour reinitialiser votre mot de passe.')
 
 @section('form')
-<h1>Reinitialiser le mot de passe</h1>
+<h1>Réinitialiser le mot de passe</h1>
 <p class="subtitle">Entrez l'adresse email associee a votre compte</p>
 
 @if(config('app.debug') && session('dev_reset_url'))

@@ -13,7 +13,7 @@
         <div><label class="crud-label">Categorie *</label>
             <select id="newCat" class="crud-input"><option value="prestation">Prestation</option><option value="soin">Soin</option><option value="examen">Examen</option></select>
         </div>
-        <div><label class="crud-label">Nom FR *</label><input type="text" id="newNameFr" class="crud-input" placeholder="Consultation generale"></div>
+        <div><label class="crud-label">Nom FR *</label><input type="text" id="newNameFr" class="crud-input" placeholder="Consultation générale"></div>
         <div><label class="crud-label">Nom EN</label><input type="text" id="newNameEn" class="crud-input" placeholder="General consultation"></div>
         <div><label class="crud-label">Ordre</label><input type="number" id="newOrder" class="crud-input" value="0" min="0"></div>
         <button onclick="createItem()" class="crud-btn crud-btn-primary">Ajouter</button>

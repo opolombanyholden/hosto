@@ -31,7 +31,7 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
             <div class="field"><label for="name">Nom complet</label><input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required></div>
             <div class="field"><label for="email">Email</label><input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required></div>
-            <div class="field"><label for="phone">Telephone</label><input type="tel" id="phone" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="+241..."></div>
+            <div class="field"><label for="phone">Téléphone</label><input type="tel" id="phone" name="phone" value="{{ old('phone', $user->phone) }}" placeholder="+241..."></div>
         </div>
         @if($errors->has('name') || $errors->has('email') || $errors->has('phone'))
         <div style="color:#E53935;font-size:.78rem;margin-top:8px;">{{ $errors->first('name') ?: $errors->first('email') ?: $errors->first('phone') }}</div>
@@ -59,13 +59,13 @@
 
 {{-- 2FA --}}
 <div style="background:white;border-radius:14px;padding:28px;border:1px solid #EEE;">
-    <h2 style="font-size:1rem;font-weight:700;color:#1B2A1B;margin-bottom:12px;">Verification en 2 etapes (2FA)</h2>
+    <h2 style="font-size:1rem;font-weight:700;color:#1B2A1B;margin-bottom:12px;">Vérification en 2 etapes (2FA)</h2>
     @if($twoFactorEnabled)
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
             <div style="width:10px;height:10px;background:#4CAF50;border-radius:50%;"></div>
             <span style="font-size:.88rem;color:#2E7D32;font-weight:600;">Active</span>
         </div>
-        <p style="font-size:.82rem;color:#757575;margin-bottom:16px;">Votre compte est protege par la verification en 2 etapes via une application d'authentification (Google Authenticator, Authy, etc.).</p>
+        <p style="font-size:.82rem;color:#757575;margin-bottom:16px;">Votre compte est protege par la vérification en 2 etapes via une application d'authentification (Google Authenticator, Authy, etc.).</p>
         <form method="POST" action="{{ route('2fa.disable') }}" style="display:inline;">
             @csrf @method('DELETE')
             <div class="field" style="max-width:300px;"><label for="disable_password">Mot de passe pour confirmer</label><input type="password" id="disable_password" name="password" required></div>
@@ -79,7 +79,7 @@
             <div style="width:10px;height:10px;background:#E53935;border-radius:50%;"></div>
             <span style="font-size:.88rem;color:#E53935;font-weight:600;">Non active</span>
         </div>
-        <p style="font-size:.82rem;color:#757575;margin-bottom:16px;">Protegez votre compte avec une couche de securite supplementaire. Vous aurez besoin d'une application comme Google Authenticator.</p>
+        <p style="font-size:.82rem;color:#757575;margin-bottom:16px;">Protegez votre compte avec une couche de sécurité supplementaire. Vous aurez besoin d'une application comme Google Authenticator.</p>
         <a href="{{ route('2fa.setup') }}" style="display:inline-block;padding:10px 24px;background:var(--env-main);color:white;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">Activer la 2FA</a>
     @endif
 </div>

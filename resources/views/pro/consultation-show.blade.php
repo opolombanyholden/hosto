@@ -92,7 +92,7 @@
     </div>
     @endforeach
     <div class="mini-form"><form method="POST" action="/pro/consultations/{{ $consultation->uuid }}/soin">@csrf
-        <label>Type de soin *</label><select name="care_type" required><option value="">Selectionnez</option><option value="injection">Injection</option><option value="perfusion">Perfusion</option><option value="pansement">Pansement</option><option value="suture">Suture</option><option value="kine">Kinesitherapie</option><option value="dialyse">Dialyse</option><option value="autre">Autre</option></select>
+        <label>Type de soin *</label><select name="care_type" required><option value="">Sélectionnez</option><option value="injection">Injection</option><option value="perfusion">Perfusion</option><option value="pansement">Pansement</option><option value="suture">Suture</option><option value="kine">Kinesitherapie</option><option value="dialyse">Dialyse</option><option value="autre">Autre</option></select>
         <label>Description *</label><textarea name="description" rows="2" required></textarea>
         <label>Instructions</label><textarea name="instructions" rows="2"></textarea>
         <button type="submit" class="mini-btn">Prescrire le soin</button>
@@ -110,7 +110,7 @@
     </div>
     @endforeach
     <div class="mini-form"><form method="POST" action="/pro/consultations/{{ $consultation->uuid }}/traitement">@csrf
-        <label>Type *</label><select name="type" required><option value="">Selectionnez</option><option value="medication">Medicamenteux</option><option value="diet">Regime alimentaire</option><option value="rest">Repos / Arret</option><option value="rehabilitation">Reeducation</option><option value="follow_up">Suivi periodique</option><option value="lifestyle">Hygiene de vie</option><option value="other">Autre</option></select>
+        <label>Type *</label><select name="type" required><option value="">Sélectionnez</option><option value="medication">Medicamenteux</option><option value="diet">Regime alimentaire</option><option value="rest">Repos / Arret</option><option value="rehabilitation">Reeducation</option><option value="follow_up">Suivi periodique</option><option value="lifestyle">Hygiene de vie</option><option value="other">Autre</option></select>
         <label>Description *</label><textarea name="description" rows="2" required></textarea>
         <label>Frequence</label><input type="text" name="frequency" placeholder="Ex: 3 fois/jour">
         <label>Duree</label><input type="text" name="duration" placeholder="Ex: 7 jours, 3 mois">
@@ -138,13 +138,13 @@
         <form method="POST" action="/pro/consultations/{{ $consultation->uuid }}/ordonnance">@csrf
             <div id="rxItems">
                 <div style="background:white;border:1px solid #EEE;border-radius:8px;padding:12px;margin-bottom:8px;">
-                    <input type="text" name="items[0][medication_name]" placeholder="Medicament *" required>
+                    <input type="text" name="items[0][medication_name]" placeholder="Médicament *" required>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;"><input type="text" name="items[0][dosage]" placeholder="Dosage"><input type="text" name="items[0][posology]" placeholder="Posologie"></div>
                     <input type="text" name="items[0][duration]" placeholder="Duree">
                 </div>
             </div>
-            <button type="button" onclick="addRxItem()" style="font-size:.72rem;color:#1565C0;background:none;border:none;cursor:pointer;margin-bottom:8px;">+ Ajouter un medicament</button><br>
-            <button type="submit" class="mini-btn">Creer l'ordonnance</button>
+            <button type="button" onclick="addRxItem()" style="font-size:.72rem;color:#1565C0;background:none;border:none;cursor:pointer;margin-bottom:8px;">+ Ajouter un médicament</button><br>
+            <button type="submit" class="mini-btn">Créer l'ordonnance</button>
         </form>
     </div>
 </div>

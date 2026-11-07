@@ -33,7 +33,7 @@ final class ProfileTest extends TestCase
             ->assertOk()
             ->assertSee('Informations personnelles')
             ->assertSee('Modifier le mot de passe')
-            ->assertSee('Verification en 2 etapes');
+            ->assertSee('Vérification en 2 etapes');
     }
 
     public function test_profile_page_redirects_when_unauthenticated(): void

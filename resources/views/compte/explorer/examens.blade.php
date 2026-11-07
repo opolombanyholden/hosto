@@ -127,7 +127,7 @@
 <div id="examLoading" class="loading" style="display:none;">Recherche en cours...</div>
 <div id="examResults"></div>
 <div id="examEmpty" class="empty-state" style="display:none;">Aucun resultat.</div>
-<button id="loadMoreBtn" class="load-more" style="display:none;" onclick="loadMore()">Voir plus de resultats</button>
+<button id="loadMoreBtn" class="load-more" style="display:none;" onclick="loadMore()">Voir plus de résultats</button>
 
 {{-- Order modal --}}
 <div class="order-modal-backdrop" id="orderModal" onclick="if(event.target===this)closeOrder()">

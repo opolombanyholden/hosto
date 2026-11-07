@@ -165,7 +165,7 @@
             <select id="spType"><option value="">Tous les types</option></select>
         </div>
         <div class="sp-field">
-            <label>Specialite</label>
+            <label>Spécialité</label>
             <select id="spSpecialty"><option value="">Toutes</option></select>
         </div>
         <div class="sp-field">
@@ -182,7 +182,7 @@
                     <input type="checkbox" id="spUrgence" style="accent-color:#C62828;"> Service d'urgence
                 </label>
                 <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;cursor:pointer;">
-                    <input type="checkbox" id="spEvacuation" style="accent-color:#6A1B9A;"> Service d'evacuation
+                    <input type="checkbox" id="spEvacuation" style="accent-color:#6A1B9A;"> Service d'évacuation
                 </label>
                 <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;cursor:pointer;">
                     <input type="checkbox" id="spDomicile" style="accent-color:#2E7D32;"> Soins a domicile
@@ -191,7 +191,7 @@
         </div>
     </div>
     <div class="search-panel-actions">
-        <button class="sp-btn sp-btn-secondary" onclick="resetSearch()">Reinitialiser</button>
+        <button class="sp-btn sp-btn-secondary" onclick="resetSearch()">Réinitialiser</button>
         <button class="sp-btn sp-btn-primary" onclick="applySearch()">Rechercher</button>
     </div>
 </div>
@@ -201,13 +201,13 @@
     <div class="toolbar-actions">
         <button id="btnProximite" onclick="toggleProximite()" class="btn-prox">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            A proximite
+            A proximité
         </button>
         <div class="view-toggle">
             <button id="btnViewList" class="active" onclick="setView('list')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg> Liste</button>
             <button id="btnViewMap" onclick="setView('map')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg> Carte</button>
         </div>
-        <button onclick="resetSearch()" class="btn-reset">Reinitialiser</button>
+        <button onclick="resetSearch()" class="btn-reset">Réinitialiser</button>
     </div>
 </div>
 

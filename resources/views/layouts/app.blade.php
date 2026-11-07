@@ -148,16 +148,13 @@
 <nav class="navbar">
     <div class="container">
         <a href="/" class="navbar-logo">
-            <div class="logo-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            </div>
-            HOSTO
+            <img src="/images/logo-hosto.png" alt="HOSTO" style="height:38px;width:auto;">
         </a>
         <div class="navbar-nav" id="navMenu">
             <a href="/" class="{{ request()->is('/') ? 'active' : '' }}">Accueil</a>
             <a href="/annuaire" class="{{ request()->is('annuaire') || request()->is('annuaire/*') && !request()->is('annuaire/medecins*') ? 'active' : '' }}">Structures</a>
-            <a href="/annuaire/medecins" class="{{ request()->is('annuaire/medecins*') ? 'active' : '' }}">Medecins</a>
-            <a href="/medicaments" class="{{ request()->is('medicaments*') ? 'active' : '' }}">Medicaments</a>
+            <a href="/annuaire/medecins" class="{{ request()->is('annuaire/medecins*') ? 'active' : '' }}">Médecins</a>
+            <a href="/medicaments" class="{{ request()->is('medicaments*') ? 'active' : '' }}">Médicaments</a>
             <a href="/examens" class="{{ request()->is('examens*') ? 'active' : '' }}">Examens</a>
             @auth
                 <a href="/compte" class="btn-nav">Mon espace</a>
@@ -193,7 +190,7 @@
                     <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
                     HOSTO
                 </div>
-                <p>Plateforme panafricaine de e-sante. La sante au bout du click, pour tous, partout en Afrique.</p>
+                <p>Plateforme panafricaine de e-sante. La santé au bout du click, pour tous, partout en Afrique.</p>
             </div>
             <div>
                 <h4>Plateforme</h4>
@@ -207,7 +204,7 @@
             <div>
                 <h4>Services</h4>
                 <ul>
-                    <li><a href="/annuaire?type=hopital">Hopitaux</a></li>
+                    <li><a href="/annuaire?type=hopital">Hôpitaux</a></li>
                     <li><a href="/annuaire?type=pharmacie&garde=1">Pharmacies de garde</a></li>
                     <li><a href="/annuaire?type=laboratoire">Laboratoires</a></li>
                     <li><a href="/annuaire">Rendez-vous</a></li>

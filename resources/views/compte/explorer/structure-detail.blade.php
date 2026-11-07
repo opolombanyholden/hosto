@@ -105,7 +105,7 @@
             @if($hosto->is_partner)<span class="status-badge" style="background:#E3F2FD;color:#1565C0;">Partenaire HOSTO</span>@endif
             @if($hosto->is_guard_service)<span class="status-badge" style="background:#FFF3E0;color:#E65100;">Garde</span>@endif
             @if($hosto->is_emergency_service)<span class="status-badge" style="background:#FFEBEE;color:#C62828;">Urgence</span>@endif
-            @if($hosto->is_evacuation_service)<span class="status-badge" style="background:#F3E5F5;color:#6A1B9A;">Evacuation</span>@endif
+            @if($hosto->is_evacuation_service)<span class="status-badge" style="background:#F3E5F5;color:#6A1B9A;">Évacuation</span>@endif
             @if($hosto->is_home_care_service)<span class="status-badge" style="background:#E8F5E9;color:#2E7D32;">Domicile</span>@endif
             <span class="status-badge" style="background:{{ $hosto->is_public ? '#E3F2FD;color:#1565C0' : '#F3E5F5;color:#6A1B9A' }};">{{ $hosto->is_public ? 'Public' : 'Prive' }}</span>
         </div>
@@ -162,7 +162,7 @@
     <div style="display:flex;gap:12px;font-size:.68rem;color:#757575;">
         <span>{{ $hosto->likes_count }} aime{{ $hosto->likes_count > 1 ? 's' : '' }}</span>
         <span>{{ $recoCount }} reco{{ $recoCount > 1 ? 's' : '' }}</span>
-        @if($hosto->is_verified)<span style="color:#2E7D32;">Verifie</span>@endif
+        @if($hosto->is_verified)<span style="color:#2E7D32;">Vérifié</span>@endif
     </div>
 </div>
 
@@ -175,14 +175,14 @@
 <div class="section-block featured-section" style="border-color:#C8E6C9;background:#FAFFF9;">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
         <img src="/images/icons/icon-pharamcie.png" alt="" style="width:32px;height:32px;">
-        <div><h3 style="margin:0;color:#2E7D32;">Catalogue medicaments</h3><p style="font-size:.72rem;color:#757575;margin:0;">Recherchez un medicament disponible dans cette pharmacie</p></div>
+        <div><h3 style="margin:0;color:#2E7D32;">Catalogue médicaments</h3><p style="font-size:.72rem;color:#757575;margin:0;">Recherchez un médicament disponible dans cette pharmacie</p></div>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:10px;">
         <input type="text" id="pharmaSearch" placeholder="Rechercher un medicament..." class="filter-input" style="margin:0;flex:1;" onkeydown="if(event.key==='Enter')searchPharma()">
         <button onclick="searchPharma()" style="padding:8px 18px;background:#388E3C;color:white;border:none;border-radius:8px;font-family:Poppins,sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap;">Rechercher</button>
     </div>
     <div id="pharmaResults"></div>
-    <div id="pharmaEmpty" style="display:none;text-align:center;padding:16px;color:#757575;font-size:.82rem;">Aucun medicament trouve.</div>
+    <div id="pharmaEmpty" style="display:none;text-align:center;padding:16px;color:#757575;font-size:.82rem;">Aucun médicament trouve.</div>
     <div id="pharmaPagination" style="display:flex;justify-content:center;gap:4px;padding:8px 0;"></div>
 </div>
 @endif
@@ -221,7 +221,7 @@
         <div style="width:32px;height:32px;background:#E3F2FD;border-radius:8px;display:flex;align-items:center;justify-content:center;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94"/><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
         </div>
-        <div><h3 style="margin:0;color:#1565C0;">Teleconsultation disponible</h3><p style="font-size:.72rem;color:#757575;margin:0;">Consultez un medecin a distance depuis cette structure</p></div>
+        <div><h3 style="margin:0;color:#1565C0;">Téléconsultation disponible</h3><p style="font-size:.72rem;color:#757575;margin:0;">Consultez un médecin a distance depuis cette structure</p></div>
     </div>
 </div>
 @endif
@@ -235,11 +235,11 @@
     <div>
         {{-- 1. Specialites --}}
         <div class="section-block">
-            <h3>Specialites</h3>
+            <h3>Spécialités</h3>
             @if($specialties->isNotEmpty())
             <div class="specs-list">@foreach($specialties as $spec)<span class="spec-badge">{{ $spec->name_fr }}</span>@endforeach</div>
             @else
-            <p style="font-size:.82rem;color:#757575;">Aucune specialite renseignee.</p>
+            <p style="font-size:.82rem;color:#757575;">Aucune spécialité renseignee.</p>
             @endif
         </div>
 

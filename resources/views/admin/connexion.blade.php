@@ -9,7 +9,7 @@
 
 @section('form')
 <h1>Connexion administrateur</h1>
-<p class="subtitle">Espace reserve — acces controle</p>
+<p class="subtitle">Espace reserve — accès controle</p>
 
 @if($errors->any())
 <div class="auth-alert auth-alert-error">{{ $errors->first() }}</div>
@@ -17,7 +17,7 @@
 
 <div class="login-tabs">
     <button type="button" class="login-tab active" id="tabEmail" onclick="switchMode('email')">Email</button>
-    <button type="button" class="login-tab" id="tabPhone" onclick="switchMode('phone')">Telephone</button>
+    <button type="button" class="login-tab" id="tabPhone" onclick="switchMode('phone')">Téléphone</button>
 </div>
 
 <form method="POST" action="/admin/connexion">
@@ -37,7 +37,7 @@
             </select>
         </div>
         <div class="field">
-            <label for="phone_number">Numero de telephone</label>
+            <label for="phone_number">Numéro de téléphone</label>
             <input type="tel" id="phone_number" name="phone_number" value="{{ old('phone_number') }}" placeholder="Ex: 077123456" inputmode="tel">
         </div>
     </div>

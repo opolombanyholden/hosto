@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
-    <title>Teleconsultation — HOSTO</title>
+    <title>Téléconsultation — HOSTO</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -47,7 +47,7 @@
     <header class="tc-header">
         <div class="tc-logo">
             <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-            HOSTO Teleconsultation
+            HOSTO Téléconsultation
         </div>
         <div class="tc-info">
             <div class="name">{{ $teleconsultation->practitioner->full_name }}</div>
@@ -60,7 +60,7 @@
             <div class="pulse">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
             </div>
-            <h2>Pret pour la teleconsultation</h2>
+            <h2>Prêt pour la téléconsultation</h2>
             <p>Votre session avec {{ $teleconsultation->practitioner->full_name }} est prete. Cliquez pour rejoindre la salle securisee.</p>
             <button class="tc-join-btn" onclick="joinRoom()">Rejoindre la consultation</button>
             <div class="tc-back"><a href="{{ $homeUrl }}">Retour</a></div>

@@ -37,7 +37,7 @@
 @empty
 <div style="text-align:center;padding:60px 20px;color:#757575;">
     <p>Aucune consultation enregistree.</p>
-    <a href="/pro/consultations/nouvelle" style="display:inline-block;margin-top:16px;padding:10px 24px;background:#1565C0;color:white;border-radius:100px;font-size:.82rem;font-weight:600;text-decoration:none;">Creer une consultation</a>
+    <a href="/pro/consultations/nouvelle" style="display:inline-block;margin-top:16px;padding:10px 24px;background:#1565C0;color:white;border-radius:100px;font-size:.82rem;font-weight:600;text-decoration:none;">Créer une consultation</a>
 </div>
 @endforelse
 

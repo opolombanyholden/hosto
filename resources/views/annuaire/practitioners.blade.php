@@ -3,7 +3,7 @@
 @section('title', 'Annuaire des medecins — HOSTO')
 @section('breadcrumb')
 <li><span class="sep">/</span> <a href="/annuaire">Annuaire</a></li>
-<li><span class="sep">/</span> <span class="current">Medecins</span></li>
+<li><span class="sep">/</span> <span class="current">Médecins</span></li>
 @endsection
 
 @section('styles')
@@ -29,7 +29,7 @@
 @endsection
 
 @section('content')
-<div class="prac-header"><div class="container"><h1>Annuaire des medecins</h1><p style="opacity:.85;">Trouvez un medecin par specialite, ville ou nom</p></div></div>
+<div class="prac-header"><div class="container"><h1>Annuaire des médecins</h1><p style="opacity:.85;">Trouvez un médecin par spécialité, ville ou nom</p></div></div>
 <div class="container">
     <div class="search-wrapper">
         <form class="search-bar" onsubmit="searchPrac(event)">
@@ -37,7 +37,7 @@
                 <input type="text" id="pracQ" placeholder="Nom du medecin...">
             </div>
             <div class="search-field">
-                <input type="text" id="pracSpec" list="specList" placeholder="Specialite (autocomplete)" autocomplete="off">
+                <input type="text" id="pracSpec" list="specList" placeholder="Spécialité (autocomplete)" autocomplete="off">
                 <datalist id="specList"></datalist>
             </div>
             <div class="search-field">
@@ -48,12 +48,12 @@
         </form>
         <div style="margin-top:8px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:.8rem;color:white;text-shadow:0 1px 2px rgba(0,0,0,.3);">
             <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="pracPartner" onchange="searchPrac()"> Partenaires HOSTO uniquement</label>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="pracTC" onchange="searchPrac()"> Teleconsultation</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="pracTC" onchange="searchPrac()"> Téléconsultation</label>
         </div>
     </div>
     <div id="pracLoading" class="loading" style="display:none;">Recherche...</div>
     <div id="pracResults" class="prac-grid"></div>
-    <div id="pracEmpty" style="display:none;text-align:center;padding:40px;color:#757575;">Aucun medecin trouve.</div>
+    <div id="pracEmpty" style="display:none;text-align:center;padding:40px;color:#757575;">Aucun médecin trouve.</div>
 </div>
 @endsection
 

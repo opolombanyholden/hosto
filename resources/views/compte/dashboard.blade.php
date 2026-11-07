@@ -116,11 +116,11 @@
 {{-- Verification alerts --}}
 @if(!$user->email_verified_at)
 <div class="dash-info-banner">
-    <span>&#9888;</span> Verifiez votre <a href="/verification" style="color:#F57F17;font-weight:600;margin-left:4px;">adresse email</a>.
+    <span>&#9888;</span> Vérifiez votre <a href="/verification" style="color:#F57F17;font-weight:600;margin-left:4px;">adresse email</a>.
 </div>
 @elseif(!$user->phone_verified_at)
 <div class="dash-info-banner">
-    <span>&#9888;</span> Verifiez votre <a href="/verification" style="color:#F57F17;font-weight:600;margin-left:4px;">telephone</a> pour teleconsulter et prendre RDV.
+    <span>&#9888;</span> Vérifiez votre <a href="/verification" style="color:#F57F17;font-weight:600;margin-left:4px;">téléphone</a> pour teleconsulter et prendre RDV.
 </div>
 @endif
 
@@ -138,7 +138,7 @@
     </div>
     <div class="dash-search-bar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#BDBDBD" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" id="dashSearch" placeholder="Trouvez un Medecin ou Medicament..." onkeydown="if(event.key==='Enter')goSearch()">
+        <input type="text" id="dashSearch" placeholder="Trouvez un Médecin ou Medicament..." onkeydown="if(event.key==='Enter')goSearch()">
     </div>
 </div>
 
@@ -162,7 +162,7 @@
 <div class="dash-counters">
     <div class="dash-counter" style="background:#E8F5E9;">
         <div class="dash-counter-val" style="color:#2E7D32;">{{ $consultCount ?: '00' }}</div>
-        <div class="dash-counter-lbl" style="color:#2E7D32;">Medecins<br>En ligne</div>
+        <div class="dash-counter-lbl" style="color:#2E7D32;">Médecins<br>En ligne</div>
     </div>
     <div class="dash-counter" style="background:#E8F5E9;">
         <div class="dash-counter-val" style="color:#2E7D32;">{{ str_pad((string) $rdvCount, 2, '0', STR_PAD_LEFT) }}</div>
@@ -193,7 +193,7 @@
     </a>
     <a href="/compte/hopitaux" class="dash-quick-item">
         <div class="dash-quick-icon">
-            <img src="/images/icons/icon-hopitaux.png" alt="Hopital" style="width:50px;height:50px;">
+            <img src="/images/icons/icon-hopitaux.png" alt="Hôpital" style="width:50px;height:50px;">
         </div>
         <div class="dash-quick-name">Hôpitaux</div>
     </a>
@@ -207,7 +207,7 @@
         <div class="dash-quick-icon">
             <img src="/images/icons/icon-ambulance.png" alt="Ambulance" style="width:50px;height:50px;">
         </div>
-        <div class="dash-quick-name">Evacuation / Ambulance</div>
+        <div class="dash-quick-name">Évacuation / Ambulance</div>
     </a>
     <a href="/compte/examens" class="dash-quick-item">
         <div class="dash-quick-icon">
@@ -219,7 +219,7 @@
         <div class="dash-quick-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="1.5" style="width:40px;height:40px;"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.4-11-.3-11 4 0 4.5 8 10 14 12.5 6-2.5 14-8 14-12.5 0-4.3-7.5-5.4-11-4-.2-.6-1.5-2-3-2z" transform="scale(.85) translate(1,1)"/><path d="M12 8v8M8 12h8"/></svg>
         </div>
-        <div class="dash-quick-name" style="color:#1565C0;">Epargne Sante</div>
+        <div class="dash-quick-name" style="color:#1565C0;">Épargne Santé</div>
     </a>
 </div>
 

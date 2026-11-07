@@ -466,8 +466,8 @@
             <a href="#fonctionnalites">Fonctionnalites</a>
             <a href="#ecosysteme">Ecosysteme</a>
             <a href="/annuaire">Annuaire</a>
-            <a href="/annuaire/medecins">Medecins</a>
-            <a href="/medicaments">Medicaments</a>
+            <a href="/annuaire/medecins">Médecins</a>
+            <a href="/medicaments">Médicaments</a>
             <a href="/examens">Examens</a>
             <a href="/compte/connexion" class="btn-nav">Connexion</a>
         </div>
@@ -489,17 +489,17 @@
                 Plateforme panafricaine de e-sante
             </div>
             <h1>
-                La Sante au bout<br>du Click
-                <span>Votre parcours de sante, simplifie et connecte</span>
+                La Santé au bout<br>du Click
+                <span>Votre parcours de santé, simplifie et connecté</span>
             </h1>
             <p class="hero-text">
-                Trouvez un hopital, un medecin, une pharmacie. Prenez rendez-vous, consultez en ligne,
-                gerez vos ordonnances. HOSTO connecte patients, professionnels et etablissements de sante
+                Trouvez un hôpital, un médecin, une pharmacie. Prenez rendez-vous, consultez en ligne,
+                gerez vos ordonnances. HOSTO connecté patients, professionnels et etablissements de santé
                 dans un ecosysteme unique.
             </p>
             <div class="hero-buttons">
                 <a href="#services" class="btn btn-primary">
-                    Decouvrir les services
+                    Découvrir les services
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
                 <a href="#ecosysteme" class="btn btn-outline">En savoir plus</a>
@@ -550,7 +550,7 @@
                             <div class="card-row-text">Rendez-vous aujourd'hui</div>
                             <div class="card-row-sub">14h30 — Consultation</div>
                         </div>
-                        <span class="card-row-badge">Confirme</span>
+                        <span class="card-row-badge">Confirmé</span>
                     </div>
                     <div class="card-row">
                         <div class="card-row-icon">
@@ -567,7 +567,7 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                         </div>
                         <div>
-                            <div class="card-row-text">Resultats labo</div>
+                            <div class="card-row-text">Résultats labo</div>
                             <div class="card-row-sub">Bilan sanguin complet</div>
                         </div>
                         <span class="card-row-badge">Nouveau</span>
@@ -592,13 +592,13 @@
         <form class="search-bar" action="/annuaire" method="GET">
             <div class="search-field">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <input type="text" name="q" placeholder="Rechercher un hopital, une pharmacie, un medecin...">
+                <input type="text" name="q" placeholder="Rechercher un hôpital, une pharmacie, un medecin...">
             </div>
             <div class="search-field">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 <select name="type">
                     <option value="">Type de structure</option>
-                    <option value="hopital">Hopital</option>
+                    <option value="hopital">Hôpital</option>
                     <option value="clinique">Clinique</option>
                     <option value="pharmacie">Pharmacie</option>
                     <option value="laboratoire">Laboratoire</option>
@@ -618,29 +618,29 @@
     <div class="container">
         <div class="text-center">
             <span class="section-label">Nos services</span>
-            <h2 class="section-title">Tous vos services de sante en un seul endroit</h2>
-            <p class="section-subtitle mx-auto">HOSTO centralise l'ensemble des services de sante pour simplifier votre parcours medical au quotidien.</p>
+            <h2 class="section-title">Tous vos services de santé en un seul endroit</h2>
+            <p class="section-subtitle mx-auto">HOSTO centralise l'ensemble des services de santé pour simplifier votre parcours medical au quotidien.</p>
         </div>
         <div class="services-grid">
             <div class="service-card">
-                <div class="service-icon"><img src="{{ asset('images/icons/icon-hopitaux.png') }}" alt="Hopitaux"></div>
-                <div class="service-name">Hopitaux & Cliniques</div>
-                <div class="service-desc">Annuaire geolocalise des structures de sante</div>
+                <div class="service-icon"><img src="{{ asset('images/icons/icon-hopitaux.png') }}" alt="Hôpitaux"></div>
+                <div class="service-name">Hôpitaux & Cliniques</div>
+                <div class="service-desc">Annuaire geolocalise des structures de santé</div>
             </div>
             <div class="service-card">
-                <div class="service-icon"><img src="{{ asset('images/icons/icon-doctor.png') }}" alt="Medecins"></div>
-                <div class="service-name">Medecins</div>
+                <div class="service-icon"><img src="{{ asset('images/icons/icon-doctor.png') }}" alt="Médecins"></div>
+                <div class="service-name">Médecins</div>
                 <div class="service-desc">Trouvez un specialiste pres de chez vous</div>
             </div>
             <div class="service-card">
                 <div class="service-icon"><img src="{{ asset('images/icons/icon-pharmacie.png') }}" alt="Pharmacies"></div>
                 <div class="service-name">Pharmacies</div>
-                <div class="service-desc">Disponibilite des medicaments en temps reel</div>
+                <div class="service-desc">Disponibilite des médicaments en temps reel</div>
             </div>
             <div class="service-card">
                 <div class="service-icon"><img src="{{ asset('images/icons/icon-laboratoire.png') }}" alt="Laboratoires"></div>
                 <div class="service-name">Laboratoires</div>
-                <div class="service-desc">Examens, resultats et suivi biologique</div>
+                <div class="service-desc">Examens, résultats et suivi biologique</div>
             </div>
             <div class="service-card">
                 <div class="service-icon"><img src="{{ asset('images/icons/icon-rdv.png') }}" alt="Rendez-vous"></div>
@@ -648,14 +648,14 @@
                 <div class="service-desc">Reservez en ligne, sans file d'attente</div>
             </div>
             <div class="service-card">
-                <div class="service-icon"><img src="{{ asset('images/icons/icon-doctorligne.png') }}" alt="Teleconsultation"></div>
-                <div class="service-name">Teleconsultation</div>
-                <div class="service-desc">Consultez un medecin a distance en visio</div>
+                <div class="service-icon"><img src="{{ asset('images/icons/icon-doctorligne.png') }}" alt="Téléconsultation"></div>
+                <div class="service-name">Téléconsultation</div>
+                <div class="service-desc">Consultez un médecin a distance en visio</div>
             </div>
             <div class="service-card">
                 <div class="service-icon"><img src="{{ asset('images/icons/icon-ordonances.png') }}" alt="Ordonnances"></div>
                 <div class="service-name">Ordonnances</div>
-                <div class="service-desc">Ordonnances electroniques securisees</div>
+                <div class="service-desc">Ordonnances electroniques sécurisées</div>
             </div>
             <div class="service-card">
                 <div class="service-icon"><img src="{{ asset('images/icons/icon-ambulance.png') }}" alt="Urgences"></div>
@@ -672,7 +672,7 @@
         <div class="text-center">
             <span class="section-label">Fonctionnalites</span>
             <h2 class="section-title">Une plateforme pensee pour l'Afrique</h2>
-            <p class="section-subtitle mx-auto">Concue pour fonctionner meme dans les zones a faible connectivite, HOSTO s'adapte aux realites du continent.</p>
+            <p class="section-subtitle mx-auto">Concue pour fonctionner même dans les zones a faible connectivite, HOSTO s'adapte aux realites du continent.</p>
         </div>
         <div class="features-grid">
             <div class="features-list">
@@ -682,7 +682,7 @@
                     </div>
                     <div>
                         <div class="feature-title">Geolocalisation intelligente</div>
-                        <div class="feature-desc">Trouvez les structures de sante, pharmacies et medecins les plus proches avec horaires, specialites et disponibilite.</div>
+                        <div class="feature-desc">Trouvez les structures de santé, pharmacies et médecins les plus proches avec horaires, spécialités et disponibilite.</div>
                     </div>
                 </div>
                 <div class="feature-item">
@@ -699,7 +699,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
                     <div>
-                        <div class="feature-title">Securite et consentement</div>
+                        <div class="feature-title">Sécurité et consentement</div>
                         <div class="feature-desc">Double authentification, journal des accès et contrôle du patient sur le partage de son dossier médical.</div>
                     </div>
                 </div>
@@ -740,8 +740,8 @@
                                 Rechercher un service...
                             </div>
                             <div class="phone-grid">
-                                <div class="phone-service"><div class="phone-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="phone-service-label">Hopitaux</div></div>
-                                <div class="phone-service"><div class="phone-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="phone-service-label">Medecins</div></div>
+                                <div class="phone-service"><div class="phone-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="phone-service-label">Hôpitaux</div></div>
+                                <div class="phone-service"><div class="phone-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="phone-service-label">Médecins</div></div>
                                 <div class="phone-service"><div class="phone-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div><div class="phone-service-label">RDV</div></div>
                                 <div class="phone-service"><div class="phone-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div><div class="phone-service-label">Pharmacies</div></div>
                                 <div class="phone-service"><div class="phone-service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><div class="phone-service-label">Ordonnances</div></div>
@@ -761,14 +761,14 @@
     <div class="container">
         <div class="text-center">
             <span class="section-label">Ecosysteme</span>
-            <h2 class="section-title">Un ecosysteme complet pour la sante</h2>
-            <p class="section-subtitle mx-auto">14 modules specialises, un noyau commun. Chaque acteur de la sante dispose de son espace dedie.</p>
+            <h2 class="section-title">Un ecosysteme complet pour la santé</h2>
+            <p class="section-subtitle mx-auto">14 modules spécialisés, un noyau commun. Chaque acteur de la santé dispose de son espace dedie.</p>
         </div>
         <div class="eco-grid">
             <div class="eco-card">
                 <div class="eco-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
                 <div class="eco-name">HOSTO <span>Usager</span></div>
-                <div class="eco-role">Portail patient : dossier medical, rendez-vous, annuaire, teleconsultation, suivi des traitements.</div>
+                <div class="eco-role">Portail patient : dossier medical, rendez-vous, annuaire, téléconsultation, suivi des traitements.</div>
                 <span class="eco-tag">Patient-centric</span>
             </div>
             <div class="eco-card">
@@ -786,7 +786,7 @@
             <div class="eco-card">
                 <div class="eco-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
                 <div class="eco-name">HOSTO <span>Lab</span></div>
-                <div class="eco-role">Gestion des laboratoires : catalogue des examens, resultats, prescriptions et tracabilite.</div>
+                <div class="eco-role">Gestion des laboratoires : catalogue des examens, résultats, prescriptions et tracabilite.</div>
                 <span class="eco-tag">Laboratoires</span>
             </div>
             <div class="eco-card">
@@ -810,25 +810,25 @@
     <div class="container">
         <div class="text-center">
             <span class="section-label">Solutions</span>
-            <h2 class="section-title">Pour chaque acteur de la sante</h2>
+            <h2 class="section-title">Pour chaque acteur de la santé</h2>
             <p class="section-subtitle mx-auto">HOSTO s'adapte a vos besoins, que vous soyez patient, professionnel ou decideur.</p>
         </div>
         <div class="audience-tabs">
             <button class="audience-tab active" onclick="switchTab(0)">Patients</button>
             <button class="audience-tab" onclick="switchTab(1)">Professionnels</button>
-            <button class="audience-tab" onclick="switchTab(2)">Hopitaux</button>
+            <button class="audience-tab" onclick="switchTab(2)">Hôpitaux</button>
             <button class="audience-tab" onclick="switchTab(3)">Gouvernement</button>
         </div>
 
         <div class="audience-panel active" id="panel-0">
             <div class="audience-content">
                 <div>
-                    <h3>Votre sante, entre vos mains</h3>
-                    <p>Accedez a l'ensemble de vos services de sante depuis votre telephone ou votre ordinateur, ou que vous soyez.</p>
+                    <h3>Votre santé, entre vos mains</h3>
+                    <p>Accedez a l'ensemble de vos services de santé depuis votre téléphone ou votre ordinateur, ou que vous soyez.</p>
                     <div class="audience-checklist">
-                        <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Trouvez un medecin ou une pharmacie a proximite</div>
+                        <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Trouvez un médecin ou une pharmacie a proximité</div>
                         <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Prenez rendez-vous en quelques clics</div>
-                        <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Consultez un medecin en video</div>
+                        <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Consultez un médecin en video</div>
                         <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Gerez vos ordonnances et dossier medical</div>
                         <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Controlez qui accede a vos donnees</div>
                     </div>
@@ -841,11 +841,11 @@
             <div class="audience-content">
                 <div>
                     <h3>Optimisez votre pratique medicale</h3>
-                    <p>HOSTO Pro vous offre les outils pour gerer efficacement votre activite medicale au quotidien.</p>
+                    <p>HOSTO Pro vous offre les outils pour gérer efficacement votre activite medicale au quotidien.</p>
                     <div class="audience-checklist">
                         <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Gestion multi-structures et multi-specialites</div>
                         <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Dossier patient electronique complet</div>
-                        <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Teleconsultation et messagerie securisee</div>
+                        <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Téléconsultation et messagerie sécurisée</div>
                         <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Ordonnances electroniques et prescriptions labo</div>
                         <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Intranet medical entre confreres</div>
                     </div>
@@ -858,7 +858,7 @@
             <div class="audience-content">
                 <div>
                     <h3>Digitalisez votre etablissement</h3>
-                    <p>HOSTO transforme la gestion de votre structure de sante avec des outils modernes et interoperables.</p>
+                    <p>HOSTO transforme la gestion de votre structure de santé avec des outils modernes et interoperables.</p>
                     <div class="audience-checklist">
                         <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Gestion complete des patients et du personnel</div>
                         <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Pharmacie interne, stocks et approvisionnement</div>
@@ -874,7 +874,7 @@
         <div class="audience-panel" id="panel-3">
             <div class="audience-content">
                 <div>
-                    <h3>Pilotez la sante publique</h3>
+                    <h3>Pilotez la santé publique</h3>
                     <p>HOSTO Analytic fournit aux decideurs les donnees necessaires pour orienter les politiques de sante.</p>
                     <div class="audience-checklist">
                         <div class="audience-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Veille sanitaire et surveillance epidemiologique</div>
@@ -907,11 +907,11 @@
     <div class="container">
         <div class="cta-box">
             <h2>Rejoignez l'ecosysteme HOSTO</h2>
-            <p>Que vous soyez patient, medecin, pharmacien ou responsable d'etablissement, HOSTO a une solution pour vous.</p>
+            <p>Que vous soyez patient, médecin, pharmacien ou responsable d'etablissement, HOSTO a une solution pour vous.</p>
             <div class="cta-buttons">
                 <a href="#" class="btn btn-white">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
-                    Creer un compte
+                    Créer un compte
                 </a>
                 <a href="#" class="btn btn-outline">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
@@ -931,7 +931,7 @@
                     <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
                     HOSTO
                 </div>
-                <p>Plateforme panafricaine de e-sante. La sante au bout du click, pour tous, partout en Afrique.</p>
+                <p>Plateforme panafricaine de e-sante. La santé au bout du click, pour tous, partout en Afrique.</p>
             </div>
             <div>
                 <h4>Plateforme</h4>
@@ -946,8 +946,8 @@
             <div>
                 <h4>Services</h4>
                 <ul>
-                    <li><a href="#">Annuaire des hopitaux</a></li>
-                    <li><a href="#">Teleconsultation</a></li>
+                    <li><a href="#">Annuaire des hôpitaux</a></li>
+                    <li><a href="#">Téléconsultation</a></li>
                     <li><a href="#">Pharmacies de garde</a></li>
                     <li><a href="#">Rendez-vous en ligne</a></li>
                     <li><a href="#">SOS Medicale</a></li>

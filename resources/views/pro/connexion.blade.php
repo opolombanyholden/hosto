@@ -17,7 +17,7 @@
 
 <div class="login-tabs">
     <button type="button" class="login-tab active" id="tabEmail" onclick="switchMode('email')">Email</button>
-    <button type="button" class="login-tab" id="tabPhone" onclick="switchMode('phone')">Telephone</button>
+    <button type="button" class="login-tab" id="tabPhone" onclick="switchMode('phone')">Téléphone</button>
 </div>
 
 <form method="POST" action="/pro/connexion">
@@ -37,7 +37,7 @@
             </select>
         </div>
         <div class="field">
-            <label for="phone_number">Numero de telephone</label>
+            <label for="phone_number">Numéro de téléphone</label>
             <input type="tel" id="phone_number" name="phone_number" value="{{ old('phone_number') }}" placeholder="Ex: 077123456" inputmode="tel">
         </div>
     </div>
@@ -59,7 +59,7 @@
     <button type="submit" class="auth-btn">Se connecter</button>
 </form>
 
-<p class="auth-link">Pas encore inscrit ? <a href="/pro/inscription">Creer un compte professionnel</a></p>
+<p class="auth-link">Pas encore inscrit ? <a href="/pro/inscription">Créer un compte professionnel</a></p>
 
 <style>
     .login-tabs { display:flex; gap:0; margin-bottom:20px; border:2px solid #EEE; border-radius:8px; overflow:hidden; }

@@ -5,7 +5,7 @@
 
 @section('breadcrumb')
 <span style="color:#BDBDBD;margin:0 6px;">/</span>
-<a href="/compte/medecins" style="color:#388E3C;text-decoration:none;font-weight:500;">Medecins</a>
+<a href="/compte/medecins" style="color:#388E3C;text-decoration:none;font-weight:500;">Médecins</a>
 <span style="color:#BDBDBD;margin:0 6px;">/</span>
 <span style="color:#424242;">{{ $practitioner->full_name }}</span>
 @endsection
@@ -56,7 +56,7 @@
         <div class="prac-specs">{{ $practitioner->specialties->pluck('name_fr')->join(' · ') }}</div>
         <div class="prac-meta">{{ ['doctor' => 'Médecin', 'nurse' => 'Infirmier(e)', 'midwife' => 'Sage-femme'][$practitioner->practitioner_type] ?? ucfirst($practitioner->practitioner_type) }}@if($practitioner->registration_number) — N° {{ $practitioner->registration_number }}@endif</div>
         <div class="prac-badges">
-            @if($practitioner->does_teleconsultation)<span class="prac-badge" style="background:#E3F2FD;color:#1565C0;">Teleconsultation</span>@endif
+            @if($practitioner->does_teleconsultation)<span class="prac-badge" style="background:#E3F2FD;color:#1565C0;">Téléconsultation</span>@endif
             @if($practitioner->does_home_care)<span class="prac-badge" style="background:#E8F5E9;color:#2E7D32;">Soins a domicile</span>@endif
             @if($practitioner->accepts_new_patients)<span class="prac-badge" style="background:#E8F5E9;color:#2E7D32;">Nouveaux patients</span>@endif
             @if($practitioner->consultation_fee_min)<span class="prac-badge" style="background:#FFF3E0;color:#E65100;">{{ number_format($practitioner->consultation_fee_min,0,',',' ') }} - {{ number_format($practitioner->consultation_fee_max,0,',',' ') }} XAF</span>@endif
@@ -71,7 +71,7 @@
         @endif
 
         <div class="section-block">
-            <h3>Creneaux disponibles</h3>
+            <h3>Créneaux disponibles</h3>
             @if($hasSlots)
                 @foreach($slots as $date => $daySlots)
                 <div class="slot-day">
@@ -95,7 +95,7 @@
                     <div id="bookingMessage" style="display:none;margin-top:10px;padding:8px;border-radius:8px;font-size:.82rem;"></div>
                 </div>
             @else
-                <p style="text-align:center;color:#757575;font-size:.82rem;padding:16px;">Aucun creneau disponible.</p>
+                <p style="text-align:center;color:#757575;font-size:.82rem;padding:16px;">Aucun créneau disponible.</p>
             @endif
         </div>
 

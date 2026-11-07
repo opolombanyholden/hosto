@@ -32,7 +32,7 @@
 </a>
 <a href="/admin/specialties" class="{{ request()->is('admin/specialties') ? 'active' : '' }}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-    <span>Specialites</span>
+    <span>Spécialités</span>
 </a>
 <a href="/admin/services" class="{{ request()->is('admin/services') ? 'active' : '' }}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>

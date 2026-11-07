@@ -26,7 +26,7 @@
 
     <h3 style="font-size:.88rem;font-weight:600;color:#B71C1C;margin-bottom:12px;">Sections mises en avant</h3>
     <p style="font-size:.78rem;color:#757575;margin-bottom:16px;">
-        Selectionnez les sections a mettre en avant sur la fiche publique de cette structure.
+        Sélectionnez les sections a mettre en avant sur la fiche publique de cette structure.
         Si aucune section n'est selectionnee, le systeme detecte automatiquement les sections pertinentes selon le type de structure.
     </p>
 
@@ -46,13 +46,13 @@
 
     <div style="display:flex;gap:10px;margin-top:16px;">
         <button onclick="saveFeatured()" style="padding:10px 24px;background:#B71C1C;color:white;border:none;border-radius:8px;font-family:Poppins,sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;">Enregistrer</button>
-        <button onclick="clearFeatured()" style="padding:10px 24px;border:1px solid #EEE;border-radius:8px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.82rem;color:#757575;">Reinitialiser (auto-detect)</button>
+        <button onclick="clearFeatured()" style="padding:10px 24px;border:1px solid #EEE;border-radius:8px;background:white;cursor:pointer;font-family:Poppins,sans-serif;font-size:.82rem;color:#757575;">Réinitialiser (auto-detect)</button>
     </div>
 </div>
 
 <div style="background:#F5F5F5;border-radius:10px;padding:14px;font-size:.78rem;color:#757575;">
     <strong>Detection automatique :</strong> Si aucune section n'est selectionnee, le systeme affiche automatiquement :
-    Pharmacie → Catalogue medicaments | Laboratoire → Examens | Urgence → Services d'urgence | Teleconsultation → si disponible.
+    Pharmacie → Catalogue médicaments | Laboratoire → Examens | Urgence → Services d'urgence | Téléconsultation → si disponible.
 </div>
 
 <script>

@@ -214,7 +214,7 @@
             <div class="detail-section">
                 <div class="detail-section-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                    Specialites
+                    Spécialités
                 </div>
                 @foreach($specialties as $spec)
                     @php
@@ -300,7 +300,7 @@
             <div class="detail-section">
                 <div class="detail-section-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                    Medecins et praticiens ({{ $practitioners->count() }})
+                    Médecins et praticiens ({{ $practitioners->count() }})
                 </div>
                 @foreach($practitioners as $prac)
                 <a href="/annuaire/medecins/{{ $prac->slug }}" style="display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;transition:background .2s;text-decoration:none;color:inherit;">

@@ -41,10 +41,10 @@
 <div id="rdvMessage"></div>
 
 <div class="rdv-step">
-    <div class="rdv-step-title"><span class="rdv-step-num">1</span> Specialite</div>
+    <div class="rdv-step-title"><span class="rdv-step-num">1</span> Spécialité</div>
     <div class="field">
         <select id="rdvSpecialty" onchange="loadSlots()">
-            <option value="">Choisissez une specialite</option>
+            <option value="">Choisissez une spécialité</option>
             @foreach($specialties as $spec)<option value="{{ $spec->code }}">{{ $spec->name_fr }}</option>@endforeach
         </select>
     </div>
@@ -52,7 +52,7 @@
 
 <div class="rdv-step">
     <div class="rdv-step-title"><span class="rdv-step-num">2</span> Date et heure</div>
-    <div id="slotsContainer"><p style="font-size:.82rem;color:#757575;">Selectionnez d'abord une specialite.</p></div>
+    <div id="slotsContainer"><p style="font-size:.82rem;color:#757575;">Sélectionnez d'abord une specialite.</p></div>
     <div id="slotsLoading" style="display:none;font-size:.82rem;color:#757575;">Chargement...</div>
 </div>
 
@@ -62,7 +62,7 @@
 </div>
 
 <div class="rdv-step">
-    <div class="rdv-step-title"><span class="rdv-step-num">4</span> Beneficiaire</div>
+    <div class="rdv-step-title"><span class="rdv-step-num">4</span> Bénéficiaire</div>
     <div class="field">
         <label><input type="radio" name="beneficiary" value="self" checked> Pour moi-meme</label>
         <label style="margin-left:20px;"><input type="radio" name="beneficiary" value="third"> Pour un tiers</label>

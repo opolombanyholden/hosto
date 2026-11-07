@@ -137,8 +137,8 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2">{!! $sections[0]['icon'] !!}</svg>
             </div>
             <div class="section-label">
-                <div class="section-label-title">Verification email et telephone</div>
-                <div class="section-label-sub">Obligatoire pour RDV, teleconsultation, achats</div>
+                <div class="section-label-title">Vérification email et téléphone</div>
+                <div class="section-label-sub">Obligatoire pour RDV, téléconsultation, achats</div>
             </div>
             <div class="section-status">
                 @if($user->email_verified_at)<span class="verify-badge verify-ok">Email &#10003;</span>@else<span class="verify-badge verify-pending">Email</span>@endif
@@ -148,7 +148,7 @@
         </div>
         <div class="section-body" id="sec1">
             <p style="font-size:.82rem;color:#757575;margin-bottom:14px;">
-                Rendez-vous sur la <a href="/verification" style="color:#388E3C;font-weight:600;">page de verification</a> pour confirmer votre email et votre telephone.
+                Rendez-vous sur la <a href="/verification" style="color:#388E3C;font-weight:600;">page de vérification</a> pour confirmer votre email et votre telephone.
             </p>
             <a href="/verification" class="save-btn" style="display:inline-block;text-decoration:none;">Verifier mon compte</a>
         </div>
@@ -169,7 +169,7 @@
         <div class="section-body" id="sec2">
             <div id="msgIdentity" class="msg"></div>
             <div class="field">
-                <label>NIP (Numero d'Identite Personnel) <span style="font-weight:400;color:#757575;">— format XX-BBBB-AAAAMMJJ</span></label>
+                <label>NIP (Numéro d'Identite Personnel) <span style="font-weight:400;color:#757575;">— format XX-BBBB-AAAAMMJJ</span></label>
                 <input type="text" id="nip" value="{{ $user->nip }}" placeholder="AB-1234-20260423" maxlength="16" oninput="formatNip(this)" style="text-transform:uppercase;letter-spacing:1px;">
             </div>
             <div class="field-row">
@@ -183,7 +183,7 @@
                     </select>
                 </div>
                 <div class="field">
-                    <label>Numero de la piece</label>
+                    <label>Numéro de la piece</label>
                     <input type="text" id="idDocNumber" value="{{ $user->id_document_number }}" maxlength="50">
                 </div>
             </div>
@@ -298,7 +298,7 @@
             </div>
             <div class="section-label">
                 <div class="section-label-title">Question secrete</div>
-                <div class="section-label-sub">Recuperation du compte en cas de perte d'acces</div>
+                <div class="section-label-sub">Recuperation du compte en cas de perte d'accès</div>
             </div>
             <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
@@ -329,7 +329,7 @@
             </div>
             <div class="section-label">
                 <div class="section-label-title">PIN du dossier medical</div>
-                <div class="section-label-sub">Code secret pour proteger vos donnees de sante</div>
+                <div class="section-label-sub">Code secret pour proteger vos donnees de santé</div>
             </div>
             <svg class="section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
@@ -375,7 +375,7 @@
                     <button class="remove-contact" onclick="removeContact(this)" type="button">&#10005;</button>
                     <div class="field-row">
                         <div class="field"><label>Nom complet *</label><input type="text" class="ec-name" value="{{ $ec->name }}"></div>
-                        <div class="field"><label>Telephone *</label><input type="tel" class="ec-phone" value="{{ $ec->phone }}" placeholder="+241..."></div>
+                        <div class="field"><label>Téléphone *</label><input type="tel" class="ec-phone" value="{{ $ec->phone }}" placeholder="+241..."></div>
                     </div>
                     <div class="field-row">
                         <div class="field">
@@ -390,7 +390,7 @@
                         <div class="field" style="display:flex;align-items:center;gap:8px;padding-top:20px;">
                             <label style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;">
                                 <input type="checkbox" class="ec-access" {{ $ec->can_access_medical_record ? 'checked' : '' }}>
-                                Acces au dossier medical
+                                Accès au dossier medical
                             </label>
                         </div>
                     </div>
@@ -400,7 +400,7 @@
                     <button class="remove-contact" onclick="removeContact(this)" type="button">&#10005;</button>
                     <div class="field-row">
                         <div class="field"><label>Nom complet *</label><input type="text" class="ec-name"></div>
-                        <div class="field"><label>Telephone *</label><input type="tel" class="ec-phone" placeholder="+241..."></div>
+                        <div class="field"><label>Téléphone *</label><input type="tel" class="ec-phone" placeholder="+241..."></div>
                     </div>
                     <div class="field-row">
                         <div class="field">
@@ -415,7 +415,7 @@
                         <div class="field" style="display:flex;align-items:center;gap:8px;padding-top:20px;">
                             <label style="display:flex;align-items:center;gap:6px;margin:0;cursor:pointer;">
                                 <input type="checkbox" class="ec-access">
-                                Acces au dossier medical
+                                Accès au dossier medical
                             </label>
                         </div>
                     </div>
@@ -457,7 +457,7 @@
                 </div>
             </div>
             <div class="field">
-                <label>Allergies connues <span style="font-weight:400;color:#757575;">— medicaments, aliments, latex, pollens...</span></label>
+                <label>Allergies connues <span style="font-weight:400;color:#757575;">— médicaments, aliments, latex, pollens...</span></label>
                 <textarea id="allergies" rows="2" maxlength="2000" placeholder="Ex : penicilline, arachides...">{{ $user->allergies }}</textarea>
             </div>
             <div class="field">
@@ -465,7 +465,7 @@
                 <textarea id="chronicConditions" rows="2" maxlength="2000" placeholder="Ex : diabete type 2 depuis 2018...">{{ $user->chronic_conditions }}</textarea>
             </div>
             <div class="field">
-                <label>Traitements en cours <span style="font-weight:400;color:#757575;">— medicaments pris regulierement</span></label>
+                <label>Traitements en cours <span style="font-weight:400;color:#757575;">— médicaments pris regulierement</span></label>
                 <textarea id="currentMedications" rows="2" maxlength="2000" placeholder="Ex : metformine 500mg matin et soir...">{{ $user->current_medications }}</textarea>
             </div>
             <div class="field">

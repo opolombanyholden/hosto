@@ -61,7 +61,7 @@
         <div id="matchMsg" style="font-size:.72rem;margin-top:4px;display:none;"></div>
     </div>
 
-    <button type="submit" class="auth-btn">Reinitialiser le mot de passe</button>
+    <button type="submit" class="auth-btn">Réinitialiser le mot de passe</button>
 </form>
 
 <p class="auth-link"><a href="/compte/connexion">Retour a la connexion</a></p>

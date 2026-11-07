@@ -7,7 +7,7 @@
 <div id="crudMsg" style="display:none;padding:12px;border-radius:10px;font-size:.82rem;margin-bottom:16px;"></div>
 
 <div style="background:white;border:1px solid #EEE;border-radius:14px;padding:20px;margin-bottom:20px;">
-    <h3 style="font-size:.88rem;font-weight:600;color:#B71C1C;margin-bottom:12px;">Ajouter une specialite</h3>
+    <h3 style="font-size:.88rem;font-weight:600;color:#B71C1C;margin-bottom:12px;">Ajouter une spécialité</h3>
     <div style="display:grid;grid-template-columns:1fr 2fr 2fr 1.5fr 80px 100px;gap:10px;align-items:end;">
         <div><label class="crud-label">Code *</label><input type="text" id="newCode" class="crud-input" placeholder="CARD"></div>
         <div><label class="crud-label">Nom FR *</label><input type="text" id="newNameFr" class="crud-input" placeholder="Cardiologie"></div>

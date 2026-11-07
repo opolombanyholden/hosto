@@ -7,7 +7,7 @@
 @section('side-description', 'L\'authentification a deux facteurs ajoute une couche de securite supplementaire. Scannez le QR code avec Google Authenticator, Authy ou toute application TOTP compatible.')
 
 @section('form')
-<h1>Activer la verification en 2 etapes</h1>
+<h1>Activer la vérification en 2 etapes</h1>
 <p class="subtitle">Scannez le QR code avec votre application d'authentification</p>
 
 @if($errors->any())

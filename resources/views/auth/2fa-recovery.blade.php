@@ -12,7 +12,7 @@
 
 <div style="background:#FFF3E0;border:2px solid #FF9800;border-radius:10px;padding:16px;margin-bottom:24px;">
     <div style="font-size:.82rem;color:#E65100;font-weight:600;margin-bottom:8px;">Important</div>
-    <div style="font-size:.78rem;color:#BF360C;">Ces codes sont a usage unique. Notez-les dans un endroit securise (gestionnaire de mots de passe, coffre-fort, papier).</div>
+    <div style="font-size:.78rem;color:#BF360C;">Ces codes sont a usage unique. Notez-les dans un endroit sécurisé (gestionnaire de mots de passe, coffre-fort, papier).</div>
 </div>
 
 <div style="background:#F5F5F5;border-radius:10px;padding:20px;margin-bottom:24px;">

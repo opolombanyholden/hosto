@@ -49,7 +49,7 @@
         <input type="email" id="email" name="email" value="{{ old('email') }}" required>
     </div>
     <div class="field">
-        <label for="phone">Telephone (optionnel)</label>
+        <label for="phone">Téléphone (optionnel)</label>
         <input type="tel" id="phone" name="phone" value="{{ old('phone') }}" placeholder="+241...">
     </div>
     <div class="field">
@@ -104,7 +104,7 @@
         <div id="matchMsg" style="font-size:.72rem;margin-top:4px;display:none;"></div>
     </div>
 
-    <button type="submit" id="submitBtn" class="auth-btn">Creer mon compte</button>
+    <button type="submit" id="submitBtn" class="auth-btn">Créer mon compte</button>
 </form>
 
 <p class="auth-link">Deja inscrit ? <a href="/compte/connexion">Se connecter</a></p>

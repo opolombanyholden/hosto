@@ -5,7 +5,7 @@
 
 @section('breadcrumb')
 <span style="color:#BDBDBD;margin:0 6px;">/</span>
-<span style="color:#424242;">Medecins</span>
+<span style="color:#424242;">Médecins</span>
 @endsection
 
 @section('styles')
@@ -31,8 +31,8 @@
 
 @section('content')
 <div class="explorer-header">
-    <h2>Medecins</h2>
-    <p>Trouvez un medecin par nom ou specialite.</p>
+    <h2>Médecins</h2>
+    <p>Trouvez un médecin par nom ou specialite.</p>
 </div>
 <div class="explorer-search">
     <input type="text" id="searchQ" placeholder="Rechercher un medecin..." autofocus onkeydown="if(event.key==='Enter')searchDocs()">

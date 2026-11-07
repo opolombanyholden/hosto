@@ -31,7 +31,7 @@
             </datalist>
         </label>
 
-        <label>Numero de dose
+        <label>Numéro de dose
             <input type="number" name="dose_number" id="doseNumber" min="1" max="20" value="1" required style="width:120px;padding:10px;border:2px solid #EEE;border-radius:8px;">
         </label>
 
@@ -39,7 +39,7 @@
             <input type="date" name="administered_at" id="adminAt" value="{{ now()->toDateString() }}" required style="width:200px;padding:10px;border:2px solid #EEE;border-radius:8px;">
         </label>
 
-        <label>Numero de lot
+        <label>Numéro de lot
             <input type="text" name="batch_number" maxlength="60" style="width:240px;padding:10px;border:2px solid #EEE;border-radius:8px;">
         </label>
 

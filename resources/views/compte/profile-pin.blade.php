@@ -3,7 +3,7 @@
 @section('title', 'Verification PIN — HOSTO')
 @section('breadcrumb')
 <li><span class="sep">/</span> <a href="/compte">Mon espace</a></li>
-<li><span class="sep">/</span> <span class="current">Verification PIN</span></li>
+<li><span class="sep">/</span> <span class="current">Vérification PIN</span></li>
 @endsection
 
 @section('content')

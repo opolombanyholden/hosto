@@ -114,8 +114,8 @@
 @section('content')
 <div class="annuaire-header">
     <div class="container">
-        <h1>Annuaire des structures de sante</h1>
-        <p>Trouvez un hopital, une pharmacie, un laboratoire pres de chez vous</p>
+        <h1>Annuaire des structures de santé</h1>
+        <p>Trouvez un hôpital, une pharmacie, un laboratoire pres de chez vous</p>
     </div>
 </div>
 
@@ -136,7 +136,7 @@
             </div>
             <div class="search-field">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                <select id="searchSpecialty"><option value="">Specialite</option></select>
+                <select id="searchSpecialty"><option value="">Spécialité</option></select>
             </div>
             <button type="submit" class="search-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -151,7 +151,7 @@
                 <input type="checkbox" id="filterUrgence" onchange="doSearch()" style="accent-color:#C62828;"> Urgence
             </label>
             <label style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:#424242;cursor:pointer;">
-                <input type="checkbox" id="filterEvacuation" onchange="doSearch()" style="accent-color:#6A1B9A;"> Evacuation
+                <input type="checkbox" id="filterEvacuation" onchange="doSearch()" style="accent-color:#6A1B9A;"> Évacuation
             </label>
             <label style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:#424242;cursor:pointer;">
                 <input type="checkbox" id="filterDomicile" onchange="doSearch()" style="accent-color:#2E7D32;"> Soins a domicile
@@ -160,11 +160,11 @@
     </div>
 
     <div class="toolbar">
-        <div class="toolbar-title" id="resultsTitle">Structures de sante</div>
+        <div class="toolbar-title" id="resultsTitle">Structures de santé</div>
         <div class="toolbar-actions">
             <button id="btnProximite" onclick="toggleProximite()" class="btn btn-outline-green btn-sm btn-toggle">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                A proximite
+                A proximité
             </button>
             <div class="view-toggle">
                 <button id="btnViewList" class="active" onclick="setView('list')">
@@ -176,7 +176,7 @@
                     Carte
                 </button>
             </div>
-            <button onclick="resetSearch()" class="btn btn-outline-green btn-sm">Reinitialiser</button>
+            <button onclick="resetSearch()" class="btn btn-outline-green btn-sm">Réinitialiser</button>
         </div>
     </div>
 

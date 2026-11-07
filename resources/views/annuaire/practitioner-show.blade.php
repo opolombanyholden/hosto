@@ -5,7 +5,7 @@
 
 @section('breadcrumb')
 <li><span class="sep">/</span> <a href="/annuaire">Annuaire</a></li>
-<li><span class="sep">/</span> <a href="/annuaire/medecins">Medecins</a></li>
+<li><span class="sep">/</span> <a href="/annuaire/medecins">Médecins</a></li>
 <li><span class="sep">/</span> <span class="current">{{ $practitioner->full_name }}</span></li>
 @endsection
 
@@ -189,7 +189,7 @@
             <div class="prac-meta">{{ ['doctor' => 'Médecin', 'nurse' => 'Infirmier(e)', 'midwife' => 'Sage-femme'][$practitioner->practitioner_type] ?? ucfirst($practitioner->practitioner_type) }}@if($practitioner->registration_number) — N° {{ $practitioner->registration_number }}@endif</div>
             <div class="prac-badges">
                 @if($practitioner->does_teleconsultation)
-                    <span class="prac-badge badge-telecon">Teleconsultation</span>
+                    <span class="prac-badge badge-telecon">Téléconsultation</span>
                 @endif
                 @if($practitioner->accepts_new_patients)
                     <span class="prac-badge badge-new">Accepte nouveaux patients</span>
@@ -222,13 +222,13 @@
             <div class="section-card">
                 <div class="section-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                    Creneaux disponibles
+                    Créneaux disponibles
                 </div>
 
                 @if(! $practitioner->is_partner)
                     <div class="no-slots">
                         <p style="font-size:.85rem;color:#757575;line-height:1.6;">
-                            La prise de rendez-vous et la teleconsultation en ligne sont reservees aux medecins exerçant dans une structure <strong>partenaire HOSTO</strong>.
+                            La prise de rendez-vous et la téléconsultation en ligne sont reservees aux médecins exerçant dans une structure <strong>partenaire HOSTO</strong>.
                         </p>
                         @if($practitioner->phone || $practitioner->email)
                             <p style="font-size:.82rem;color:#388E3C;margin-top:8px;">
@@ -276,7 +276,7 @@
                 @else
                     <div class="no-slots">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#BDBDBD" stroke-width="1.5" style="margin-bottom:8px;"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                        <p>Aucun creneau disponible pour le moment.</p>
+                        <p>Aucun créneau disponible pour le moment.</p>
                     </div>
                 @endif
             </div>
@@ -406,7 +406,7 @@
             @endif
 
             <div class="section-card" style="text-align:center;">
-                <a href="/annuaire/medecins" style="font-size:.82rem;color:#1565C0;font-weight:500;text-decoration:none;">Voir tous les medecins</a>
+                <a href="/annuaire/medecins" style="font-size:.82rem;color:#1565C0;font-weight:500;text-decoration:none;">Voir tous les médecins</a>
             </div>
         </div>
     </div>

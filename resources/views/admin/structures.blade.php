@@ -33,7 +33,7 @@
             <td style="padding:12px 16px;">@foreach($s->structureTypes as $t)<span style="padding:2px 8px;background:#E8F5E9;color:#2E7D32;border-radius:100px;font-size:.68rem;margin-right:4px;">{{ $t->name_fr }}</span>@endforeach</td>
             <td style="padding:12px 16px;">
                 @if($s->is_partner)<span style="padding:2px 8px;background:#E3F2FD;color:#1565C0;border-radius:100px;font-size:.68rem;">Partenaire</span>@endif
-                @if($s->is_verified)<span style="padding:2px 8px;background:#E8F5E9;color:#2E7D32;border-radius:100px;font-size:.68rem;">Verifie</span>@else<span style="padding:2px 8px;background:#FFF3E0;color:#E65100;border-radius:100px;font-size:.68rem;">Non verifie</span>@endif
+                @if($s->is_verified)<span style="padding:2px 8px;background:#E8F5E9;color:#2E7D32;border-radius:100px;font-size:.68rem;">Vérifié</span>@else<span style="padding:2px 8px;background:#FFF3E0;color:#E65100;border-radius:100px;font-size:.68rem;">Non vérifié</span>@endif
             </td>
             <td style="padding:12px 16px;">
                 <a href="/admin/structures/{{ $s->uuid }}/config" style="font-size:.75rem;color:#B71C1C;font-weight:500;text-decoration:none;">Configurer</a>

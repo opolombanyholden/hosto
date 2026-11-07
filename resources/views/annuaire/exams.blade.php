@@ -151,7 +151,7 @@
         <p>Aucun resultat.</p>
         <p style="font-size:.78rem;margin-top:4px;">Essayez un autre type d'examen ou une autre ville.</p>
     </div>
-    <button id="loadMoreBtn" class="load-more" style="display:none;" onclick="loadMore()">Voir plus de resultats</button>
+    <button id="loadMoreBtn" class="load-more" style="display:none;" onclick="loadMore()">Voir plus de résultats</button>
 </div>
 
 {{-- Order modal --}}
