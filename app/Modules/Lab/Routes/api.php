@@ -14,7 +14,5 @@ Route::get('exams/search', [ExamSearchController::class, 'search'])->name('exams
 // Authenticated: patient views their own results.
 Route::middleware([EnsureFrontendRequestsAreStateful::class, 'auth:sanctum'])->group(function (): void {
     Route::get('results', [LabController::class, 'patientResults'])->name('results.index');
+    Route::get('results/{uuid}', [LabController::class, 'show'])->name('results.show');
 });
-
-// Public detail (for sharing via reference — access controlled by UUID knowledge).
-Route::get('results/{uuid}', [LabController::class, 'show'])->name('results.show');

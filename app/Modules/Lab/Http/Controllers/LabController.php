@@ -13,12 +13,16 @@ use Illuminate\Http\Request;
  */
 final class LabController
 {
+    /** A patient only sees a result once the laboratory has released it. */
+    private const RELEASED_STATUSES = ['validated', 'transmitted'];
+
     /**
      * List results for a patient (authenticated).
      */
     public function patientResults(Request $request): JsonResponse
     {
         $results = LabResult::where('patient_id', $request->user()->id)
+            ->whereIn('status', self::RELEASED_STATUSES)
             ->with(['laboratory', 'examRequest', 'items'])
             ->orderByDesc('created_at')
             ->paginate($request->integer('per_page', 20));
@@ -48,9 +52,11 @@ final class LabController
     /**
      * Single result detail.
      */
-    public function show(string $uuid): JsonResponse
+    public function show(Request $request, string $uuid): JsonResponse
     {
         $result = LabResult::whereUuid($uuid)
+            ->where('patient_id', $request->user()->id)
+            ->whereIn('status', self::RELEASED_STATUSES)
             ->with(['laboratory', 'examRequest', 'items', 'patient'])
             ->firstOrFail();
 
