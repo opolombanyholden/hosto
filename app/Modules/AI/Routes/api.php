@@ -11,4 +11,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('chat/{uuid}/message', [AIController::class, 'chatMessage'])->name('chat.message');
 });
 
-Route::get('predictions', [AIController::class, 'predictions'])->name('predictions.index');
+// Epidemiological predictions: decision makers only, like the statistics.
+Route::middleware(['auth:sanctum', 'perm:stats.view'])->group(function (): void {
+    Route::get('predictions', [AIController::class, 'predictions'])->name('predictions.index');
+});

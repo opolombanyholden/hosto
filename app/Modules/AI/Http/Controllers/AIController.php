@@ -69,7 +69,9 @@ final class AIController
             'message' => ['required', 'string', 'max:2000'],
         ]);
 
-        $conversation = ChatbotConversation::whereUuid($uuid)->firstOrFail();
+        $conversation = ChatbotConversation::whereUuid($uuid)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
 
         $message = $this->chatbotService->sendMessage(
             $conversation,

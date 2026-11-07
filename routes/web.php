@@ -67,9 +67,9 @@ Route::get('/annuaire/{slug}', [AnnuaireWebController::class, 'show'])->name('an
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/mot-de-passe/oublie', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
-    Route::post('/mot-de-passe/oublie', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::post('/mot-de-passe/oublie', [PasswordResetController::class, 'sendResetLink'])->middleware('throttle:5,1')->name('password.email');
     Route::get('/mot-de-passe/reinitialiser', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
-    Route::post('/mot-de-passe/reinitialiser', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+    Route::post('/mot-de-passe/reinitialiser', [PasswordResetController::class, 'resetPassword'])->middleware('throttle:5,1')->name('password.update');
 
     // Social login (OAuth)
     Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])->name('social.redirect');
@@ -83,9 +83,9 @@ Route::middleware('guest')->group(function (): void {
 Route::prefix('compte')->group(function (): void {
     Route::middleware('guest')->group(function (): void {
         Route::get('/connexion', [AuthController::class, 'compteConnexionForm'])->name('compte.connexion');
-        Route::post('/connexion', [AuthController::class, 'compteConnexion']);
+        Route::post('/connexion', [AuthController::class, 'compteConnexion'])->middleware('throttle:10,1');
         Route::get('/inscription', [AuthController::class, 'compteInscriptionForm'])->name('compte.inscription');
-        Route::post('/inscription', [AuthController::class, 'compteInscription']);
+        Route::post('/inscription', [AuthController::class, 'compteInscription'])->middleware('throttle:10,1');
     });
 
     Route::middleware(['auth', 'env:usager'])->group(function (): void {
@@ -216,7 +216,7 @@ Route::prefix('compte')->group(function (): void {
         Route::get('/pin-medical', [ProfileController::class, 'showMedicalPin'])->name('compte.medical-pin');
         Route::post('/pin-medical', [ProfileController::class, 'unlockMedicalPin']);
         Route::get('/profil/pin', [ProfileController::class, 'showProfilePin'])->name('compte.profile-pin');
-        Route::post('/profil/pin-verification', [ProfileController::class, 'verifyProfilePin']);
+        Route::post('/profil/pin-verification', [ProfileController::class, 'verifyProfilePin'])->middleware('throttle:5,1');
 
         // Complete profile flow (protected by PIN if set)
         Route::middleware('profile.pin')->group(function (): void {
@@ -227,7 +227,7 @@ Route::prefix('compte')->group(function (): void {
             Route::put('/profil/bio-medical', [ProfileController::class, 'updateMedicalBio'])->name('compte.profil.medical-bio');
             Route::put('/profil/question-secrete', [ProfileController::class, 'updateSecurityQuestion'])->name('compte.profil.security-question');
             Route::put('/profil/pin-medical', [ProfileController::class, 'updateMedicalPin'])->name('compte.profil.medical-pin');
-            Route::post('/profil/pin-medical/verify', [ProfileController::class, 'verifyMedicalPin'])->name('compte.profil.verify-pin');
+            Route::post('/profil/pin-medical/verify', [ProfileController::class, 'verifyMedicalPin'])->middleware('throttle:5,1')->name('compte.profil.verify-pin');
             Route::put('/profil/contacts-urgence', [ProfileController::class, 'updateEmergencyContacts'])->name('compte.profil.emergency');
             Route::post('/profil/photo', [ProfileController::class, 'updatePhoto'])->name('compte.profil.photo');
         });
@@ -248,9 +248,9 @@ Route::prefix('compte')->group(function (): void {
 Route::prefix('pro')->group(function (): void {
     Route::middleware('guest')->group(function (): void {
         Route::get('/connexion', [AuthController::class, 'proConnexionForm'])->name('pro.connexion');
-        Route::post('/connexion', [AuthController::class, 'proConnexion']);
+        Route::post('/connexion', [AuthController::class, 'proConnexion'])->middleware('throttle:10,1');
         Route::get('/inscription', [AuthController::class, 'proInscriptionForm'])->name('pro.inscription');
-        Route::post('/inscription', [AuthController::class, 'proInscription']);
+        Route::post('/inscription', [AuthController::class, 'proInscription'])->middleware('throttle:10,1');
     });
 
     Route::middleware(['auth', 'env:pro'])->group(function (): void {
@@ -312,7 +312,7 @@ Route::prefix('pro')->group(function (): void {
 Route::prefix('admin')->group(function (): void {
     Route::middleware('guest')->group(function (): void {
         Route::get('/connexion', [AuthController::class, 'adminConnexionForm'])->name('admin.connexion');
-        Route::post('/connexion', [AuthController::class, 'adminConnexion']);
+        Route::post('/connexion', [AuthController::class, 'adminConnexion'])->middleware('throttle:10,1');
     });
 
     Route::middleware(['auth', 'env:admin'])->group(function (): void {
@@ -470,4 +470,4 @@ Route::middleware('auth')->group(function (): void {
 
 // 2FA challenge (during login — not yet fully authenticated).
 Route::get('/2fa/challenge', [TwoFactorController::class, 'challenge'])->name('2fa.challenge');
-Route::post('/2fa/verify', [TwoFactorController::class, 'verifyChallengeCode'])->name('2fa.verify');
+Route::post('/2fa/verify', [TwoFactorController::class, 'verifyChallengeCode'])->middleware('throttle:5,1')->name('2fa.verify');

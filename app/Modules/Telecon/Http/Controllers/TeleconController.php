@@ -6,14 +6,18 @@ namespace App\Modules\Telecon\Http\Controllers;
 
 use App\Modules\Telecon\Models\Teleconsultation;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 final class TeleconController
 {
-    public function show(string $uuid): JsonResponse
+    public function show(Request $request, string $uuid): JsonResponse
     {
         $tc = Teleconsultation::whereUuid($uuid)
             ->with(['practitioner', 'patient'])
             ->firstOrFail();
+
+        $userId = $request->user()->id;
+        abort_unless($tc->patient_id === $userId || $tc->practitioner->user_id === $userId, 404);
 
         return response()->json([
             'data' => [

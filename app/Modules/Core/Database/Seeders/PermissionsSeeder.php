@@ -46,6 +46,7 @@ class PermissionsSeeder extends Seeder
             ['slug' => 'payments.refund',       'scope' => 'payments',      'name_fr' => 'Émettre un remboursement'],
             ['slug' => 'invoices.manage',       'scope' => 'invoices',      'name_fr' => 'Créer / valider des factures (compta)'],
             ['slug' => 'stats.view',            'scope' => 'stats',         'name_fr' => 'Accéder aux tableaux de bord statistiques'],
+            ['slug' => 'sync.manage',           'scope' => 'sync',          'name_fr' => 'Synchroniser une instance locale avec le cloud'],
             ['slug' => 'stats.view.financial',  'scope' => 'stats',         'name_fr' => 'Accéder aux KPI financiers (compta only)'],
             ['slug' => 'exports.users',         'scope' => 'exports',       'name_fr' => 'Exporter la liste users en CSV'],
             ['slug' => 'exports.structures',    'scope' => 'exports',       'name_fr' => 'Exporter les structures'],

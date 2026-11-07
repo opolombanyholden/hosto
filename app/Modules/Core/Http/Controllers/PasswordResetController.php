@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Modules\Core\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -147,7 +148,7 @@ final class PasswordResetController
         }
 
         // Check expiry.
-        if (now()->diffInMinutes($record->created_at) > self::TOKEN_EXPIRY_MINUTES) {
+        if (Carbon::parse($record->created_at)->addMinutes(self::TOKEN_EXPIRY_MINUTES)->isPast()) {
             DB::table('password_reset_tokens')->where('email', $email)->delete();
 
             return back()->withErrors(['email' => 'Ce lien a expire. Veuillez refaire une demande.']);
