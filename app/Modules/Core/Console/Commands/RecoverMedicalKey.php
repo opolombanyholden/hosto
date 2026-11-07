@@ -25,6 +25,13 @@ final class RecoverMedicalKey extends Command
 
     public function handle(MedicalKeyEscrow $escrow, MedicalCipher $cipher): int
     {
+        if (MedicalEncryptionKey::whereNotNull('escrowed_at')->doesntExist()) {
+            $this->error('Aucune cle n\'a encore ete mise sous sequestre : il n\'y a aucun fragment a saisir.');
+            $this->line('Lancez d\'abord : php artisan hosto:medical-key-escrow');
+
+            return self::FAILURE;
+        }
+
         $parsed = [];
         $needed = null;
 

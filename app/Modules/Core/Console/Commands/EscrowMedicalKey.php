@@ -29,6 +29,7 @@ final class EscrowMedicalKey extends Command
 
         if ($keyId === null) {
             $this->error('MEDICAL_ENCRYPTION_KEY est absente ou invalide : rien a mettre sous sequestre.');
+            $this->line('Creez d\'abord la cle : php artisan hosto:medical-key --write');
 
             return self::FAILURE;
         }

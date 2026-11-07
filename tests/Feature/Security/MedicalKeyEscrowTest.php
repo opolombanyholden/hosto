@@ -124,9 +124,12 @@ final class MedicalKeyEscrowTest extends TestCase
 
     public function test_recovered_key_is_checked_against_the_registry(): void
     {
+        $this->useKey($this->key('autre'));
+        $this->escrow();
+        File::deleteDirectory($this->dir);
         $this->useKey($this->key('prod'));
         $shares = $this->escrow();
-        MedicalEncryptionKey::query()->delete();
+        MedicalEncryptionKey::where('key_id', app(MedicalKeyEscrow::class)->currentKeyId())->forceDelete();
 
         $this->artisan('hosto:medical-key-recover')
             ->expectsQuestion('Fragment 1', $shares[0])
@@ -205,6 +208,25 @@ final class MedicalKeyEscrowTest extends TestCase
         $this->escrow();
 
         $this->artisan('hosto:medical-key-check')->assertSuccessful();
+    }
+
+    public function test_recovery_stops_at_once_when_nothing_was_escrowed(): void
+    {
+        $this->useKey($this->key('prod'));
+
+        $this->artisan('hosto:medical-key-recover', ['--verify' => true])
+            ->expectsOutputToContain('hosto:medical-key-escrow')
+            ->assertFailed();
+    }
+
+    public function test_escrow_without_key_explains_how_to_create_it(): void
+    {
+        $this->useKey('');
+        $this->app->instance(MedicalCipher::class, new MedicalCipher(null));
+
+        $this->artisan('hosto:medical-key-escrow', ['--output' => $this->dir])
+            ->expectsOutputToContain('hosto:medical-key --write')
+            ->assertFailed();
     }
 
     private function key(string $seed): string
