@@ -72,7 +72,10 @@ final class PasswordResetController
         $resetUrl = url("/mot-de-passe/reinitialiser?token={$token}&email=".urlencode($email));
 
         // Log for development.
-        Log::info("[HOSTO DEV] Lien de reinitialisation pour {$email} : {$resetUrl}");
+        // Secrets never reach the logs outside a developer machine.
+        if (app()->environment('local')) {
+            Log::info("[HOSTO DEV] Lien de reinitialisation pour {$email} : {$resetUrl}");
+        }
 
         // Send email.
         Mail::raw(

@@ -7,8 +7,10 @@ namespace App\Modules\Core\Http\Controllers\Admin;
 use App\Models\User;
 use App\Modules\Annuaire\Models\Hosto;
 use App\Modules\Core\Models\Role;
+use App\Modules\Core\Services\AuditLogger;
 use App\Modules\Core\Services\ImpersonationService;
 use App\Modules\Core\Services\RoleAssignmentService;
+use App\Modules\Core\Services\TwoFactorService;
 use App\Modules\Core\Services\UserAdminService;
 use App\Modules\Core\Services\UserExportService;
 use DomainException;
@@ -16,6 +18,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use InvalidArgumentException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -162,6 +165,39 @@ final class AdminUsersController
         $plain = $svc->resetPassword($user);
 
         return back()->with('success', 'Mot de passe réinitialisé')->with('temp_password', $plain);
+    }
+
+    /**
+     * For a user who lost their phone and recovery codes. The reason records
+     * how their identity was checked: this is the usual target of impersonation scams.
+     */
+    public function resetTwoFactor(Request $request, string $uuid, UserAdminService $svc, TwoFactorService $twoFactor, AuditLogger $audit): RedirectResponse
+    {
+        $target = User::where('uuid', $uuid)->firstOrFail();
+        $data = $request->validate(['reason' => 'required|string|min:10|max:500']);
+
+        if ($target->id === $request->user()->id) {
+            return back()->with('error', 'Vous ne pouvez pas reinitialiser votre propre double authentification : utilisez vos codes de secours ou demandez a un autre administrateur.');
+        }
+
+        if (! $twoFactor->isEnabled($target)) {
+            return back()->with('error', 'Cet utilisateur n\'a pas de double authentification active.');
+        }
+
+        $svc->resetTwoFactor($target);
+
+        $audit->record('user.2fa_reset', 'user', $target->uuid, ['reason' => $data['reason']]);
+
+        Mail::raw(
+            "Bonjour {$target->name},\n\n"
+            ."La double authentification de votre compte HOSTO vient d'etre reinitialisee par un administrateur.\n"
+            ."Vous devrez la configurer de nouveau a votre prochaine connexion.\n\n"
+            ."Si vous n'etes pas a l'origine de cette demande, contactez immediatement le support HOSTO.\n\n"
+            ."— L'equipe HOSTO",
+            fn ($message) => $message->to($target->email)->subject('HOSTO — Double authentification reinitialisee'),
+        );
+
+        return back()->with('success', 'Double authentification reinitialisee. L\'utilisateur devra la configurer de nouveau.');
     }
 
     public function impersonate(Request $request, string $uuid, ImpersonationService $svc): RedirectResponse

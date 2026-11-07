@@ -18,6 +18,7 @@ class PermissionsSeeder extends Seeder
             ['slug' => 'users.delete',          'scope' => 'users',         'name_fr' => 'Supprimer (soft) / restaurer un utilisateur'],
             ['slug' => 'users.suspend',         'scope' => 'users',         'name_fr' => 'Suspendre / réactiver'],
             ['slug' => 'users.reset_password',  'scope' => 'users',         'name_fr' => 'Réinitialiser le mot de passe'],
+            ['slug' => 'users.reset_2fa',       'scope' => 'users',         'name_fr' => 'Réinitialiser la double authentification'],
             ['slug' => 'users.validate_pro',    'scope' => 'users',         'name_fr' => 'Valider / rejeter un compte pro'],
             ['slug' => 'users.impersonate',     'scope' => 'users',         'name_fr' => 'Se connecter "comme" un utilisateur'],
             ['slug' => 'users.sessions',        'scope' => 'users',         'name_fr' => 'Voir et révoquer les sessions actives'],

@@ -49,7 +49,10 @@ final class VerificationController
         session([$cacheKey => $otp]);
 
         // Log OTP for development.
-        Log::info("[HOSTO DEV] Code de verification EMAIL pour {$user->email} : {$otp}");
+        // Secrets never reach the logs outside a developer machine.
+        if (app()->environment('local')) {
+            Log::info("[HOSTO DEV] Code de verification EMAIL pour {$user->email} : {$otp}");
+        }
 
         // Send email (goes to log in dev mode).
         Mail::raw(
@@ -124,7 +127,10 @@ final class VerificationController
         session([$cacheKey => $otp]);
 
         // Log OTP for development.
-        Log::info("[HOSTO DEV] Code de verification TELEPHONE pour {$user->phone} : {$otp}");
+        // Secrets never reach the logs outside a developer machine.
+        if (app()->environment('local')) {
+            Log::info("[HOSTO DEV] Code de verification TELEPHONE pour {$user->phone} : {$otp}");
+        }
 
         // TODO: In production, send SMS via gateway (Twilio, AfricasTalking, etc.)
         // SmsGateway::send($user->phone, "Votre code HOSTO : {$otp}");

@@ -333,6 +333,7 @@ Route::prefix('admin')->group(function (): void {
             Route::post('/{uuid}/suspend', [AdminUsersController::class, 'suspend'])->middleware('perm:users.suspend')->name('suspend');
             Route::post('/{uuid}/reactivate', [AdminUsersController::class, 'reactivate'])->middleware('perm:users.suspend')->name('reactivate');
             Route::post('/{uuid}/reset-password', [AdminUsersController::class, 'resetPassword'])->middleware('perm:users.reset_password')->name('reset_password');
+            Route::post('/{uuid}/reset-2fa', [AdminUsersController::class, 'resetTwoFactor'])->middleware('perm:users.reset_2fa')->name('reset_2fa');
             Route::post('/{uuid}/validate-pro', [AdminUsersController::class, 'validatePro'])->middleware('perm:users.validate_pro')->name('validate_pro');
             Route::put('/{uuid}/roles', [AdminUsersController::class, 'updateRoles'])->middleware('perm:roles.assign')->name('roles.update');
             Route::get('/{uuid}/sessions', [AdminUsersController::class, 'sessions'])->middleware('perm:users.sessions')->name('sessions');

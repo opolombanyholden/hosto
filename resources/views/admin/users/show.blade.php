@@ -84,6 +84,14 @@
             <button type="submit" onclick="return confirm('Réinitialiser le mot de passe ?')" style="padding:8px 14px;background:#1565C0;color:white;border:none;border-radius:6px;font-size:.82rem;cursor:pointer;">Réinitialiser MDP</button>
         </form>
 
+        @if($user->two_factor_confirmed_at && $user->id !== auth()->id())
+        <form method="POST" action="{{ route('admin.users.reset_2fa', $user->uuid) }}" style="display:flex;gap:6px;align-items:center;" onsubmit="return confirm('Réinitialiser la double authentification de cet utilisateur ?')">
+            @csrf
+            <input type="text" name="reason" required minlength="10" maxlength="500" placeholder="Comment l'identité a été vérifiée" aria-label="Motif de la réinitialisation" style="padding:7px 10px;border:1px solid #DDD;border-radius:6px;font-size:.8rem;min-width:240px;">
+            <button type="submit" style="padding:8px 14px;background:#4E342E;color:white;border:none;border-radius:6px;font-size:.82rem;cursor:pointer;">Réinitialiser la 2FA</button>
+        </form>
+        @endif
+
         <form method="POST" action="{{ route('admin.users.validate_pro', $user->uuid) }}" style="display:inline;">
             @csrf
             <input type="hidden" name="action" value="approve">

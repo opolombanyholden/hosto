@@ -10,6 +10,7 @@ use App\Modules\Core\Models\UserRoleAssignment;
 use DomainException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Throwable;
 
@@ -64,6 +65,21 @@ final class UserAdminService
         $user->tokens()->delete();
 
         return $plain;
+    }
+
+    /**
+     * Removes the second factor of a user who lost it, and logs them out
+     * everywhere. They must enrol again at their next sign-in.
+     */
+    public function resetTwoFactor(User $user): void
+    {
+        $user->forceFill([
+            'two_factor_secret' => null,
+            'two_factor_recovery_codes' => null,
+            'two_factor_confirmed_at' => null,
+            'remember_token' => Str::random(60),
+        ])->save();
+        $user->tokens()->delete();
     }
 
     public function softDelete(User $user): void
